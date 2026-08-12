@@ -3,3 +3,38 @@
 html {
   scroll-behavior: smooth;
 }
+
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f3f4f6;
+  --text-primary: #111111;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
+  --accent-color: #eab308;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --bg-primary: #111111;
+  --bg-secondary: #1f1f1f;
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --border-color: #3f3f46;
+  --accent-color: #facc15;
+}
+
+/* Gold Theme */
+[data-theme="gold"] {
+  --bg-primary: #fffdf5;
+  --bg-secondary: #fef3c7;
+  --text-primary: #292524;
+  --text-secondary: #78716c;
+  --border-color: #fde68a;
+  --accent-color: #d97706;
+}
+
+html,
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
