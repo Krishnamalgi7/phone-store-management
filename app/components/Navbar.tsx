@@ -66,16 +66,26 @@ export default function Navbar() {
 
       {/* ================= NAVBAR ================= */}
 
-      <nav className="flex items-center rounded-full border border-gray-200 bg-white px-7 py-4 pr-20 shadow-sm">
+      <nav
+  className="flex items-center rounded-full border px-7 py-4 pr-20 shadow-sm"
+  style={{
+    backgroundColor: "var(--bg-primary)",
+    borderColor: "var(--border-color)",
+    color: "var(--text-primary)",
+  }}
+>
 
         {/* LOGO */}
 
         <a
-          href="#home"
-          className="text-2xl font-bold"
-        >
-          AI NOVA +
-        </a>
+  href="#home"
+  className="text-2xl font-bold"
+  style={{
+    color: "var(--text-primary)",
+  }}
+>
+ AI NOVA + 
+</a>
 
         {/* ================= DESKTOP NAVIGATION ================= */}
 
@@ -84,9 +94,12 @@ export default function Navbar() {
           {/* HOME */}
 
           <a
-            href="#home"
-            className="flex items-center gap-2 transition hover:text-yellow-600"
-          >
+  href="#home"
+  className="flex items-center gap-2 transition hover:text-yellow-600"
+  style={{
+    color: "var(--text-primary)",
+  }}
+>
             <House size={18} />
             Home
           </a>
@@ -96,6 +109,9 @@ export default function Navbar() {
           <a
             href="#phones"
             className="flex items-center gap-2 transition hover:text-yellow-600"
+            style={{
+              color: "var(--text-primary)",
+            }}
           >
             <Smartphone size={18} />
             Phones
@@ -106,6 +122,9 @@ export default function Navbar() {
           <a
             href="#about"
             className="flex items-center gap-2 transition hover:text-yellow-600"
+            style={{
+              color: "var(--text-primary)",
+            }}  
           >
             <Info size={18} />
             About
@@ -116,6 +135,9 @@ export default function Navbar() {
           <a
             href="#contact"
             className="flex items-center gap-2 transition hover:text-yellow-600"
+            style={{
+              color: "var(--text-primary)",
+            }}  
           >
             <Mail size={18} />
             Contact
@@ -152,7 +174,11 @@ export default function Navbar() {
           onClick={() =>
             setIsSettingsOpen(!isSettingsOpen)
           }
-          className="cursor-pointer rounded-full bg-white p-3 shadow-md transition hover:bg-gray-100 hover:text-yellow-600"
+          className="cursor-pointer rounded-full p-3 shadow-md transition hover:bg-gray-100 hover:text-yellow-600"
+          style={{
+            backgroundColor: "var(--bg-primary)",
+            color: "var(--text-primary)",
+          }}
           aria-label="Open settings"
         >
           <Settings size={22} />
@@ -161,37 +187,48 @@ export default function Navbar() {
         {/* ================= SETTINGS MENU ================= */}
 
         {isSettingsOpen && (
-          <div className="absolute right-0 top-14 w-56 rounded-2xl border border-gray-200 bg-white p-4 shadow-2xl">
+  <div
+    className="absolute right-0 top-14 w-56 rounded-2xl border p-4 shadow-2xl"
+    style={{
+      backgroundColor: "var(--bg-primary)",
+      borderColor: "var(--border-color)",
+      color: "var(--text-primary)",
+    }}
+  >
 
-            <h2 className="mb-3 text-sm font-semibold">
+            <h2 className="mb-3 text-sm font-semibold"
+            style={{
+              color: "var(--text-primary)",
+            }}
+            >
               Choose Theme
             </h2>
 
             {/* DEFAULT */}
 
             <button
-            onClick={() => changeTheme("default")}
-            className="flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition hover:bg-gray-100"
-          >
-            <span>Default</span>
+  onClick={() => changeTheme("default")}
+  className="flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition theme-option "
+>
+  <span>Default</span>
 
-            {theme === "default" && (
-              <span className="text-yellow-500">
-                ✓
-              </span>
-            )}
-          </button>
+  {theme === "default" && (
+    <span style={{ color: "var(--accent-color)" }}>
+      ✓
+    </span>
+  )}
+</button>
 
             {/* DARK */}
 
             <button
             onClick={() => changeTheme("dark")}
-            className="flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition hover:bg-gray-100"
+            className="flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition theme-option"
           >
             <span>Dark</span>
 
             {theme === "dark" && (
-              <span className="text-yellow-500">
+              <span style={{ color: "var(--accent-color)" }}>
                 ✓
               </span>
             )}
@@ -201,12 +238,12 @@ export default function Navbar() {
 
             <button
             onClick={() => changeTheme("gold")}
-            className="flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition hover:bg-gray-100"
+            className="flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition theme-option"
           >
             <span>Gold</span>
 
             {theme === "gold" && (
-              <span className="text-yellow-500">
+              <span style={{ color: "var(--accent-color)" }}>
                 ✓
               </span>
             )}
@@ -220,7 +257,7 @@ export default function Navbar() {
       {/* ================= MOBILE MENU ================= */}
 
       {isMenuOpen && (
-        <div className="absolute right-4 top-20 z-40 w-56 rounded-2xl border border-gray-200 bg-white p-4 shadow-2xl md:hidden">
+        <div className="absolute right-4 top-20 z-40 w-56 rounded-2xl border border-gray-200 p-4 shadow-2xl md:hidden">
 
           <div className="flex flex-col gap-2">
 

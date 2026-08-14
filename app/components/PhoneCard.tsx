@@ -16,7 +16,14 @@ function PhoneCard({
   isNew,
 }: PhoneCardProps) {
   return (
-    <div className="relative flex h-full flex-col rounded-2xl border border-gray-200 p-6 transition hover:-translate-y-1 hover:shadow-lg">
+    <div
+  className="relative rounded-3xl border p-6 shadow-sm"
+  style={{
+    backgroundColor: "var(--bg-secondary)",
+    borderColor: "var(--border-color)",
+    color: "var(--text-primary)",
+  }}
+>
 
       {/* New badge */}
 
@@ -28,7 +35,12 @@ function PhoneCard({
 
       {/* Phone image */}
 
-      <div className="flex h-64 items-center justify-center rounded-xl bg-gray-100">
+      <div
+  className="flex h-64 items-center justify-center rounded-xl"
+  style={{
+    backgroundColor: "var(--bg-primary)",
+  }}
+>
         <img
           src={image}
           alt={name}
@@ -38,19 +50,33 @@ function PhoneCard({
 
       {/* Brand */}
 
-      <p className="mt-5 text-sm font-medium text-gray-500">
-        {brand}
-      </p>
+      <p
+  className="mt-5 text-sm font-medium"
+  style={{
+    color: "var(--text-secondary)",
+  }}
+>
+  {brand}
+</p>
 
       {/* Name */}
 
-      <h3 className="mt-1 text-xl font-bold">
+      <h3
+  className="text-xl font-bold"
+  style={{
+    color: "var(--text-primary)",
+  }}
+>
         {name}
       </h3>
 
       {/* Description */}
 
-      <p className="mt-2 text-gray-600">
+      <p
+  style={{
+    color: "var(--text-secondary)",
+  }}
+>
         {description}
       </p>
 
@@ -62,7 +88,12 @@ function PhoneCard({
 
       {/* View button */}
 
-      <button className="mt-auto cursor-pointer rounded-full bg-black px-5 py-2 text-sm font-semibold text-white transition hover:bg-yellow-500">
+      <button className="theme-accent-hover mt-8 inline-block cursor-pointer rounded-full px-6 py-1 font-semibold transition"
+        style={{
+  backgroundColor: "var(--text-primary)",
+  color: "var(--bg-primary)",
+}}
+>
         View Phone
       </button>
 

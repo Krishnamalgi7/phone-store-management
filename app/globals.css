@@ -1,7 +1,20 @@
 @import "tailwindcss";
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior:smooth;
+}
+
+.theme-accent-hover:hover {
+  background-color: var(--accent-color) !important;
+}
+
+html,
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition:
+    background-color 0.6s ease,
+    color 0.6s ease;
 }
 
 :root {
@@ -45,4 +58,8 @@ body {
   transition:
     background-color 0.3s ease,
     color 0.5s ease;
+}
+
+.theme-option:hover {
+  background-color: var(--bg-secondary);
 }

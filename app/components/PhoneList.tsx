@@ -42,18 +42,28 @@ const phones = [
 export default function PhoneList() {
   return (
     <section
-      id="phones"
-      className="px-6 py-10 md:px-12 lg:px-24"
-    >
+  id="phones"
+  className="px-6 py-12 md:px-12 lg:px-24"
+  style={{
+    backgroundColor: "var(--bg-primary)",
+    color: "var(--text-primary)",
+  }}
+>
+
       {/* Section container */}
 
       <div className="mx-auto max-w-7xl">
 
         {/* Section heading */}
 
-        <h2 className="text-3xl font-bold">
-          Explore Our Phones
-        </h2>
+        <h2
+  className="text-3xl font-bold"
+  style={{
+    color: "var(--text-primary)",
+  }}
+>
+  Explore Our Phones
+</h2>
 
         {/* Responsive phone grid */}
 

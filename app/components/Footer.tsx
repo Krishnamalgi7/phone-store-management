@@ -2,11 +2,22 @@ import { Smartphone, Info, Mail } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="px-6 py-10">
+    <footer className="px-6 py-10"
+    style={{
+    backgroundColor: "var(--bg-primary)",
+    color: "var(--text-primary)",
+  }}
+  >
 
       {/* Footer container */}
 
-      <div className="mx-auto max-w-7xl rounded-3xl border border-gray-200 bg-gray-100 p-6 sm:p-8">
+      <div
+  className="mx-auto max-w-7xl rounded-3xl border p-6 sm:p-8"
+  style={{
+    backgroundColor: "var(--bg-secondary)",
+    borderColor: "var(--border-color)",
+  }}
+>
 
         {/* Main footer content */}
 
@@ -16,13 +27,23 @@ export default function Footer() {
 
           <div>
 
-            <h2 className="text-xl font-bold">
-              NOVA
-            </h2>
+            <h2
+  className="text-xl font-bold"
+  style={{
+    color: "var(--text-primary)",
+  }}
+>
+  NOVA
+</h2>
 
-            <p className="mt-2 text-sm text-gray-500">
-              Technology made personal.
-            </p>
+            <p
+  className="mt-2 text-sm"
+  style={{
+    color: "var(--text-secondary)",
+  }}
+>
+  Technology made personal.
+</p>
 
           </div>
 
@@ -33,6 +54,9 @@ export default function Footer() {
             <a
               href="#phones"
               className="flex items-center gap-2 transition hover:text-yellow-600"
+              style={{
+  color: "var(--text-primary)",
+}}
             >
               <Smartphone size={17} />
               Phones
@@ -41,6 +65,10 @@ export default function Footer() {
             <a
               href="#about"
               className="flex items-center gap-2 transition hover:text-yellow-600"
+              style={{
+  color: "var(--text-primary)",
+}}
+
             >
               <Info size={17} />
               About
@@ -49,6 +77,9 @@ export default function Footer() {
             <a
               href="#contact"
               className="flex items-center gap-2 transition hover:text-yellow-600"
+              style={{
+  color: "var(--text-primary)",
+}}
             >
               <Mail size={17} />
               Contact
@@ -60,9 +91,15 @@ export default function Footer() {
 
         {/* Copyright */}
 
-        <div className="mt-8 border-t border-gray-200 pt-6 text-sm text-gray-500">
-          © 2026 NOVA. All rights reserved.
-        </div>
+        <div
+  className="mt-8 border-t pt-6 text-sm"
+  style={{
+    borderColor: "var(--border-color)",
+    color: "var(--text-secondary)",
+  }}
+>
+  © 2026 NOVA. All rights reserved.
+</div>
 
       </div>
 

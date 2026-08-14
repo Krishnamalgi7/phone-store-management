@@ -44,7 +44,14 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="px-6 py-20">
+    <section
+  id="contact"
+  className="px-6 py-20"
+  style={{
+    backgroundColor: "var(--bg-primary)",
+    color: "var(--text-primary)",
+  }}
+>
 
       {/* Main container */}
 
@@ -52,23 +59,44 @@ export default function Contact() {
 
         {/* Contact box */}
 
-        <div className="rounded-3xl border border-gray-200 p-8 md:p-12">
+        <div
+  className="rounded-3xl border p-8 md:p-12"
+  style={{
+    backgroundColor: "var(--bg-secondary)",
+    borderColor: "var(--border-color)",
+  }}
+>
 
           {/* Small label */}
 
-          <p className="text-sm font-semibold">
-            CONTACT US
-          </p>
+          <p
+  className="text-sm font-semibold"
+  style={{
+    color: "var(--text-primary)",
+  }}
+>
+  CONTACT US
+</p>
 
           {/* Heading */}
 
-          <h2 className="mt-4 text-3xl font-bold md:text-4xl">
-            Have a question?
-          </h2>
+         <h2
+  className="mt-4 text-3xl font-bold md:text-4xl"
+  style={{
+    color: "var(--text-primary)",
+  }}
+>
+  Have a question?
+</h2>
 
           {/* Description */}
 
-          <p className="mt-4 max-w-2xl text-gray-600">
+          <p
+  className="mt-4 max-w-2xl"
+  style={{
+    color: "var(--text-secondary)",
+  }}
+>
             We'd love to hear from you. Get in touch with the NOVA
             team for product information or general enquiries.
           </p>
@@ -84,27 +112,52 @@ export default function Contact() {
               target="_blank"
               rel="noopener noreferrer"
               className="cursor-pointer rounded-2xl bg-gray-100 px-5 py-4 transition hover:bg-gray-200"
+              style={{
+  backgroundColor: "var(--bg-primary)",
+}}
             >
-              <p className="text-sm text-gray-500">
-                Email
-              </p>
+              <p
+  className="text-sm"
+  style={{
+    color: "var(--text-secondary)",
+  }}
+>
+  Email
+</p>
 
-              <p className="mt-1 font-semibold">
-                hello@nova.com
-              </p>
+              <p
+  className="mt-1 font-semibold"
+  style={{
+    color: "var(--text-primary)",
+  }}
+>
+  hello@nova.com
+</p>
             </a>
 
             {/* Phone */}
 
             <a
               href="tel:+919876543210"
-              className="cursor-pointer rounded-2xl bg-gray-100 px-5 py-4 transition hover:bg-gray-200"
+              className="cursor-pointer rounded-2xl px-5 py-4 transition hover:bg-gray-200"
+style={{
+  backgroundColor: "var(--bg-primary)",
+}}
             >
-              <p className="text-sm text-gray-500">
-                Phone
-              </p>
+                <p
+  className="text-sm"
+  style={{
+    color: "var(--text-secondary)",
+  }}
+>
+                  Phone
+                </p>
 
-              <p className="mt-1 font-semibold">
+              <p className="mt-1 font-semibold"
+              style={{
+  color: "var(--text-primary)",
+}}
+>
                 +91 98765 43210
               </p>
             </a>
@@ -115,7 +168,11 @@ export default function Contact() {
 
           <button
             onClick={() => setIsOpen(true)}
-            className="mt-8 cursor-pointer rounded-full bg-black px-6 py-3 font-semibold text-white transition hover:bg-yellow-500"
+            className="theme-accent-hover mt-8 inline-block cursor-pointer rounded-full px-6 py-3 font-semibold transition"
+            style={{
+  backgroundColor: "var(--text-primary)",
+  color: "var(--bg-primary)",
+}}
           >
             Get in Touch
           </button>
@@ -131,13 +188,22 @@ export default function Contact() {
 
           {/* Popup */}
 
-          <div className="relative w-full max-w-lg rounded-3xl bg-white p-8 shadow-2xl">
+          <div
+  className="relative w-full max-w-lg rounded-3xl p-8 shadow-2xl"
+  style={{
+    backgroundColor: "var(--bg-primary)",
+    color: "var(--text-primary)",
+  }}
+>
 
             {/* Close button */}
 
             <button
               onClick={() => setIsOpen(false)}
               className="absolute right-5 top-5 cursor-pointer rounded-full p-2 transition hover:bg-yellow-500"
+              style={{
+  color: "var(--text-primary)",
+}}
               aria-label="Close contact form"
             >
               <X size={20} />
@@ -145,13 +211,23 @@ export default function Contact() {
 
             {/* Popup heading */}
 
-            <h2 className="text-2xl font-bold">
-              Get in Touch
-            </h2>
+            <h2
+  className="text-2xl font-bold"
+  style={{
+    color: "var(--text-primary)",
+  }}
+>
+  Get in Touch
+</h2>
 
-            <p className="mt-2 text-sm text-gray-600">
-              Fill in your details and we'll get back to you.
-            </p>
+            <p
+  className="mt-2 text-sm"
+  style={{
+    color: "var(--text-secondary)",
+  }}
+>
+  Fill in your details and we'll get back to you.
+</p>
 
             {/* Form */}
 
@@ -167,6 +243,9 @@ export default function Contact() {
                 <label
                   htmlFor="name"
                   className="text-sm font-medium"
+                  style={{
+  color: "var(--text-primary)",
+}}
                 >
                   Name
                 </label>
@@ -187,7 +266,12 @@ export default function Contact() {
                   maxLength={40}
                   pattern="[a-zA-Z ]+"
                   required
-                  className="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-black"
+                  className="mt-2 w-full rounded-xl border px-4 py-3 outline-none transition focus:border-black"
+style={{
+  backgroundColor: "var(--bg-primary)",
+  color: "var(--text-primary)",
+  borderColor: "var(--border-color)",
+}}
                 />
 
               </div>
@@ -205,13 +289,24 @@ export default function Contact() {
 
                 {/* +91 + 10 digit phone number */}
 
-                <div className="mt-2 flex overflow-hidden rounded-xl border border-gray-300 focus-within:border-black">
+                <div
+  className="mt-2 flex overflow-hidden rounded-xl border focus-within:border-black"
+  style={{
+    borderColor: "var(--border-color)",
+  }}
+>
 
                   {/* Fixed +91 */}
 
-                  <span className="flex items-center bg-gray-100 px-4 text-gray-600">
-                    +91
-                  </span>
+                  <span
+  className="flex items-center px-4"
+  style={{
+    backgroundColor: "var(--bg-secondary)",
+    color: "var(--text-secondary)",
+  }}
+>
+  +91
+</span>
 
                   {/* User enters only 10 digits */}
 
@@ -232,6 +327,10 @@ export default function Contact() {
                     pattern="[0-9]{10}"
                     required
                     className="min-w-0 flex-1 px-4 py-3 outline-none"
+                    style={{
+  backgroundColor: "var(--bg-primary)",
+  color: "var(--text-primary)",
+}}
                   />
 
                 </div>
@@ -258,7 +357,12 @@ export default function Contact() {
                   placeholder="Write your message"
                   rows={4}
                   required
-                  className="mt-2 w-full resize-none rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-black"
+                  className="mt-2 w-full resize-none rounded-xl border px-4 py-3 outline-none transition focus:border-black"
+  style={{
+    backgroundColor: "var(--bg-primary)",
+    color: "var(--text-primary)",
+    borderColor: "var(--border-color)",
+  }}
                 />
 
               </div>
@@ -267,7 +371,11 @@ export default function Contact() {
 
               <button
                 type="submit"
-                className="w-full cursor-pointer rounded-xl bg-black py-3 font-semibold text-white transition hover:bg-yellow-500"
+                className="theme-accent-hover mt-8 inline-block cursor-pointer rounded-full px-6 py-3 font-semibold transition"
+style={{
+  backgroundColor: "var(--text-primary)",
+  color: "var(--bg-primary)",
+}}
               >
                 Send Message
               </button>
@@ -284,30 +392,59 @@ export default function Contact() {
       {submissions.length > 0 && (
         <div className="mx-auto mt-12 max-w-7xl">
 
-          <h2 className="text-2xl font-bold">
-            Contact Requests
-          </h2>
+          <h2
+  className="text-2xl font-bold"
+  style={{
+    color: "var(--text-primary)",
+  }}
+>
+  Contact Requests
+</h2>
 
-          <div className="mt-6 overflow-x-auto rounded-2xl border border-gray-200">
+          <div
+  className="mt-6 overflow-x-auto rounded-2xl border"
+  style={{
+    borderColor: "var(--border-color)",
+  }}
+>
 
             <table className="w-full min-w-[600px] text-left">
 
               {/* Table heading */}
 
-              <thead className="bg-gray-100">
+              <thead
+  style={{
+    backgroundColor: "var(--bg-secondary)",
+  }}
+>
                 <tr>
 
-                  <th className="px-6 py-4 text-sm font-semibold">
-                    Name
-                  </th>
+                  <th
+  className="px-6 py-4 text-sm font-semibold"
+  style={{
+    color: "var(--text-primary)",
+  }}
+>
+  Name
+</th>
 
-                  <th className="px-6 py-4 text-sm font-semibold">
-                    Phone
-                  </th>
+                  <th
+  className="px-6 py-4 text-sm font-semibold"
+  style={{
+    color: "var(--text-primary)",
+  }}
+>
+  Phone
+</th>
 
-                  <th className="px-6 py-4 text-sm font-semibold">
-                    Message
-                  </th>
+                  <th
+  className="px-6 py-4 text-sm font-semibold"
+  style={{
+    color: "var(--text-primary)",
+  }}
+>
+  Message
+</th>
 
                 </tr>
               </thead>
@@ -319,18 +456,31 @@ export default function Contact() {
                 {submissions.map((submission, index) => (
                   <tr
                     key={index}
-                    className="border-t border-gray-200"
+                    className="border-t"
+                    style={{
+    borderColor: "var(--border-color)",
+  }}
                   >
 
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4"
+                    style={{
+    color: "var(--text-primary)",
+  }}
+  >
                       {submission.name}
                     </td>
 
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4"
+                    style={{
+    color: "var(--text-primary)",
+  }}>
                       +91 {submission.phone}
                     </td>
 
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4"
+                    style={{
+    color: "var(--text-primary)",
+  }}>
                       {submission.message}
                     </td>
 

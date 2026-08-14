@@ -1,6 +1,11 @@
 export default function Hero() {
   return (
-    <section className="px-6 py-20 text-center lg:text-left">
+    <section className="px-6 py-20 text-center lg:text-left"
+    style={{
+    backgroundColor: "var(--bg-primary)",
+    color: "var(--text-primary)",
+  }}
+  >
       
       {/* Main hero container */}
       <div className="mx-auto max-w-7xl">
@@ -12,30 +17,49 @@ export default function Hero() {
           <div className="flex-1">
 
             {/* Small heading */}
-            <p className="text-sm font-semibold tracking-wider text-gray-600">
+            <p className="text-sm font-semibold tracking-wider"
+              style={{
+                color: "var(--text-secondary)",
+              }}
+            >
               THE FUTURE OF MOBILE
             </p>
 
             {/* Main heading */}
-            <h1 className="mt-4 text-5xl font-bold leading-tight sm:text-6xl">
+      
+            <h1
+              className="mt-4 text-5xl font-bold leading-tight sm:text-6xl"
+              style={{
+                color: "var(--text-primary)",
+              }}
+            >
               Technology
               <br />
               Made Personal.
             </h1>
 
             {/* Description */}
-            <p className="mt-6 max-w-xl text-lg text-gray-600">
+            <p
+              className="mt-6 max-w-xl text-lg"
+              style={{
+                color: "var(--text-secondary)",
+              }}
+            >
               Discover smartphones designed for performance,
               style and everyday life.
             </p>
 
             {/* Explore button */}
             <a
-              href="#phones"
-              className="mt-8 inline-block cursor-pointer rounded-full bg-black px-6 py-3 font-semibold text-white transition hover:bg-yellow-500"
-            >
-              Explore Phones
-            </a>
+  href="#phones"
+  className="theme-accent-hover mt-8 inline-block cursor-pointer rounded-full px-6 py-3 font-semibold transition"
+  style={{
+    backgroundColor: "var(--text-primary)",
+    color: "var(--bg-primary)",
+  }}
+>
+  Explore Phones
+</a>
 
           </div>
 
