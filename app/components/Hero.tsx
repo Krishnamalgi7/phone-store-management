@@ -1,14 +1,11 @@
-function Hero() {
+export default function Hero() {
   return (
     <section className="px-6 py-20 text-center lg:text-left">
-
+      
       {/* Main hero container */}
       <div className="mx-auto max-w-7xl">
 
-        {/* Hero layout
-            flex-col = stack on mobile
-            lg:flex-row = side by side on desktop
-        */}
+        {/* Hero layout */}
         <div className="flex flex-col lg:flex-row lg:items-center">
 
           {/* LEFT SIDE - Hero text */}
@@ -34,9 +31,9 @@ function Hero() {
 
             {/* Explore button */}
             <a
-            href="#phones"
-            className="mt-8 inline-block rounded-full bg-black px-6 py-3 font-semibold text-white transition hover:bg-yellow-500"
-          >
+              href="#phones"
+              className="mt-8 inline-block cursor-pointer rounded-full bg-black px-6 py-3 font-semibold text-white transition hover:bg-yellow-500"
+            >
               Explore Phones
             </a>
 
@@ -60,5 +57,3 @@ function Hero() {
     </section>
   );
 }
-
-export default Hero;

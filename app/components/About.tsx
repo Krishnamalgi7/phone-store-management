@@ -1,7 +1,6 @@
-function About() {
+export default function About() {
   return (
     <section id="about" className="px-6 py-20">
-
       {/* Main About container */}
       <div className="mx-auto max-w-7xl">
 
@@ -69,9 +68,6 @@ function About() {
         </div>
 
       </div>
-
     </section>
   );
 }
-
-export default About;

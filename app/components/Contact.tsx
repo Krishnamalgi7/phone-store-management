@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { X } from "lucide-react";
 
@@ -7,10 +9,9 @@ type Submission = {
   message: string;
 };
 
-function Contact() {
+export default function Contact() {
   // Controls whether the popup is visible
   const [isOpen, setIsOpen] = useState(false);
-
 
   // Form values
   const [name, setName] = useState("");
@@ -19,56 +20,65 @@ function Contact() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
 
   // Handle form submission
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-  event.preventDefault();
+  const handleSubmit = (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
 
-  const newSubmission: Submission = {
-    name: name,
-    phone: phone,
-    message: message,
+    const newSubmission: Submission = {
+      name: name,
+      phone: phone,
+      message: message,
+    };
+
+    setSubmissions((previousSubmissions) => [
+      ...previousSubmissions,
+      newSubmission,
+    ]);
+
+    setIsOpen(false);
+
+    setName("");
+    setPhone("");
+    setMessage("");
   };
-
-  setSubmissions((previousSubmissions) => [
-    ...previousSubmissions,
-    newSubmission,
-  ]);
-
-  setIsOpen(false);
-
-  setName("");
-  setPhone("");
-  setMessage("");
-};
 
   return (
     <section id="contact" className="px-6 py-20">
 
       {/* Main container */}
+
       <div className="mx-auto max-w-7xl">
 
         {/* Contact box */}
+
         <div className="rounded-3xl border border-gray-200 p-8 md:p-12">
 
           {/* Small label */}
+
           <p className="text-sm font-semibold">
             CONTACT US
           </p>
 
           {/* Heading */}
+
           <h2 className="mt-4 text-3xl font-bold md:text-4xl">
             Have a question?
           </h2>
 
           {/* Description */}
+
           <p className="mt-4 max-w-2xl text-gray-600">
             We'd love to hear from you. Get in touch with the NOVA
             team for product information or general enquiries.
           </p>
 
           {/* Contact information */}
+
           <div className="mt-8 flex flex-col gap-4 md:flex-row">
 
             {/* Email */}
+
             <a
               href="https://mail.google.com/mail/?view=cm&fs=1&to=hello@nova.com"
               target="_blank"
@@ -85,6 +95,7 @@ function Contact() {
             </a>
 
             {/* Phone */}
+
             <a
               href="tel:+919876543210"
               className="cursor-pointer rounded-2xl bg-gray-100 px-5 py-4 transition hover:bg-gray-200"
@@ -101,6 +112,7 @@ function Contact() {
           </div>
 
           {/* Get in touch button */}
+
           <button
             onClick={() => setIsOpen(true)}
             className="mt-8 cursor-pointer rounded-full bg-black px-6 py-3 font-semibold text-white transition hover:bg-yellow-500"
@@ -113,13 +125,16 @@ function Contact() {
       </div>
 
       {/* Contact popup */}
+
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6">
 
           {/* Popup */}
+
           <div className="relative w-full max-w-lg rounded-3xl bg-white p-8 shadow-2xl">
 
             {/* Close button */}
+
             <button
               onClick={() => setIsOpen(false)}
               className="absolute right-5 top-5 cursor-pointer rounded-full p-2 transition hover:bg-yellow-500"
@@ -129,6 +144,7 @@ function Contact() {
             </button>
 
             {/* Popup heading */}
+
             <h2 className="text-2xl font-bold">
               Get in Touch
             </h2>
@@ -138,13 +154,16 @@ function Contact() {
             </p>
 
             {/* Form */}
+
             <form
               onSubmit={handleSubmit}
               className="mt-6 space-y-5"
             >
 
               {/* NAME */}
+
               <div>
+
                 <label
                   htmlFor="name"
                   className="text-sm font-medium"
@@ -152,24 +171,31 @@ function Contact() {
                   Name
                 </label>
 
-            <input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(event) => {
-                const value = event.target.value.replace(/[^a-zA-Z ]/g, "");
-                setName(value);
-              }}
-              placeholder="Enter your name"
-              maxLength={40}
-              pattern="[a-zA-Z ]+"
-              required
-              className="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-black"
-            />
+                <input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(event) => {
+                    const value = event.target.value.replace(
+                      /[^a-zA-Z ]/g,
+                      ""
+                    );
+
+                    setName(value);
+                  }}
+                  placeholder="Enter your name"
+                  maxLength={40}
+                  pattern="[a-zA-Z ]+"
+                  required
+                  className="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-black"
+                />
+
               </div>
 
               {/* PHONE */}
+
               <div>
+
                 <label
                   htmlFor="phone"
                   className="text-sm font-medium"
@@ -178,23 +204,25 @@ function Contact() {
                 </label>
 
                 {/* +91 + 10 digit phone number */}
+
                 <div className="mt-2 flex overflow-hidden rounded-xl border border-gray-300 focus-within:border-black">
 
                   {/* Fixed +91 */}
+
                   <span className="flex items-center bg-gray-100 px-4 text-gray-600">
                     +91
                   </span>
 
                   {/* User enters only 10 digits */}
+
                   <input
                     id="phone"
                     type="tel"
                     value={phone}
                     onChange={(event) => {
-                      // Remove anything that is not a number
-                      const value = event.target.value.replace(/\D/g, "");
+                      const value =
+                        event.target.value.replace(/\D/g, "");
 
-                      // Maximum 10 digits
                       if (value.length <= 10) {
                         setPhone(value);
                       }
@@ -207,10 +235,13 @@ function Contact() {
                   />
 
                 </div>
+
               </div>
 
               {/* MESSAGE */}
+
               <div>
+
                 <label
                   htmlFor="message"
                   className="text-sm font-medium"
@@ -221,15 +252,19 @@ function Contact() {
                 <textarea
                   id="message"
                   value={message}
-                  onChange={(event) => setMessage(event.target.value)}
+                  onChange={(event) =>
+                    setMessage(event.target.value)
+                  }
                   placeholder="Write your message"
                   rows={4}
                   required
                   className="mt-2 w-full resize-none rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-black"
                 />
+
               </div>
 
               {/* SUBMIT */}
+
               <button
                 type="submit"
                 className="w-full cursor-pointer rounded-xl bg-black py-3 font-semibold text-white transition hover:bg-yellow-500"
@@ -244,69 +279,73 @@ function Contact() {
         </div>
       )}
 
-    {/* Submitted contact requests */}
-{submissions.length > 0 && (
-  <div className="mx-auto mt-12 max-w-7xl">
+      {/* Submitted contact requests */}
 
-    <h2 className="text-2xl font-bold">
-      Contact Requests
-    </h2>
+      {submissions.length > 0 && (
+        <div className="mx-auto mt-12 max-w-7xl">
 
-    <div className="mt-6 overflow-x-auto rounded-2xl border border-gray-200">
+          <h2 className="text-2xl font-bold">
+            Contact Requests
+          </h2>
 
-      <table className="w-full min-w-[600px] text-left">
+          <div className="mt-6 overflow-x-auto rounded-2xl border border-gray-200">
 
-        {/* Table heading */}
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="px-6 py-4 text-sm font-semibold">
-              Name
-            </th>
+            <table className="w-full min-w-[600px] text-left">
 
-            <th className="px-6 py-4 text-sm font-semibold">
-              Phone
-            </th>
+              {/* Table heading */}
 
-            <th className="px-6 py-4 text-sm font-semibold">
-              Message
-            </th>
-          </tr>
-        </thead>
+              <thead className="bg-gray-100">
+                <tr>
 
-        {/* Table data */}
-        <tbody>
+                  <th className="px-6 py-4 text-sm font-semibold">
+                    Name
+                  </th>
 
-          {submissions.map((submission, index) => (
-            <tr
-              key={index}
-              className="border-t border-gray-200"
-            >
+                  <th className="px-6 py-4 text-sm font-semibold">
+                    Phone
+                  </th>
 
-              <td className="px-6 py-4">
-                {submission.name}
-              </td>
+                  <th className="px-6 py-4 text-sm font-semibold">
+                    Message
+                  </th>
 
-              <td className="px-6 py-4">
-                +91 {submission.phone}
-              </td>
+                </tr>
+              </thead>
 
-              <td className="px-6 py-4">
-                {submission.message}
-              </td>
+              {/* Table data */}
 
-            </tr>
-          ))}
+              <tbody>
 
-        </tbody>
+                {submissions.map((submission, index) => (
+                  <tr
+                    key={index}
+                    className="border-t border-gray-200"
+                  >
 
-      </table>
+                    <td className="px-6 py-4">
+                      {submission.name}
+                    </td>
 
-    </div>
+                    <td className="px-6 py-4">
+                      +91 {submission.phone}
+                    </td>
 
-  </div>
-)}
+                    <td className="px-6 py-4">
+                      {submission.message}
+                    </td>
+
+                  </tr>
+                ))}
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+      )}
+
     </section>
   );
 }
-
-export default Contact;
