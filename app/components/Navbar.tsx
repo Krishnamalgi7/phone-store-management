@@ -84,7 +84,7 @@ export default function Navbar() {
     color: "var(--text-primary)",
   }}
 >
- AI NOVA + 
+ Nothing
 </a>
 
         {/* ================= DESKTOP NAVIGATION ================= */}

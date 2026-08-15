@@ -1,13 +1,17 @@
+import Link from "next/link";
+
 type PhoneCardProps = {
+  id: string;
   brand: string;
   name: string;
   description: string;
-  price: string;
+  price: number;
   image: string;
   isNew?: boolean;
 };
 
 function PhoneCard({
+  id,
   brand,
   name,
   description,
@@ -83,19 +87,21 @@ function PhoneCard({
       {/* Price */}
 
       <p className="mt-4 text-lg font-semibold">
-        {price}
+        ₹{price.toLocaleString("en-IN")}
       </p>
 
       {/* View button */}
 
-      <button className="theme-accent-hover mt-8 inline-block cursor-pointer rounded-full px-6 py-1 font-semibold transition"
-        style={{
-  backgroundColor: "var(--text-primary)",
-  color: "var(--bg-primary)",
-}}
+      <Link
+  href={`/phones/${id}`}
+  className="mt-auto inline-block cursor-pointer rounded-full px-5 py-2 text-sm font-semibold transition hover:bg-yellow-500"
+  style={{
+    backgroundColor: "var(--text-primary)",
+    color: "var(--bg-primary)",
+  }}
 >
-        View Phone
-      </button>
+  View Phone
+</Link>
 
     </div>
   );

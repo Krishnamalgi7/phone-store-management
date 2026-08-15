@@ -1,45 +1,51 @@
+"use client";
+import { useEffect, useState } from "react";
+
 import PhoneCard from "./PhoneCard";
 
-const phones = [
-  {
-    brand: "NOVA",
-    name: "NOVA 5G",
-    description: "Powerful performance with a premium design.",
-    price: "₹79,999",
-    image:
-      "https://cdn.moglix.com/p/ozhJ6RrWGkwJ9-xxlarge.png",
-    isNew: true,
-  },
-  {
-    brand: "NOVA",
-    name: "NOVA 2 Ultra",
-    description: "Advanced technology with an incredible camera.",
-    price: "₹99,999",
-    image:
-      "https://cdn.beebom.com/mobile/ai-plus-nova-2-ultra-5g-front-back-3.png",
-    isNew: false,
-  },
-  {
-    brand: "NOVA",
-    name: "NOVA 12 s",
-    description: "Elegant design and reliable everyday performance.",
-    price: "₹49,999",
-    image:
-      "https://cdn.beebom.com/mobile/huawei-nova-12s-front-back-2.png",
-    isNew: false,
-  },
-  {
-    brand: "NOVA",
-    name: "NOVA 12 SE",
-    description: "Upcoming model with cutting-edge features.",
-    price: "₹89,999",
-    image:
-      "https://cdn.beebom.com/mobile/huawei-nova-12-se-front-back.png",
-    isNew: false,
-  },
-];
+type Phone = {
+  _id: string;
+  name: string;
+  brand: string;
+  price: number;
+  description: string;
+  image: string;
+  isNewPhone: boolean;
+};
 
 export default function PhoneList() {
+  const [phones, setPhones] = useState<Phone[]>([]);
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState("");
+
+  useEffect(() => {
+  const fetchPhones = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await fetch("/api/phones", {
+        cache: "no-store",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch phones");
+      }
+
+      const data = await response.json();
+
+      setPhones(data);
+    } catch (error) {
+      console.error("Error fetching phones:", error);
+      setError("Unable to load phones.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchPhones();
+}, []);
+
   return (
     <section
   id="phones"
@@ -65,21 +71,46 @@ export default function PhoneList() {
   Explore Our Phones
 </h2>
 
-        {/* Responsive phone grid */}
+        {/*phone grid */}
 
         <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 
-          {phones.map((phone) => (
-            <PhoneCard
-              key={phone.name}
-              brand={phone.brand}
-              name={phone.name}
-              description={phone.description}
-              price={phone.price}
-              image={phone.image}
-              isNew={phone.isNew}
-            />
-          ))}
+          {loading && (
+  <p
+    className="col-span-full text-center"
+    style={{
+      color: "var(--text-secondary)",
+    }}
+  >
+    Loading phones...
+  </p>
+)}
+
+{error && (
+  <p
+    className="col-span-full text-center"
+    style={{
+      color: "var(--text-secondary)",
+    }}
+  >
+    {error}
+  </p>
+)}
+
+{!loading &&
+  !error &&
+  phones.map((phone) => (
+    <PhoneCard
+  key={phone._id}
+  id={phone._id}
+  brand={phone.brand}
+  name={phone.name}
+  description={phone.description}
+  price={phone.price}
+  image={phone.image}
+  isNew={phone.isNewPhone}
+/>
+  ))}
 
         </div>
 

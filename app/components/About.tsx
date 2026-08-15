@@ -26,7 +26,7 @@ export default function About() {
     color: "var(--text-primary)",
   }}
 >
-  ABOUT NOVA
+  ABOUT NOTHING
 </p>
 
           {/* Main heading */}
@@ -46,7 +46,7 @@ export default function About() {
     color: "var(--text-secondary)",
   }}
 >
-  NOVA creates smartphones that combine thoughtful design,
+  Nothing creates smartphones that combine thoughtful design,
   powerful performance and technology that fits naturally
   into everyday life.
 </p>

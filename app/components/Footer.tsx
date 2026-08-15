@@ -33,7 +33,7 @@ export default function Footer() {
     color: "var(--text-primary)",
   }}
 >
-  NOVA
+  NOTHING
 </h2>
 
             <p
@@ -98,7 +98,7 @@ export default function Footer() {
     color: "var(--text-secondary)",
   }}
 >
-  © 2026 NOVA. All rights reserved.
+  © 2026 NOTHING. All rights reserved.
 </div>
 
       </div>

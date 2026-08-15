@@ -68,7 +68,7 @@ export default function Hero() {
 
             <img
               src="https://img.magnific.com/free-photo/technology-concept-with-futuristic-element_23-2151910959.jpg?semt=ais_test_b&w=740&q=80"
-              alt="NOVA smartphone"
+              alt=" NOTHING smartphone"
               className="w-64 rotate-6 rounded-3xl object-contain shadow-2xl transition duration-500 hover:rotate-3 hover:-translate-y-2 sm:w-72 lg:w-80"
             />
 

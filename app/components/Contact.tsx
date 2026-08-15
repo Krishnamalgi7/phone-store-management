@@ -97,7 +97,7 @@ export default function Contact() {
     color: "var(--text-secondary)",
   }}
 >
-            We'd love to hear from you. Get in touch with the NOVA
+            We'd love to hear from you. Get in touch with the NOTHING
             team for product information or general enquiries.
           </p>
 
@@ -108,7 +108,7 @@ export default function Contact() {
             {/* Email */}
 
             <a
-              href="https://mail.google.com/mail/?view=cm&fs=1&to=hello@nova.com"
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=hello@nothing.com"
               target="_blank"
               rel="noopener noreferrer"
               className="cursor-pointer rounded-2xl bg-gray-100 px-5 py-4 transition hover:bg-gray-200"
@@ -131,7 +131,7 @@ export default function Contact() {
     color: "var(--text-primary)",
   }}
 >
-  hello@nova.com
+  hello@nothing.com
 </p>
             </a>
 
@@ -150,7 +150,7 @@ style={{
     color: "var(--text-secondary)",
   }}
 >
-                  Phone
+                  Customer Care
                 </p>
 
               <p className="mt-1 font-semibold"
