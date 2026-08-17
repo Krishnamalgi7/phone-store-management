@@ -408,7 +408,7 @@ style={{
   }}
 >
 
-            <table className="w-full min-w-[600px] text-left">
+            <table className="w-full min-w-150 text-left">
 
               {/* Table heading */}
 
