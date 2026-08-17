@@ -201,7 +201,7 @@ export default function Navbar() {
               color: "var(--text-primary)",
             }}
             >
-              Choose Theme
+              Select Theme
             </h2>
 
             {/* DEFAULT */}
@@ -234,15 +234,15 @@ export default function Navbar() {
             )}
           </button>
 
-            {/* GOLD */}
+            {/* ocean */}
 
             <button
-            onClick={() => changeTheme("gold")}
+            onClick={() => changeTheme("ocean")}
             className="flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition theme-option"
           >
-            <span>Gold</span>
+            <span>ocean</span>
 
-            {theme === "gold" && (
+            {theme === "ocean" && (
               <span style={{ color: "var(--accent-color)" }}>
                 ✓
               </span>
