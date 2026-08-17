@@ -94,7 +94,7 @@ function PhoneCard({
 
       <Link
   href={`/phones/${id}`}
-  className="mt-auto inline-block cursor-pointer rounded-full px-5 py-2 text-sm font-semibold transition hover:bg-yellow-500"
+  className="mt-auto inline-block cursor-pointer rounded-full px-5 py-2 text-sm font-semibold transition theme-accent-hover"
   style={{
     backgroundColor: "var(--text-primary)",
     color: "var(--bg-primary)",
