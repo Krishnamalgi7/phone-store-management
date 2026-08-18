@@ -24,9 +24,7 @@ const [error, setError] = useState("");
       setLoading(true);
       setError("");
 
-      const response = await fetch("/api/phones", {
-        cache: "no-store",
-      });
+      const response = await fetch("http://localhost:5000/api/phones");
 
       if (!response.ok) {
         throw new Error("Failed to fetch phones");
