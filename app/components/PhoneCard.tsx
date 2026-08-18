@@ -21,14 +21,13 @@ function PhoneCard({
 }: PhoneCardProps) {
   return (
     <div
-  className="relative rounded-3xl border p-6 shadow-sm"
-  style={{
-    backgroundColor: "var(--bg-secondary)",
-    borderColor: "var(--border-color)",
-    color: "var(--text-primary)",
-  }}
->
-
+      className="relative rounded-3xl border p-6 shadow-sm"
+      style={{
+        backgroundColor: "var(--bg-secondary)",
+        borderColor: "var(--border-color)",
+        color: "var(--text-primary)",
+      }}
+    >
       {/* New badge */}
 
       {isNew && (
@@ -40,11 +39,11 @@ function PhoneCard({
       {/* Phone image */}
 
       <div
-  className="flex h-64 items-center justify-center rounded-xl"
-  style={{
-    backgroundColor: "var(--bg-primary)",
-  }}
->
+        className="flex h-64 items-center justify-center rounded-xl"
+        style={{
+          backgroundColor: "var(--bg-primary)",
+        }}
+      >
         <img
           src={image}
           alt={name}
@@ -55,32 +54,32 @@ function PhoneCard({
       {/* Brand */}
 
       <p
-  className="mt-5 text-sm font-medium"
-  style={{
-    color: "var(--text-secondary)",
-  }}
->
-  {brand}
-</p>
+        className="mt-5 text-sm font-medium"
+        style={{
+          color: "var(--text-secondary)",
+        }}
+      >
+        {brand}
+      </p>
 
       {/* Name */}
 
       <h3
-  className="text-xl font-bold"
-  style={{
-    color: "var(--text-primary)",
-  }}
->
+        className="text-xl font-bold"
+        style={{
+          color: "var(--text-primary)",
+        }}
+      >
         {name}
       </h3>
 
       {/* Description */}
 
       <p
-  style={{
-    color: "var(--text-secondary)",
-  }}
->
+        style={{
+          color: "var(--text-secondary)",
+        }}
+      >
         {description}
       </p>
 
@@ -93,16 +92,15 @@ function PhoneCard({
       {/* View button */}
 
       <Link
-  href={`/phones/${id}`}
-  className="mt-auto inline-block cursor-pointer rounded-full px-5 py-2 text-sm font-semibold transition theme-accent-hover"
-  style={{
-    backgroundColor: "var(--text-primary)",
-    color: "var(--bg-primary)",
-  }}
->
-  View Phone
-</Link>
-
+        href={`/phones/${id}`}
+        className="mt-auto inline-block cursor-pointer rounded-full px-5 py-2 text-sm font-semibold transition theme-accent-hover"
+        style={{
+          backgroundColor: "var(--text-primary)",
+          color: "var(--bg-primary)",
+        }}
+      >
+        View Phone
+      </Link>
     </div>
   );
 }

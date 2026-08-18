@@ -308,7 +308,7 @@ export default function Contact() {
                   Phone
                 </label>
 
-                {/* +91 + 10 digit phone number */}
+                {/* +91 (10 digit phone number) */}
 
                 <div
                   className="mt-2 flex overflow-hidden rounded-xl border focus-within:border-black"

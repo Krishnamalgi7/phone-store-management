@@ -25,9 +25,14 @@ const phoneSchema = new mongoose.Schema(
       trim: true,
     },
 
-    image: {
+    imageUrl: {
       type: String,
-      required: true,
+      default: null,
+    },
+
+    imageFileId: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: null,
     },
 
     isNewPhone: {
@@ -37,7 +42,7 @@ const phoneSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Phone = mongoose.model("Phone", phoneSchema);

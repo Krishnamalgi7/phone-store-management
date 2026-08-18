@@ -1,4 +1,8 @@
 const Phone = require("../models/Phone");
+const mongoose = require("mongoose");
+
+const { getGridFSBucket } = require("../config/gridfs");
+const { Readable } = require("stream");
 
 // Get all phones
 const getPhones = async (req, res) => {
@@ -7,7 +11,23 @@ const getPhones = async (req, res) => {
       createdAt: -1,
     });
 
-    res.status(200).json(phones);
+    const phonesWithImages = phones.map((phone) => {
+      const phoneData = phone.toObject();
+
+      if (phoneData.imageFileId) {
+        phoneData.image = `http://localhost:5000/api/phones/image/${phoneData.imageFileId}`;
+      } else if (phoneData.imageUrl) {
+        phoneData.image = phoneData.imageUrl;
+      } else if (phoneData.image) {
+        // Support old phone documents
+        // that still have the old "image" field.
+        phoneData.image = phoneData.image;
+      }
+
+      return phoneData;
+    });
+
+    res.status(200).json(phonesWithImages);
   } catch (error) {
     console.error("Failed to fetch phones:", error);
 
@@ -41,9 +61,52 @@ const getPhoneById = async (req, res) => {
 // Create a phone
 const createPhone = async (req, res) => {
   try {
-    const phone = await Phone.create(req.body);
+    const {
+      name,
+      brand,
+      price,
+      description,
+      isNewPhone,
+      imageUrl,
+    } = req.body;
 
-    res.status(201).json(phone);
+    let imageFileId = null;
+
+    // If user uploaded an image from their computer
+    if (req.file) {
+      const bucket = getGridFSBucket();
+
+      const uploadStream = bucket.openUploadStream(
+        req.file.originalname,
+        {
+          contentType: req.file.mimetype,
+        }
+      );
+
+      await new Promise((resolve, reject) => {
+        Readable.from(req.file.buffer)
+          .pipe(uploadStream)
+          .on("finish", resolve)
+          .on("error", reject);
+      });
+
+      imageFileId = uploadStream.id;
+    }
+
+    const phone = await Phone.create({
+      name,
+      brand,
+      price,
+      description,
+      isNewPhone,
+      imageUrl: imageUrl || null,
+      imageFileId,
+    });
+
+    res.status(201).json({
+      message: "Phone added successfully",
+      phone,
+    });
   } catch (error) {
     console.error("Failed to create phone:", error);
 
@@ -105,10 +168,41 @@ const deletePhone = async (req, res) => {
   }
 };
 
+const getPhoneImage = async (req, res) => {
+  try {
+    const bucket = getGridFSBucket();
+
+    const fileId = new mongoose.Types.ObjectId(req.params.id);
+
+    const files = await bucket.find({
+      _id: fileId,
+    }).toArray();
+
+    if (!files || files.length === 0) {
+      return res.status(404).json({
+        message: "Image not found",
+      });
+    }
+
+    const file = files[0];
+
+    res.set("Content-Type", file.contentType);
+
+    bucket.openDownloadStream(fileId).pipe(res);
+  } catch (error) {
+    console.error("Failed to fetch image:", error);
+
+    res.status(500).json({
+      message: "Failed to fetch image",
+    });
+  }
+};
+
 module.exports = {
   getPhones,
   getPhoneById,
   createPhone,
   updatePhone,
   deletePhone,
+  getPhoneImage,
 };

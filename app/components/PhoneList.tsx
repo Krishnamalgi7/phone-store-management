@@ -33,6 +33,7 @@ const [error, setError] = useState("");
       const data = await response.json();
 
       setPhones(data);
+      
     } catch (error) {
       console.error("Error fetching phones:", error);
       setError("Unable to load phones.");
