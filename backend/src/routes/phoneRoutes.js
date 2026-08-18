@@ -23,7 +23,7 @@ router.get("/image/:id", getPhoneImage);
 router.get("/:id", getPhoneById);
 
 // Update a phone
-router.put("/:id", updatePhone);
+router.put("/:id", upload.single("image"), updatePhone);
 
 // Delete a phone
 router.delete("/:id", deletePhone);
