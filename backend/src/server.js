@@ -1,13 +1,11 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-const { initializeGridFS } = require("./config/gridfs");
 require("dotenv").config();
 
 const connectDB = require("./config/db");
 const phoneRoutes = require("./routes/phoneRoutes");
 const contactRoutes = require("./routes/contactRoutes");
-
 
 const app = express();
 
@@ -26,9 +24,7 @@ app.get("/", (req, res) => {
 });
 
 connectDB().then(() => {
-  initializeGridFS();
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
 });

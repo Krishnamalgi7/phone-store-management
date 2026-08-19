@@ -32,14 +32,13 @@ export default function PhoneForm({
     isNewPhone: false,
   });
 
-  const [imageFile, setImageFile] =
-    useState<File | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
-  const [imageType, setImageType] =
-    useState<"upload" | "url">("upload");
+  const [imageType, setImageType] = useState<"upload" | "url">("upload");
 
-  const [imagePreview, setImagePreview] =
-    useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const [imageRemoved, setImageRemoved] = useState(false);
 
   const [status, setStatus] = useState("");
 
@@ -56,9 +55,7 @@ export default function PhoneForm({
 
       setImageFile(null);
 
-      setImageType(
-        editingPhone.imageUrl ? "url" : "upload"
-      );
+      setImageType(editingPhone.imageUrl ? "url" : "upload");
 
       // Show existing image
       setImagePreview(editingPhone.image);
@@ -82,9 +79,7 @@ export default function PhoneForm({
   }, [editingPhone]);
 
   const handleChange = (
-    event: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement
-    >
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type } = event.target;
 
@@ -102,11 +97,8 @@ export default function PhoneForm({
     }
   };
 
-  const handleFileChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file =
-      event.target.files?.[0] || null;
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] || null;
 
     if (!file) {
       return;
@@ -123,6 +115,7 @@ export default function PhoneForm({
   const handleRemoveImage = () => {
     setImageFile(null);
     setImagePreview(null);
+    setImageRemoved(true);
 
     setFormData((current) => ({
       ...current,
@@ -130,10 +123,9 @@ export default function PhoneForm({
     }));
 
     // Reset file input
-    const fileInput =
-      document.getElementById(
-        "phone-image"
-      ) as HTMLInputElement | null;
+    const fileInput = document.getElementById(
+      "phone-image",
+    ) as HTMLInputElement | null;
 
     if (fileInput) {
       fileInput.value = "";
@@ -156,57 +148,37 @@ export default function PhoneForm({
     setStatus("");
   };
 
-  const handleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
-      setStatus(
-        editingPhone
-          ? "Updating phone..."
-          : "Adding phone..."
-      );
+      setStatus(editingPhone ? "Updating phone..." : "Adding phone...");
 
       const data = new FormData();
 
       data.append("name", formData.name);
       data.append("brand", formData.brand);
       data.append("price", formData.price);
-      data.append(
-        "description",
-        formData.description
-      );
+      data.append("description", formData.description);
 
-      data.append(
-        "isNewPhone",
-        String(formData.isNewPhone)
-      );
+      data.append("isNewPhone", String(formData.isNewPhone));
 
-      if (
-        imageType === "upload" &&
-        imageFile
-      ) {
+      if (imageType === "upload" && imageFile) {
         data.append("image", imageFile);
       }
 
-      if (
-        imageType === "url" &&
-        formData.imageUrl
-      ) {
-        data.append(
-          "imageUrl",
-          formData.imageUrl
-        );
+      if (imageType === "url" && formData.imageUrl) {
+        data.append("imageUrl", formData.imageUrl);
+      }
+      if (imageRemoved) {
+        data.append("imageRemoved", "true");
       }
 
       const url = editingPhone
         ? `http://localhost:5000/api/phones/${editingPhone._id}`
         : "http://localhost:5000/api/phones";
 
-      const method = editingPhone
-        ? "PUT"
-        : "POST";
+      const method = editingPhone ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
@@ -216,15 +188,13 @@ export default function PhoneForm({
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          result.message || "Operation failed"
-        );
+        throw new Error(result.message || "Operation failed");
       }
 
       setStatus(
         editingPhone
           ? "Phone updated successfully."
-          : "Phone added successfully."
+          : "Phone added successfully.",
       );
 
       resetForm();
@@ -235,15 +205,10 @@ export default function PhoneForm({
 
       window.location.reload();
     } catch (error) {
-      console.error(
-        "Phone form error:",
-        error
-      );
+      console.error("Phone form error:", error);
 
       setStatus(
-        editingPhone
-          ? "Failed to update phone."
-          : "Failed to add phone."
+        editingPhone ? "Failed to update phone." : "Failed to add phone.",
       );
     }
   };
@@ -259,16 +224,11 @@ export default function PhoneForm({
     >
       <div className="mb-5 flex items-center justify-between">
         <h2 className="text-xl font-bold">
-          {editingPhone
-            ? "Edit Phone"
-            : "Add Phone"}
+          {editingPhone ? "Edit Phone" : "Add Phone"}
         </h2>
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-4"
-      >
+      <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name / Brand / Price */}
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
           <input
@@ -333,9 +293,7 @@ export default function PhoneForm({
 
         {/* Image */}
         <div>
-          <p className="mb-2 text-sm font-semibold">
-            Phone Image
-          </p>
+          <p className="mb-2 text-sm font-semibold">Phone Image</p>
 
           <div className="mb-3 flex gap-5 text-sm">
             <label
@@ -347,16 +305,12 @@ export default function PhoneForm({
               <input
                 type="radio"
                 name="imageType"
-                checked={
-                  imageType === "upload"
-                }
+                checked={imageType === "upload"}
                 onChange={() => {
                   setImageType("upload");
 
                   if (!imageFile && editingPhone) {
-                    setImagePreview(
-                      editingPhone.image
-                    );
+                    setImagePreview(editingPhone.image);
                   }
                 }}
               />
@@ -372,16 +326,12 @@ export default function PhoneForm({
               <input
                 type="radio"
                 name="imageType"
-                checked={
-                  imageType === "url"
-                }
+                checked={imageType === "url"}
                 onChange={() => {
                   setImageType("url");
 
                   if (formData.imageUrl) {
-                    setImagePreview(
-                      formData.imageUrl
-                    );
+                    setImagePreview(formData.imageUrl);
                   } else {
                     setImagePreview(null);
                   }
@@ -401,11 +351,9 @@ export default function PhoneForm({
               required={!editingPhone}
               className="w-full cursor-pointer rounded-lg border px-3 py-2 text-sm"
               style={{
-                backgroundColor:
-                  "var(--bg-primary)",
+                backgroundColor: "var(--bg-primary)",
                 color: "var(--text-primary)",
-                borderColor:
-                  "var(--border-color)",
+                borderColor: "var(--border-color)",
               }}
             />
           )}
@@ -421,11 +369,9 @@ export default function PhoneForm({
               required
               className="w-full rounded-lg border px-3 py-2.5 text-sm outline-none"
               style={{
-                backgroundColor:
-                  "var(--bg-primary)",
+                backgroundColor: "var(--bg-primary)",
                 color: "var(--text-primary)",
-                borderColor:
-                  "var(--border-color)",
+                borderColor: "var(--border-color)",
               }}
             />
           )}
@@ -435,16 +381,12 @@ export default function PhoneForm({
             <div
               className="mt-4 rounded-xl border p-4"
               style={{
-                backgroundColor:
-                  "var(--bg-secondary)",
-                borderColor:
-                  "var(--border-color)",
+                backgroundColor: "var(--bg-secondary)",
+                borderColor: "var(--border-color)",
               }}
             >
               <div className="mb-3 flex items-center justify-between">
-                <p className="text-sm font-semibold">
-                  Image Preview
-                </p>
+                <p className="text-sm font-semibold">Image Preview</p>
 
                 <button
                   type="button"
@@ -452,8 +394,7 @@ export default function PhoneForm({
                   className="cursor-pointer rounded-full border px-3 py-1 text-xs font-semibold transition"
                   style={{
                     color: "var(--text-primary)",
-                    borderColor:
-                      "var(--border-color)",
+                    borderColor: "var(--border-color)",
                   }}
                 >
                   Remove Image
@@ -494,14 +435,11 @@ export default function PhoneForm({
             type="submit"
             className="theme-accent-hover cursor-pointer rounded-full px-5 py-2.5 text-sm font-semibold transition"
             style={{
-              backgroundColor:
-                "var(--text-primary)",
+              backgroundColor: "var(--text-primary)",
               color: "var(--bg-primary)",
             }}
           >
-            {editingPhone
-              ? "Update Phone"
-              : "Add Phone"}
+            {editingPhone ? "Update Phone" : "Add Phone"}
           </button>
 
           {status && (

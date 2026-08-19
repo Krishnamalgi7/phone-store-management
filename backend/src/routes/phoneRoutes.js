@@ -6,7 +6,6 @@ const {
   createPhone,
   updatePhone,
   deletePhone,
-  getPhoneImage,
 } = require("../controllers/phoneController");
 
 const router = express.Router();
@@ -16,8 +15,6 @@ router.get("/", getPhones);
 
 // Create a phone
 router.post("/", upload.single("image"), createPhone);
-
-router.get("/image/:id", getPhoneImage);
 
 // Get one phone
 router.get("/:id", getPhoneById);

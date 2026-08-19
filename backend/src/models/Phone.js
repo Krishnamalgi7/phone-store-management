@@ -30,8 +30,8 @@ const phoneSchema = new mongoose.Schema(
       default: null,
     },
 
-    imageFileId: {
-      type: mongoose.Schema.Types.ObjectId,
+    image: {
+      type: String,
       default: null,
     },
 

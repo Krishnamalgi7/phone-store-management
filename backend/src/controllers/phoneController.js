@@ -1,8 +1,8 @@
 const Phone = require("../models/Phone");
 const mongoose = require("mongoose");
 
-const { getGridFSBucket } = require("../config/gridfs");
-const { Readable } = require("stream");
+const fs = require("fs");
+const path = require("path");
 
 // Get all phones
 const getPhones = async (req, res) => {
@@ -14,14 +14,13 @@ const getPhones = async (req, res) => {
     const phonesWithImages = phones.map((phone) => {
       const phoneData = phone.toObject();
 
-      if (phoneData.imageFileId) {
-        phoneData.image = `http://localhost:5000/api/phones/image/${phoneData.imageFileId}`;
+      // Uploaded image stored in backend/uploads
+      if (phoneData.image) {
+        if (phoneData.image.startsWith("/uploads/")) {
+          phoneData.image = `http://localhost:5000${phoneData.image}`;
+        }
       } else if (phoneData.imageUrl) {
         phoneData.image = phoneData.imageUrl;
-      } else if (phoneData.image) {
-        // Support old phone documents
-        // that still have the old "image" field.
-        phoneData.image = phoneData.image;
       }
 
       return phoneData;
@@ -63,24 +62,11 @@ const createPhone = async (req, res) => {
   try {
     const { name, brand, price, description, isNewPhone, imageUrl } = req.body;
 
-    let imageFileId = null;
+    let image = null;
 
     // If user uploaded an image from their computer
     if (req.file) {
-      const bucket = getGridFSBucket();
-
-      const uploadStream = bucket.openUploadStream(req.file.originalname, {
-        contentType: req.file.mimetype,
-      });
-
-      await new Promise((resolve, reject) => {
-        Readable.from(req.file.buffer)
-          .pipe(uploadStream)
-          .on("finish", resolve)
-          .on("error", reject);
-      });
-
-      imageFileId = uploadStream.id;
+      image = `/uploads/${req.file.filename}`;
     }
 
     const phone = await Phone.create({
@@ -90,7 +76,7 @@ const createPhone = async (req, res) => {
       description,
       isNewPhone,
       imageUrl: imageUrl || null,
-      imageFileId,
+      image: image,
     });
 
     res.status(201).json({
@@ -117,57 +103,67 @@ const updatePhone = async (req, res) => {
       });
     }
 
-    const { name, brand, price, description, isNewPhone, imageUrl } = req.body;
+    const { name, brand, price, description, isNewPhone, imageUrl, imageRemoved } = req.body;
 
-    phone.name = name;
-    phone.brand = brand;
-    phone.price = price;
-    phone.description = description;
-    phone.isNewPhone = isNewPhone;
+    const updateData = {
+      name,
+      brand,
+      price,
+      description,
+      isNewPhone,
+    };
 
     // If a new image was uploaded
     if (req.file) {
-      const bucket = getGridFSBucket();
+      // Delete the old local image
+      if (phone.image && phone.image.startsWith("/uploads/")) {
+        const oldImageName = path.basename(phone.image);
 
-      // Delete the old image from GridFS
-      if (phone.imageFileId) {
-        try {
-          await bucket.delete(new mongoose.Types.ObjectId(phone.imageFileId));
-        } catch (error) {
-          console.log("Old image could not be deleted:", error.message);
+        const oldImagePath = path.join(
+          __dirname,
+          "../../uploads",
+          oldImageName,
+        );
+
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
         }
       }
 
-      // Upload the new image
-      const uploadStream = bucket.openUploadStream(req.file.originalname, {
-        contentType: req.file.mimetype,
-      });
+      // Save the new image path
+      updateData.image = `/uploads/${req.file.filename}`;
+      updateData.imageUrl = null;
+    } else if (imageRemoved === "true") {
+      // Delete the existing local image
+      if (phone.image && phone.image.startsWith("/uploads/")) {
+        const oldImageName = path.basename(phone.image);
 
-      await new Promise((resolve, reject) => {
-        Readable.from(req.file.buffer)
-          .pipe(uploadStream)
-          .on("finish", resolve)
-          .on("error", reject);
-      });
+        const oldImagePath = path.join(
+          __dirname,
+          "../../uploads",
+          oldImageName,
+        );
 
-      // Store the new image ID
-      phone.imageFileId = uploadStream.id;
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
+        }
+      }
 
-      // We are using the uploaded image now
-      phone.imageUrl = null;
+      // Remove image path from MongoDB
+      updateData.image = null;
+      updateData.imageUrl = null;
     }
-    // If user selected URL instead
-    else if (imageUrl) {
-      phone.imageUrl = imageUrl;
-      phone.imageFileId = null;
-    }
 
-    await phone.save();
+    const updatedPhone = await Phone.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
 
-    res.status(200).json({
-      message: "Phone updated successfully",
-      phone,
-    });
+    res.status(200).json(updatedPhone);
   } catch (error) {
     console.error("Failed to update phone:", error);
 
@@ -188,71 +184,29 @@ const deletePhone = async (req, res) => {
       });
     }
 
-    // Delete uploaded image from GridFS
-    if (phone.imageFileId) {
-      try {
-        const bucket = getGridFSBucket();
+    // Delete the local image if it exists
+    if (phone.image && phone.image.startsWith("/uploads/")) {
+      const imageName = path.basename(phone.image);
 
-        await bucket.delete(
-          new mongoose.Types.ObjectId(
-            phone.imageFileId
-          )
-        );
-      } catch (error) {
-        console.log(
-          "Image could not be deleted from GridFS:",
-          error.message
-        );
+      const imagePath = path.join(__dirname, "../../uploads", imageName);
+
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
       }
     }
 
-    // Delete phone document
+    // Delete the phone from MongoDB
     await Phone.findByIdAndDelete(req.params.id);
 
     res.status(200).json({
-      message: "Phone and image deleted successfully",
+      message: "Phone deleted successfully",
       phone,
     });
   } catch (error) {
-    console.error(
-      "Failed to delete phone:",
-      error
-    );
+    console.error("Failed to delete phone:", error);
 
     res.status(500).json({
       message: "Failed to delete phone",
-    });
-  }
-};
-
-const getPhoneImage = async (req, res) => {
-  try {
-    const bucket = getGridFSBucket();
-
-    const fileId = new mongoose.Types.ObjectId(req.params.id);
-
-    const files = await bucket
-      .find({
-        _id: fileId,
-      })
-      .toArray();
-
-    if (!files || files.length === 0) {
-      return res.status(404).json({
-        message: "Image not found",
-      });
-    }
-
-    const file = files[0];
-
-    res.set("Content-Type", file.contentType);
-
-    bucket.openDownloadStream(fileId).pipe(res);
-  } catch (error) {
-    console.error("Failed to fetch image:", error);
-
-    res.status(500).json({
-      message: "Failed to fetch image",
     });
   }
 };
@@ -263,5 +217,4 @@ module.exports = {
   createPhone,
   updatePhone,
   deletePhone,
-  getPhoneImage,
 };
