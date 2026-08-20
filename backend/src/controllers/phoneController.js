@@ -1,4 +1,5 @@
 const Phone = require("../models/Phone");
+const PhoneSetting = require("../models/PhoneSetting");
 const mongoose = require("mongoose");
 
 const fs = require("fs");
@@ -60,7 +61,64 @@ const getPhoneById = async (req, res) => {
 // Create a phone
 const createPhone = async (req, res) => {
   try {
-    const { name, brand, price, description, isNewPhone, imageUrl } = req.body;
+    const {
+      name,
+      brand,
+      variant,
+      ram,
+      rom,
+      price,
+      description,
+      isNewPhone,
+      imageUrl,
+    } = req.body;
+
+    const settings = await PhoneSetting.find({
+      type: { $in: ["brand", "variant", "ram", "rom"] },
+      isActive: true,
+    });
+
+    const activeValues = {
+      brand: settings
+        .filter((setting) => setting.type === "brand")
+        .map((setting) => setting.value),
+
+      variant: settings
+        .filter((setting) => setting.type === "variant")
+        .map((setting) => setting.value),
+
+      ram: settings
+        .filter((setting) => setting.type === "ram")
+        .map((setting) => setting.value),
+
+      rom: settings
+        .filter((setting) => setting.type === "rom")
+        .map((setting) => setting.value),
+    };
+
+    if (!activeValues.brand.includes(brand)) {
+      return res.status(400).json({
+        message: "Selected brand is inactive or invalid",
+      });
+    }
+
+    if (!activeValues.variant.includes(variant)) {
+      return res.status(400).json({
+        message: "Selected variant is inactive or invalid",
+      });
+    }
+
+    if (!activeValues.ram.includes(ram)) {
+      return res.status(400).json({
+        message: "Selected RAM is inactive or invalid",
+      });
+    }
+
+    if (!activeValues.rom.includes(rom)) {
+      return res.status(400).json({
+        message: "Selected ROM is inactive or invalid",
+      });
+    }
 
     let image = null;
 
@@ -72,6 +130,9 @@ const createPhone = async (req, res) => {
     const phone = await Phone.create({
       name,
       brand,
+      variant,
+      ram,
+      rom,
       price,
       description,
       isNewPhone,
@@ -103,11 +164,72 @@ const updatePhone = async (req, res) => {
       });
     }
 
-    const { name, brand, price, description, isNewPhone, imageUrl, imageRemoved } = req.body;
+    const {
+      name,
+      brand,
+      variant,
+      ram,
+      rom,
+      price,
+      description,
+      isNewPhone,
+      imageUrl,
+      imageRemoved,
+    } = req.body;
+
+    const settings = await PhoneSetting.find({
+      type: { $in: ["brand", "variant", "ram", "rom"] },
+      isActive: true,
+    });
+
+    const activeValues = {
+      brand: settings
+        .filter((setting) => setting.type === "brand")
+        .map((setting) => setting.value),
+
+      variant: settings
+        .filter((setting) => setting.type === "variant")
+        .map((setting) => setting.value),
+
+      ram: settings
+        .filter((setting) => setting.type === "ram")
+        .map((setting) => setting.value),
+
+      rom: settings
+        .filter((setting) => setting.type === "rom")
+        .map((setting) => setting.value),
+    };
+
+    if (!activeValues.brand.includes(brand)) {
+      return res.status(400).json({
+        message: "Selected brand is inactive or invalid",
+      });
+    }
+
+    if (!activeValues.variant.includes(variant)) {
+      return res.status(400).json({
+        message: "Selected variant is inactive or invalid",
+      });
+    }
+
+    if (!activeValues.ram.includes(ram)) {
+      return res.status(400).json({
+        message: "Selected RAM is inactive or invalid",
+      });
+    }
+
+    if (!activeValues.rom.includes(rom)) {
+      return res.status(400).json({
+        message: "Selected ROM is inactive or invalid",
+      });
+    }
 
     const updateData = {
       name,
       brand,
+      variant,
+      ram,
+      rom,
       price,
       description,
       isNewPhone,

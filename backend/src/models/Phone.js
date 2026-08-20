@@ -39,6 +39,24 @@ const phoneSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    variant: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    ram: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    rom: {
+      type: String,
+      required: true,
+      trim: true,
+    },
   },
   {
     timestamps: true,

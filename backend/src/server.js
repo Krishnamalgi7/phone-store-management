@@ -6,6 +6,8 @@ require("dotenv").config();
 const connectDB = require("./config/db");
 const phoneRoutes = require("./routes/phoneRoutes");
 const contactRoutes = require("./routes/contactRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const phoneSettingRoutes = require("./routes/phoneSettingRoutes");
 
 const app = express();
 
@@ -14,6 +16,8 @@ app.use(express.json());
 app.use("/api/phones", phoneRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+app.use("/api/admin", adminRoutes);
+app.use("/api/settings", phoneSettingRoutes);
 
 const PORT = process.env.PORT || 5000;
 
