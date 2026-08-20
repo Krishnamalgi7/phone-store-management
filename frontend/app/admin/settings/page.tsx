@@ -221,7 +221,7 @@ export default function AdminSettingsPage() {
           <select
             value={type}
             onChange={(e) => setType(e.target.value as SettingType)}
-            className="rounded-lg border px-4 py-2.5 outline-none"
+            className="rounded-lg border px-4 py-2.5 outline-none cursor-pointer"
             style={{
               backgroundColor: "var(--bg-primary)",
               color: "var(--text-primary)",

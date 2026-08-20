@@ -13,6 +13,9 @@ type Phone = {
   imageUrl?: string | null;
   imageFileId?: string | null;
   isNewPhone: boolean;
+  variant: string;
+  ram: string;
+  rom: string;
 };
 
 type ManagePhoneListProps = {

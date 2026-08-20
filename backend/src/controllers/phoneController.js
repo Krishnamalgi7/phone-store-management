@@ -48,7 +48,17 @@ const getPhoneById = async (req, res) => {
       });
     }
 
-    res.status(200).json(phone);
+    const phoneData = phone.toObject();
+
+    if (phoneData.image) {
+      if (phoneData.image.startsWith("/uploads/")) {
+        phoneData.image = `http://localhost:5000${phoneData.image}`;
+      }
+    } else if (phoneData.imageUrl) {
+      phoneData.image = phoneData.imageUrl;
+    }
+
+    res.status(200).json(phoneData);
   } catch (error) {
     console.error("Failed to fetch phone:", error);
 

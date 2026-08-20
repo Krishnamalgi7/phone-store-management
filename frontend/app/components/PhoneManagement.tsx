@@ -15,10 +15,23 @@ type Phone = {
   imageUrl?: string | null;
   imageFileId?: string | null;
   isNewPhone: boolean;
+  variant: string;
+  ram: string;
+  rom: string;
 };
 
-export default function PhoneManagement() {
-  const [showManager, setShowManager] = useState(false);
+type PhoneManagementProps = {
+  showManager?: boolean;
+  onShowManagerChange?: (show: boolean) => void;
+};
+
+export default function PhoneManagement({
+  showManager,
+  onShowManagerChange,
+}: {
+  showManager: boolean;
+  onShowManagerChange: (show: boolean) => void;
+}) {
   const [showForm, setShowForm] = useState(false);
 
   const [editingPhone, setEditingPhone] = useState<Phone | null>(null);
@@ -49,72 +62,82 @@ export default function PhoneManagement() {
         color: "var(--text-primary)",
       }}
     >
-      {/* Manage Phones Button */}
-      <div className="flex justify-center">
-        <button
-          type="button"
-          onClick={() => {
-            setShowManager((current) => !current);
-            closeForm();
-          }}
-          className="theme-accent-hover cursor-pointer rounded-full px-6 py-3 text-sm font-semibold transition"
-          style={{
-            backgroundColor: "var(--text-primary)",
-            color: "var(--bg-primary)",
-          }}
-        >
-          {showManager ? "Close Management" : "Manage Phones"}
-        </button>
-      </div>
-
       {/* Management Section */}
       {showManager && (
         <div
-          className="mt-8 rounded-2xl border p-6 shadow-sm"
-          style={{
-            backgroundColor: "var(--bg-secondary)",
-            color: "var(--text-primary)",
-            borderColor: "var(--border-color)",
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              onShowManagerChange(false);
+              closeForm();
+            }
           }}
         >
-          {/* Header */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-2xl font-bold">Manage Phones</h2>
-
-              <p
-                className="mt-1 text-sm"
-                style={{
-                  color: "var(--text-secondary)",
-                }}
-              >
-                Add, update, or delete phones.
-              </p>
-            </div>
-
-            {/* Add Phone */}
-            <button
-              type="button"
-              onClick={openAddForm}
-              className="theme-accent-hover flex w-fit cursor-pointer items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition"
-              style={{
-                backgroundColor: "var(--text-primary)",
-                color: "var(--bg-primary)",
-              }}
-            >
-              <Plus size={16} strokeWidth={2.2} />
-              Add Phone
-            </button>
-          </div>
-
-          {/* Existing Phones */}
           <div
-            className="mt-8 border-t pt-6"
+            className="relative max-h-[90vh] w-full max-w-7xl overflow-y-auto rounded-2xl border p-6 shadow-2xl"
             style={{
+              backgroundColor: "var(--bg-primary)",
+              color: "var(--text-primary)",
               borderColor: "var(--border-color)",
             }}
           >
-            <ManagePhoneList onEdit={openEditForm} />
+
+             {/* X Mark on Managephone popup */}
+            <button
+              type="button"
+              onClick={() => {
+                onShowManagerChange(false);
+                closeForm();
+              }}
+              className="theme-accent-hover absolute right-5 top-5 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition"
+              style={{
+                backgroundColor: "transparent",
+                color: "var(--text-primary)",
+              }}
+              aria-label="Close phone management"
+            >
+              <X size={22} strokeWidth={2.5} />
+            </button>
+
+            {/* Header */}
+            <div className="flex flex-col gap-4 pr-14 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-2xl font-bold">Manage Phones</h2>
+
+                <p
+                  className="mt-1 text-sm"
+                  style={{
+                    color: "var(--text-secondary)",
+                  }}
+                >
+                  Add, update, or delete phones.
+                </p>
+              </div>
+
+              {/* Add Phone */}
+              <button
+                type="button"
+                onClick={openAddForm}
+                className="theme-accent-hover flex w-fit cursor-pointer items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition"
+                style={{
+                  backgroundColor: "var(--text-primary)",
+                  color: "var(--bg-primary)",
+                }}
+              >
+                <Plus size={16} strokeWidth={2.2} />
+                Add Phone
+              </button>
+            </div>
+
+            {/* Existing Phones */}
+            <div
+              className="mt-8 border-t pt-6"
+              style={{
+                borderColor: "var(--border-color)",
+              }}
+            >
+              <ManagePhoneList onEdit={openEditForm} />
+            </div>
           </div>
         </div>
       )}
@@ -148,7 +171,6 @@ export default function PhoneManagement() {
               style={{
                 backgroundColor: "transparent",
                 color: "var(--text-primary)",
-                
               }}
               aria-label="Close"
             >
