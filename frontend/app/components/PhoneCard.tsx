@@ -93,6 +93,8 @@ function PhoneCard({
 
       <Link
         href={`/phones/${id}`}
+        target="_blank"
+        rel="noopener noreferrer"
         className="mt-auto inline-block cursor-pointer rounded-full px-5 py-2 text-sm font-semibold transition theme-accent-hover"
         style={{
           backgroundColor: "var(--text-primary)",

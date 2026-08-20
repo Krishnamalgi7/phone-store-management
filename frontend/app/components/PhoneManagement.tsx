@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Plus, X } from "lucide-react";
-import PhoneForm from "../admin/phones/PhoneForm";
-import ManagePhoneList from "../admin/phones/ManagePhoneList";
+import PhoneForm from "../phones/PhoneForm";
+import ManagePhoneList from "../phones/ManagePhoneList";
 
 type Phone = {
   _id: string;

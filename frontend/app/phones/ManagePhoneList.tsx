@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Pencil, Trash2 ,  X } from "lucide-react";
+import { Pencil, Trash2, X } from "lucide-react";
 
 type Phone = {
   _id: string;
@@ -19,18 +19,14 @@ type ManagePhoneListProps = {
   onEdit: (phone: Phone) => void;
 };
 
-export default function ManagePhoneList({
-  onEdit,
-}: ManagePhoneListProps) {
+export default function ManagePhoneList({ onEdit }: ManagePhoneListProps) {
   const [phones, setPhones] = useState<Phone[]>([]);
   const [loading, setLoading] = useState(true);
   const [phoneToDelete, setPhoneToDelete] = useState<Phone | null>(null);
 
   const fetchPhones = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/phones"
-      );
+      const response = await fetch("http://localhost:5000/api/phones");
 
       const data = await response.json();
 
@@ -47,54 +43,45 @@ export default function ManagePhoneList({
   }, []);
 
   const confirmDelete = async () => {
-  if (!phoneToDelete) {
-    return;
-  }
+    if (!phoneToDelete) {
+      return;
+    }
 
-  const id = phoneToDelete._id;
+    const id = phoneToDelete._id;
 
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/phones/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const token = localStorage.getItem("adminToken");
+
+      const response = await fetch(`http://localhost:5000/api/phones/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.message || "Failed to delete phone"
-        );
+        throw new Error(data.message || "Failed to delete phone");
       }
 
       setPhones((currentPhones) =>
-        currentPhones.filter(
-          (phone) => phone._id !== id
-        )
+        currentPhones.filter((phone) => phone._id !== id),
       );
 
       setPhoneToDelete(null);
-
     } catch (error) {
       console.error("Delete phone error:", error);
     }
   };
 
   if (loading) {
-    return (
-      <p className="mt-12">
-        Loading phones...
-      </p>
-    );
+    return <p className="mt-12">Loading phones...</p>;
   }
 
   return (
     <section className="mt-16">
-      <h2 className="text-3xl font-bold">
-        Existing Phones
-      </h2>
+      <h2 className="text-3xl font-bold">Existing Phones</h2>
 
       <div className="mt-8 space-y-4">
         {phones.map((phone) => (
@@ -109,17 +96,11 @@ export default function ManagePhoneList({
             />
 
             <div className="flex-1">
-              <p className="text-sm text-gray-500">
-                {phone.brand}
-              </p>
+              <p className="text-sm text-gray-500">{phone.brand}</p>
 
-              <h3 className="text-xl font-bold">
-                {phone.name}
-              </h3>
+              <h3 className="text-xl font-bold">{phone.name}</h3>
 
-              <p className="mt-1">
-                ₹{phone.price.toLocaleString("en-IN")}
-              </p>
+              <p className="mt-1">₹{phone.price.toLocaleString("en-IN")}</p>
             </div>
 
             <div className="flex gap-3">
@@ -142,7 +123,7 @@ export default function ManagePhoneList({
           </div>
         ))}
       </div>
-            {/* Delete Confirmation Modal */}
+      {/* Delete Confirmation Modal */}
       {phoneToDelete && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -179,9 +160,7 @@ export default function ManagePhoneList({
 
             {/* Content */}
             <div className="pr-10">
-              <h2 className="text-xl font-bold">
-                Delete Phone?
-              </h2>
+              <h2 className="text-xl font-bold">Delete Phone?</h2>
 
               <p
                 className="mt-3 text-sm leading-6"

@@ -12,11 +12,21 @@ type Phone = {
   imageUrl?: string | null;
   imageFileId?: string | null;
   isNewPhone: boolean;
+  variant: string;
+  ram: string;
+  rom: string;
 };
 
 type PhoneFormProps = {
   editingPhone: Phone | null;
   onEditComplete: () => void;
+};
+
+type Setting = {
+  _id: string;
+  type: "variant" | "brand" | "ram" | "rom";
+  value: string;
+  isActive: boolean;
 };
 
 export default function PhoneForm({
@@ -26,6 +36,9 @@ export default function PhoneForm({
   const [formData, setFormData] = useState({
     name: "",
     brand: "",
+    variant: "",
+    ram: "",
+    rom: "",
     price: "",
     description: "",
     imageUrl: "",
@@ -42,11 +55,16 @@ export default function PhoneForm({
 
   const [status, setStatus] = useState("");
 
+  const [settings, setSettings] = useState<Setting[]>([]);
+
   useEffect(() => {
     if (editingPhone) {
       setFormData({
         name: editingPhone.name,
         brand: editingPhone.brand,
+        variant: editingPhone.variant,
+        ram: editingPhone.ram,
+        rom: editingPhone.rom,
         price: String(editingPhone.price),
         description: editingPhone.description,
         imageUrl: editingPhone.imageUrl || "",
@@ -65,6 +83,9 @@ export default function PhoneForm({
       setFormData({
         name: "",
         brand: "",
+        variant: "",
+        ram: "",
+        rom: "",
         price: "",
         description: "",
         imageUrl: "",
@@ -78,8 +99,36 @@ export default function PhoneForm({
     }
   }, [editingPhone]);
 
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const token = localStorage.getItem("adminToken");
+
+        const response = await fetch("http://localhost:5000/api/settings", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch phone settings");
+        }
+
+        const data = await response.json();
+
+        setSettings(data);
+      } catch (error) {
+        console.error("Phone settings error:", error);
+      }
+    };
+
+    fetchSettings();
+  }, []);
+
   const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    event: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const { name, value, type } = event.target;
 
@@ -136,6 +185,9 @@ export default function PhoneForm({
     setFormData({
       name: "",
       brand: "",
+      variant: "",
+      ram: "",
+      rom: "",
       price: "",
       description: "",
       imageUrl: "",
@@ -158,6 +210,9 @@ export default function PhoneForm({
 
       data.append("name", formData.name);
       data.append("brand", formData.brand);
+      data.append("variant", formData.variant);
+      data.append("ram", formData.ram);
+      data.append("rom", formData.rom);
       data.append("price", formData.price);
       data.append("description", formData.description);
 
@@ -170,6 +225,7 @@ export default function PhoneForm({
       if (imageType === "url" && formData.imageUrl) {
         data.append("imageUrl", formData.imageUrl);
       }
+
       if (imageRemoved) {
         data.append("imageRemoved", "true");
       }
@@ -180,8 +236,13 @@ export default function PhoneForm({
 
       const method = editingPhone ? "PUT" : "POST";
 
+      const token = localStorage.getItem("adminToken");
+
       const response = await fetch(url, {
         method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: data,
       });
 
@@ -245,11 +306,10 @@ export default function PhoneForm({
             }}
           />
 
-          <input
+          <select
             name="brand"
             value={formData.brand}
             onChange={handleChange}
-            placeholder="Brand"
             required
             className="w-full rounded-lg border px-3 py-2.5 text-sm outline-none"
             style={{
@@ -257,7 +317,17 @@ export default function PhoneForm({
               color: "var(--text-primary)",
               borderColor: "var(--border-color)",
             }}
-          />
+          >
+            <option value="">Select Brand</option>
+
+            {settings
+              .filter((setting) => setting.type === "brand" && setting.isActive)
+              .map((setting) => (
+                <option key={setting._id} value={setting.value}>
+                  {setting.value}
+                </option>
+              ))}
+          </select>
 
           <input
             name="price"
@@ -273,6 +343,80 @@ export default function PhoneForm({
               borderColor: "var(--border-color)",
             }}
           />
+        </div>
+
+        {/* Variant / RAM / ROM */}
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+          <select
+            name="variant"
+            value={formData.variant}
+            onChange={handleChange}
+            required
+            className="w-full rounded-lg border px-3 py-2.5 text-sm outline-none"
+            style={{
+              backgroundColor: "var(--bg-primary)",
+              color: "var(--text-primary)",
+              borderColor: "var(--border-color)",
+            }}
+          >
+            <option value="">Select Variant</option>
+
+            {settings
+              .filter(
+                (setting) => setting.type === "variant" && setting.isActive,
+              )
+              .map((setting) => (
+                <option key={setting._id} value={setting.value}>
+                  {setting.value}
+                </option>
+              ))}
+          </select>
+
+          <select
+            name="ram"
+            value={formData.ram}
+            onChange={handleChange}
+            required
+            className="w-full rounded-lg border px-3 py-2.5 text-sm outline-none"
+            style={{
+              backgroundColor: "var(--bg-primary)",
+              color: "var(--text-primary)",
+              borderColor: "var(--border-color)",
+            }}
+          >
+            <option value="">Select RAM</option>
+
+            {settings
+              .filter((setting) => setting.type === "ram" && setting.isActive)
+              .map((setting) => (
+                <option key={setting._id} value={setting.value}>
+                  {setting.value}
+                </option>
+              ))}
+          </select>
+
+          <select
+            name="rom"
+            value={formData.rom}
+            onChange={handleChange}
+            required
+            className="w-full rounded-lg border px-3 py-2.5 text-sm outline-none"
+            style={{
+              backgroundColor: "var(--bg-primary)",
+              color: "var(--text-primary)",
+              borderColor: "var(--border-color)",
+            }}
+          >
+            <option value="">Select ROM</option>
+
+            {settings
+              .filter((setting) => setting.type === "rom" && setting.isActive)
+              .map((setting) => (
+                <option key={setting._id} value={setting.value}>
+                  {setting.value}
+                </option>
+              ))}
+          </select>
         </div>
 
         {/* Description */}
