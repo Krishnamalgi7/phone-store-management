@@ -16,6 +16,8 @@ export default function AdminDashboardPage() {
   const [phones, setPhones] = useState<any[]>([]);
   const [contacts, setContacts] = useState<any[]>([]);
 
+  const [showQueries, setShowQueries] = useState(false);
+
   //Count phone brands
   const brandCounts = phones.reduce((counts: Record<string, number>, phone) => {
     const brand = phone.brand || "Unknown";
@@ -56,38 +58,66 @@ export default function AdminDashboardPage() {
     }
   }, [router]);
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const token = localStorage.getItem("adminToken");
+  const fetchDashboardData = async () => {
+    try {
+      const token = localStorage.getItem("adminToken");
 
-        if (!token) {
-          return;
-        }
-
-        const [phonesResponse, contactsResponse] = await Promise.all([
-          fetch("http://localhost:5000/api/phones"),
-          fetch("http://localhost:5000/api/contacts", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-        ]);
-
-        if (!phonesResponse.ok || !contactsResponse.ok) {
-          throw new Error("Failed to fetch dashboard data");
-        }
-
-        const phonesData = await phonesResponse.json();
-        const contactsData = await contactsResponse.json();
-
-        setPhones(phonesData);
-        setContacts(contactsData);
-      } catch (error) {
-        console.error("Failed to fetch dashboard data:", error);
+      if (!token) {
+        return;
       }
-    };
 
+      const [phonesResponse, contactsResponse] = await Promise.all([
+        fetch("http://localhost:5000/api/phones"),
+        fetch("http://localhost:5000/api/contacts", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }),
+      ]);
+
+      if (!phonesResponse.ok || !contactsResponse.ok) {
+        throw new Error("Failed to fetch dashboard data");
+      }
+
+      const phonesData = await phonesResponse.json();
+      const contactsData = await contactsResponse.json();
+
+      setPhones(phonesData);
+      setContacts(contactsData);
+    } catch (error) {
+      console.error("Failed to fetch dashboard data:", error);
+    }
+  };
+
+  const handleCompleteQuery = async (contactId: string) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+
+      if (!token) {
+        return;
+      }
+
+      const response = await fetch(
+        `http://localhost:5000/api/contacts/${contactId}/status`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update query status");
+      }
+
+      await fetchDashboardData();
+    } catch (error) {
+      console.error("Failed to complete customer query:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchDashboardData();
   }, []);
 
@@ -285,10 +315,144 @@ export default function AdminDashboardPage() {
                     <p className="mt-1 text-xl font-semibold">
                       {completedQueries}
                     </p>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowQueries(true)}
+                      className="theme-accent-hover mt-5 w-full cursor-pointer rounded-lg border px-4 py-2.5 text-sm font-medium transition"
+                      style={{
+                        backgroundColor: "var(--text-primary)",
+                        color: "var(--bg-primary)",
+                        borderColor: "var(--border-color)",
+                      }}
+                    >
+                      View Queries
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
+
+            {showQueries && (
+              <div
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4"
+                onMouseDown={(event) => {
+                  if (event.target === event.currentTarget) {
+                    setShowQueries(false);
+                  }
+                }}
+              >
+                <div
+                  className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl border p-6 shadow-2xl"
+                  style={{
+                    backgroundColor: "var(--bg-primary)",
+                    color: "var(--text-primary)",
+                    borderColor: "var(--border-color)",
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setShowQueries(false)}
+                    className="theme-accent-hover absolute right-5 top-5 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition"
+                    style={{
+                      backgroundColor: "transparent",
+                      color: "var(--text-primary)",
+                    }}
+                    aria-label="Close customer queries"
+                  >
+                    <X size={22} strokeWidth={2.5} />
+                  </button>
+
+                  <div className="pr-12">
+                    <h3 className="text-2xl font-bold">Customer Queries</h3>
+
+                    <p
+                      className="mt-1 text-sm"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      View and manage messages received from customers.
+                    </p>
+                  </div>
+
+                  <div className="mt-6 space-y-4">
+                    {contacts.length === 0 ? (
+                      <div
+                        className="rounded-xl border p-6 text-center"
+                        style={{
+                          borderColor: "var(--border-color)",
+                          backgroundColor: "var(--bg-secondary)",
+                        }}
+                      >
+                        <p style={{ color: "var(--text-secondary)" }}>
+                          No customer queries yet.
+                        </p>
+                      </div>
+                    ) : (
+                      contacts.map((contact) => (
+                        <div
+                          key={contact._id}
+                          className="rounded-xl border p-5"
+                          style={{
+                            backgroundColor: "var(--bg-secondary)",
+                            borderColor: "var(--border-color)",
+                          }}
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div>
+                              <h4 className="font-semibold">{contact.name}</h4>
+
+                              <p
+                                className="mt-1 text-sm"
+                                style={{ color: "var(--text-secondary)" }}
+                              >
+                                {contact.phone}
+                              </p>
+                            </div>
+
+                            <span
+                              className="rounded-full px-3 py-1 text-xs font-medium"
+                              style={{
+                                backgroundColor:
+                                  contact.status === "completed"
+                                    ? "var(--bg-primary)"
+                                    : "var(--accent-color)",
+                                color:
+                                  contact.status === "completed"
+                                    ? "var(--text-secondary)"
+                                    : "var(--text-primary)",
+                              }}
+                            >
+                              {contact.status === "completed"
+                                ? "Completed"
+                                : "Pending"}
+                            </span>
+                          </div>
+
+                          <p className="mt-4 text-sm leading-6">
+                            {contact.message}
+                          </p>
+
+                          {contact.status === "pending" && (
+                            <div className="mt-4 flex justify-end">
+                              <button
+                                type="button"
+                                onClick={() => handleCompleteQuery(contact._id)}
+                                className="cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium transition hover:bg-green-500 hover:text-white"
+                                style={{
+                                  borderColor: "var(--border-color)",
+                                }}
+                              >
+                                Mark Complete
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div id="manage-phones-section">
               <PhoneManagement
@@ -296,7 +460,7 @@ export default function AdminDashboardPage() {
                 onShowManagerChange={setShowManager}
               />
             </div>
-            
+
             {showSettings && (
               <div
                 className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4"
