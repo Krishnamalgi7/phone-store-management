@@ -3,7 +3,7 @@
 import PhoneManagement from "../../components/PhoneManagement";
 import AdminSettingsPage from "../settings/page";
 
-import { X } from "lucide-react";
+import { X, MessageSquare, Smartphone } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -12,6 +12,29 @@ export default function AdminDashboardPage() {
   const [adminName, setAdminName] = useState("");
   const [showManager, setShowManager] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+
+  const [phones, setPhones] = useState<any[]>([]);
+  const [contacts, setContacts] = useState<any[]>([]);
+
+  //Count phone brands
+  const brandCounts = phones.reduce((counts: Record<string, number>, phone) => {
+    const brand = phone.brand || "Unknown";
+
+    counts[brand] = (counts[brand] || 0) + 1;
+
+    return counts;
+  }, {});
+
+  //filter pending and update get in touch status
+  const totalQueries = contacts.length;
+
+  const pendingQueries = contacts.filter(
+    (contact) => contact.status === "pending",
+  ).length;
+
+  const completedQueries = contacts.filter(
+    (contact) => contact.status === "completed",
+  ).length;
 
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
@@ -32,6 +55,41 @@ export default function AdminDashboardPage() {
       router.replace("/admin/login");
     }
   }, [router]);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const token = localStorage.getItem("adminToken");
+
+        if (!token) {
+          return;
+        }
+
+        const [phonesResponse, contactsResponse] = await Promise.all([
+          fetch("http://localhost:5000/api/phones"),
+          fetch("http://localhost:5000/api/contacts", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }),
+        ]);
+
+        if (!phonesResponse.ok || !contactsResponse.ok) {
+          throw new Error("Failed to fetch dashboard data");
+        }
+
+        const phonesData = await phonesResponse.json();
+        const contactsData = await contactsResponse.json();
+
+        setPhones(phonesData);
+        setContacts(contactsData);
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
@@ -119,12 +177,126 @@ export default function AdminDashboardPage() {
           </p>
 
           <div className="mt-8">
+            <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+              {/* Total Phones */}
+              <div
+                className="rounded-2xl border p-6 shadow-sm"
+                style={{
+                  backgroundColor: "var(--bg-secondary)",
+                  borderColor: "var(--border-color)",
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className="flex h-11 w-11 items-center justify-center rounded-xl"
+                    style={{
+                      backgroundColor: "var(--bg-primary)",
+                      color: "var(--accent-color)",
+                    }}
+                  >
+                    <Smartphone size={22} />
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold">Total Phones</h3>
+                    <p
+                      className="text-2xl font-bold"
+                      style={{ color: "var(--accent-color)" }}
+                    >
+                      {phones.length}
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  className="mt-5 border-t pt-4"
+                  style={{ borderColor: "var(--border-color)" }}
+                >
+                  <div className="space-y-2">
+                    {Object.entries(brandCounts).map(([brand, count]) => (
+                      <div
+                        key={brand}
+                        className="flex items-center justify-between text-sm"
+                      >
+                        <span style={{ color: "var(--text-secondary)" }}>
+                          {brand}
+                        </span>
+
+                        <span className="font-semibold">{count}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Customer Queries */}
+              <div
+                className="rounded-2xl border p-6 shadow-sm"
+                style={{
+                  backgroundColor: "var(--bg-secondary)",
+                  borderColor: "var(--border-color)",
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className="flex h-11 w-11 items-center justify-center rounded-xl"
+                    style={{
+                      backgroundColor: "var(--bg-primary)",
+                      color: "var(--accent-color)",
+                    }}
+                  >
+                    <MessageSquare size={22} />
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold">Customer Queries</h3>
+                    <p
+                      className="text-2xl font-bold"
+                      style={{ color: "var(--accent-color)" }}
+                    >
+                      {totalQueries}
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  className="mt-5 grid grid-cols-2 gap-4 border-t pt-4"
+                  style={{ borderColor: "var(--border-color)" }}
+                >
+                  <div>
+                    <p
+                      className="text-sm"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      Pending
+                    </p>
+                    <p className="mt-1 text-xl font-semibold">
+                      {pendingQueries}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p
+                      className="text-sm"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      Completed
+                    </p>
+                    <p className="mt-1 text-xl font-semibold">
+                      {completedQueries}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div id="manage-phones-section">
               <PhoneManagement
                 showManager={showManager}
                 onShowManagerChange={setShowManager}
               />
             </div>
+            
             {showSettings && (
               <div
                 className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4"

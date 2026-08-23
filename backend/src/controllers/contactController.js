@@ -41,7 +41,38 @@ const getContacts = async (req, res) => {
   }
 };
 
+// Mark a contact message as completed
+const updateContactStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const contact = await Contact.findByIdAndUpdate(
+      id,
+      { status: "completed" },
+      { new: true },
+    );
+
+    if (!contact) {
+      return res.status(404).json({
+        message: "Contact message not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Contact marked as completed",
+      contact,
+    });
+  } catch (error) {
+    console.error("Failed to update contact status:", error);
+
+    res.status(500).json({
+      message: "Failed to update contact status",
+    });
+  }
+};
+
 module.exports = {
   createContact,
   getContacts,
+  updateContactStatus 
 };

@@ -9,7 +9,6 @@ import {
   Settings,
   Menu,
   X,
-  LogIn,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -135,16 +134,6 @@ export default function Navbar() {
             Contact
           </a>
 
-          <a
-            href="/admin/login"
-            className="nav-link flex items-center gap-2 transition"
-            style={{
-              color: "var(--text-primary)",
-            }}
-          >
-            <LogIn size={18} />
-            Admin Auth
-          </a>
         </div>
 
         {/* ================= MOBILE MENU BUTTON ================= */}
@@ -286,14 +275,6 @@ export default function Navbar() {
               Contact
             </a>
 
-            <a
-              href="/admin/login"
-              onClick={handleNavClick}
-              className="flex items-center gap-3 rounded-xl px-4 py-3 transition hover:bg-gray-100 hover:text-yellow-600"
-            >
-              <LogIn size={18} />
-              Admin Login
-            </a>
           </div>
         </div>
       )}

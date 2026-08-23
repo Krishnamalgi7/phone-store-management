@@ -1,8 +1,11 @@
 const express = require("express");
 
+const verifyToken = require("../middleware/authMiddleware");
+
 const {
   createContact,
   getContacts,
+   updateContactStatus,
 } = require("../controllers/contactController");
 
 const router = express.Router();
@@ -11,6 +14,9 @@ const router = express.Router();
 router.post("/", createContact);
 
 // Get all contact messages
-router.get("/", getContacts);
+router.get("/", verifyToken, getContacts);
+
+// Mark contact message as completed
+router.patch("/:id/status", verifyToken, updateContactStatus);
 
 module.exports = router;
