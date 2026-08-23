@@ -4,8 +4,17 @@ html {
   scroll-behavior:smooth;
 }
 
+.theme-accent-text-hover:hover {
+  color: var(--accent-color) !important;
+}
+
 .theme-accent-hover:hover {
   background-color: var(--accent-color) !important;
+}
+
+.theme-danger-hover:hover {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
 }
 
 html,
@@ -57,3 +66,11 @@ body {
 .theme-option:hover {
   background-color: var(--bg-secondary);
 }
+
+.nav-link:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--accent-color);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+

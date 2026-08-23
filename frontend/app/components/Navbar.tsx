@@ -9,6 +9,7 @@ import {
   Settings,
   Menu,
   X,
+  LogIn,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -26,19 +27,16 @@ export default function Navbar() {
 
   // Change theme and update the data-theme attribute on the document
   const changeTheme = (selectedTheme: string) => {
-  setTheme(selectedTheme);
+    setTheme(selectedTheme);
 
-  if (selectedTheme === "default") {
-    document.documentElement.removeAttribute("data-theme");
-  } else {
-    document.documentElement.setAttribute(
-      "data-theme",
-      selectedTheme
-    );
-  }
+    if (selectedTheme === "default") {
+      document.documentElement.removeAttribute("data-theme");
+    } else {
+      document.documentElement.setAttribute("data-theme", selectedTheme);
+    }
 
-  setIsSettingsOpen(false);
-};
+    setIsSettingsOpen(false);
+  };
 
   // Close settings when clicking outside the settings area
   useEffect(() => {
@@ -54,52 +52,46 @@ export default function Navbar() {
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   return (
     <div className="relative mx-auto mt-4 max-w-7xl">
-
       {/* ================= NAVBAR ================= */}
 
       <nav
-  className="flex items-center rounded-full border px-7 py-4 pr-20 shadow-sm"
-  style={{
-    backgroundColor: "var(--bg-primary)",
-    borderColor: "var(--border-color)",
-    color: "var(--text-primary)",
-  }}
->
-
+        className="flex items-center rounded-full border px-7 py-4 pr-20 shadow-sm"
+        style={{
+          backgroundColor: "var(--bg-primary)",
+          borderColor: "var(--border-color)",
+          color: "var(--text-primary)",
+        }}
+      >
         {/* LOGO */}
 
         <a
-  href="#home"
-  className="text-2xl font-bold"
-  style={{
-    color: "var(--text-primary)",
-  }}
->
- Nothing
-</a>
+          href="#home"
+          className="text-2xl font-bold"
+          style={{
+            color: "var(--text-primary)",
+          }}
+        >
+          Nothing
+        </a>
 
         {/* ================= DESKTOP NAVIGATION ================= */}
 
         <div className="ml-auto hidden items-center gap-7 md:flex">
-
           {/* HOME */}
 
           <a
-  href="#home"
-  className="flex items-center gap-2 transition hover:text-yellow-600"
-  style={{
-    color: "var(--text-primary)",
-  }}
->
+            href="#home"
+            className="nav-link flex items-center gap-2 transition"
+            style={{
+              color: "var(--text-primary)",
+            }}
+          >
             <House size={18} />
             Home
           </a>
@@ -108,7 +100,7 @@ export default function Navbar() {
 
           <a
             href="#phones"
-            className="flex items-center gap-2 transition hover:text-yellow-600"
+            className="nav-link flex items-center gap-2 transition"
             style={{
               color: "var(--text-primary)",
             }}
@@ -121,10 +113,10 @@ export default function Navbar() {
 
           <a
             href="#about"
-            className="flex items-center gap-2 transition hover:text-yellow-600"
+            className="nav-link flex items-center gap-2 transition"
             style={{
               color: "var(--text-primary)",
-            }}  
+            }}
           >
             <Info size={18} />
             About
@@ -134,15 +126,25 @@ export default function Navbar() {
 
           <a
             href="#contact"
-            className="flex items-center gap-2 transition hover:text-yellow-600"
+            className="nav-link flex items-center gap-2 transition"
             style={{
               color: "var(--text-primary)",
-            }}  
+            }}
           >
             <Mail size={18} />
             Contact
           </a>
 
+          <a
+            href="/admin/login"
+            className="nav-link flex items-center gap-2 transition"
+            style={{
+              color: "var(--text-primary)",
+            }}
+          >
+            <LogIn size={18} />
+            Admin Auth
+          </a>
         </div>
 
         {/* ================= MOBILE MENU BUTTON ================= */}
@@ -152,28 +154,17 @@ export default function Navbar() {
           className="ml-auto cursor-pointer rounded-full p-2 transition hover:bg-gray-100 hover:text-yellow-600 md:hidden"
           aria-label="Toggle navigation"
         >
-          {isMenuOpen ? (
-            <X size={24} />
-          ) : (
-            <Menu size={24} />
-          )}
+          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
-
       </nav>
 
       {/* ================= SETTINGS ================= */}
 
-      <div
-        ref={settingsRef}
-        className="absolute right-3 top-3 z-50 md:top-2"
-      >
-
+      <div ref={settingsRef} className="absolute right-3 top-3 z-50 md:top-2">
         {/* SETTINGS BUTTON */}
 
         <button
-          onClick={() =>
-            setIsSettingsOpen(!isSettingsOpen)
-          }
+          onClick={() => setIsSettingsOpen(!isSettingsOpen)}
           className="cursor-pointer rounded-full p-3 shadow-md transition hover:bg-gray-100 hover:text-yellow-600"
           style={{
             backgroundColor: "var(--bg-primary)",
@@ -187,19 +178,19 @@ export default function Navbar() {
         {/* ================= SETTINGS MENU ================= */}
 
         {isSettingsOpen && (
-  <div
-    className="absolute right-0 top-14 w-56 rounded-2xl border p-4 shadow-2xl"
-    style={{
-      backgroundColor: "var(--bg-primary)",
-      borderColor: "var(--border-color)",
-      color: "var(--text-primary)",
-    }}
-  >
-
-            <h2 className="mb-3 text-sm font-semibold"
+          <div
+            className="absolute right-0 top-14 w-56 rounded-2xl border p-4 shadow-2xl"
             style={{
+              backgroundColor: "var(--bg-primary)",
+              borderColor: "var(--border-color)",
               color: "var(--text-primary)",
             }}
+          >
+            <h2
+              className="mb-3 text-sm font-semibold"
+              style={{
+                color: "var(--text-primary)",
+              }}
             >
               Select Theme
             </h2>
@@ -207,60 +198,50 @@ export default function Navbar() {
             {/* DEFAULT */}
 
             <button
-  onClick={() => changeTheme("default")}
-  className="flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition theme-option "
->
-  <span>Default</span>
+              onClick={() => changeTheme("default")}
+              className="flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition theme-option "
+            >
+              <span>Default</span>
 
-  {theme === "default" && (
-    <span style={{ color: "var(--accent-color)" }}>
-      ✓
-    </span>
-  )}
-</button>
+              {theme === "default" && (
+                <span style={{ color: "var(--accent-color)" }}>✓</span>
+              )}
+            </button>
 
             {/* DARK */}
 
             <button
-            onClick={() => changeTheme("dark")}
-            className="flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition theme-option"
-          >
-            <span>Dark</span>
+              onClick={() => changeTheme("dark")}
+              className="flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition theme-option"
+            >
+              <span>Dark</span>
 
-            {theme === "dark" && (
-              <span style={{ color: "var(--accent-color)" }}>
-                ✓
-              </span>
-            )}
-          </button>
+              {theme === "dark" && (
+                <span style={{ color: "var(--accent-color)" }}>✓</span>
+              )}
+            </button>
 
             {/* ocean */}
 
             <button
-            onClick={() => changeTheme("ocean")}
-            className="flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition theme-option"
-          >
-            <span>ocean</span>
+              onClick={() => changeTheme("ocean")}
+              className="flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition theme-option"
+            >
+              <span>ocean</span>
 
-            {theme === "ocean" && (
-              <span style={{ color: "var(--accent-color)" }}>
-                ✓
-              </span>
-            )}
-          </button>
-
+              {theme === "ocean" && (
+                <span style={{ color: "var(--accent-color)" }}>✓</span>
+              )}
+            </button>
           </div>
         )}
-
       </div>
 
       {/* ================= MOBILE MENU ================= */}
 
       {isMenuOpen && (
         <div className="absolute right-4 top-20 z-40 w-56 rounded-2xl border border-gray-200 p-4 shadow-2xl md:hidden">
-
           <div className="flex flex-col gap-2">
-
             {/* HOME */}
 
             <a
@@ -305,11 +286,17 @@ export default function Navbar() {
               Contact
             </a>
 
+            <a
+              href="/admin/login"
+              onClick={handleNavClick}
+              className="flex items-center gap-3 rounded-xl px-4 py-3 transition hover:bg-gray-100 hover:text-yellow-600"
+            >
+              <LogIn size={18} />
+              Admin Login
+            </a>
           </div>
-
         </div>
       )}
-
     </div>
   );
 }

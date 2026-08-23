@@ -20,20 +20,17 @@ export default function AdminSignupPage() {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/admin/signup",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name,
-            email,
-            password,
-          }),
+      const response = await fetch("http://localhost:5000/api/admin/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      });
 
       const data = await response.json();
 
@@ -65,12 +62,13 @@ export default function AdminSignupPage() {
         <form
           onSubmit={handleSubmit}
           className="space-y-5 rounded-xl border p-6 shadow-sm"
+          style={{
+            backgroundColor: "var(--bg-secondary)",
+            borderColor: "var(--border-color)",
+          }}
         >
           <div>
-            <label
-              htmlFor="name"
-              className="mb-2 block text-sm font-medium"
-            >
+            <label htmlFor="name" className="mb-2 block text-sm font-medium">
               Name
             </label>
 
@@ -81,15 +79,17 @@ export default function AdminSignupPage() {
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter admin name"
               required
-              className="w-full rounded-lg border px-4 py-2.5 outline-none focus:ring-2"
+              className="w-full rounded-lg border px-4 py-2.5 outline-none"
+              style={{
+                backgroundColor: "var(--bg-primary)",
+                color: "var(--text-primary)",
+                borderColor: "var(--border-color)",
+              }}
             />
           </div>
 
           <div>
-            <label
-              htmlFor="email"
-              className="mb-2 block text-sm font-medium"
-            >
+            <label htmlFor="email" className="mb-2 block text-sm font-medium">
               Email
             </label>
 
@@ -100,7 +100,12 @@ export default function AdminSignupPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter admin email"
               required
-              className="w-full rounded-lg border px-4 py-2.5 outline-none focus:ring-2"
+              className="w-full rounded-lg border px-4 py-2.5 outline-none"
+              style={{
+                backgroundColor: "var(--bg-primary)",
+                color: "var(--text-primary)",
+                borderColor: "var(--border-color)",
+              }}
             />
           </div>
 
@@ -119,7 +124,12 @@ export default function AdminSignupPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter password"
               required
-              className="w-full rounded-lg border px-4 py-2.5 outline-none focus:ring-2"
+              className="w-full rounded-lg border px-4 py-2.5 outline-none"
+              style={{
+                backgroundColor: "var(--bg-primary)",
+                color: "var(--text-primary)",
+                borderColor: "var(--border-color)",
+              }}
             />
           </div>
 
@@ -132,11 +142,32 @@ export default function AdminSignupPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-blue-600 px-4 py-2.5 font-medium text-white shadow-sm transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+            className="theme-accent-hover cursor-pointer w-full rounded-lg px-4 py-2.5 font-medium shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60"
+            style={{
+              backgroundColor: "var(--text-primary)",
+              color: "var(--bg-primary)",
+            }}
           >
             {loading ? "Creating account..." : "Create Admin Account"}
           </button>
         </form>
+
+        <p
+          className="mt-4 text-center text-sm"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          Already have an admin account?{" "}
+          <button
+            type="button"
+            onClick={() => router.push("/admin/login")}
+            className="theme-accent-text-hover cursor-pointer font-medium transition hover:underline"
+            style={{
+              color: "var(--text-primary)",
+            }}
+          >
+            Sign in
+          </button>
+        </p>
       </div>
     </main>
   );

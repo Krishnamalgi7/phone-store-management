@@ -19,19 +19,16 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/admin/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-            password,
-          }),
+      const response = await fetch("http://localhost:5000/api/admin/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
       const data = await response.json();
 
@@ -59,9 +56,7 @@ export default function AdminLoginPage() {
     >
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold">
-            Admin Login
-          </h1>
+          <h1 className="text-3xl font-bold">Admin Login</h1>
 
           <p
             className="mt-2 text-sm"
@@ -80,10 +75,7 @@ export default function AdminLoginPage() {
           }}
         >
           <div>
-            <label
-              htmlFor="email"
-              className="mb-2 block text-sm font-medium"
-            >
+            <label htmlFor="email" className="mb-2 block text-sm font-medium">
               Email
             </label>
 
@@ -136,15 +128,42 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg px-4 py-2.5 font-medium shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+            className="theme-accent-hover cursor-pointer w-full rounded-lg px-4 py-2.5 font-medium shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60"
             style={{
-              backgroundColor: "var(--accent-color)",
-              color: "var(--text-primary)",
+              backgroundColor: "var(--text-primary)",
+              color: "var(--bg-primary)",
             }}
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
+
+        <p
+          className="mt-4 text-center text-sm"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          Don't have an admin account?{" "}
+          <button
+            type="button"
+            onClick={() => router.push("/admin/signup")}
+            className="cursor-pointer font-medium transition hover:!text-[var(--accent-color)] hover:underline"
+            style={{ color: "var(--text-primary)" }}
+          >
+            Sign up
+          </button>
+        </p>
+
+                <button
+          type="button"
+          onClick={() => router.push("/")}
+          className="theme-accent-text-hover mt-3 block w-full cursor-pointer text-center text-sm font-medium transition hover:underline"
+          style={{
+            color: "var(--text-secondary)",
+          }}
+        >
+          ← Back to Home
+        </button>
+        
       </div>
     </main>
   );

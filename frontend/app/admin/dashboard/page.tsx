@@ -37,7 +37,7 @@ export default function AdminDashboardPage() {
     localStorage.removeItem("adminToken");
     localStorage.removeItem("admin");
 
-    router.replace("/admin/login");
+    router.replace("/");
   };
 
   return (
@@ -99,7 +99,7 @@ export default function AdminDashboardPage() {
 
           <button
             onClick={handleLogout}
-            className="cursor-pointer rounded-lg px-4 py-2 font-medium transition hover:!bg-[var(--accent-color)]"
+            className="theme-danger-hover cursor-pointer rounded-lg px-4 py-2 font-medium transition"
             style={{
               backgroundColor: "var(--text-primary)",
               color: "var(--bg-secondary)",
