@@ -8,6 +8,7 @@ const {
   createPhone,
   updatePhone,
   deletePhone,
+  getPhoneFilters,
 } = require("../controllers/phoneController");
 
 const router = express.Router();
@@ -17,6 +18,9 @@ router.get("/", getPhones);
 
 // Create a phone with Admin JWT required
 router.post("/", verifyToken, upload.single("image"), createPhone);
+
+// Filter phone route
+router.get("/filters", getPhoneFilters);
 
 // Get one phone
 router.get("/:id", getPhoneById);

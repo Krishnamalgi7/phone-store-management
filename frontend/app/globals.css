@@ -74,3 +74,43 @@ body {
   text-underline-offset: 6px;
 }
 
+.price-slider {
+  appearance: none;
+  background: transparent;
+  pointer-events: none;
+  cursor: pointer;
+}
+
+.price-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+}
+
+.price-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  border: 2px solid var(--bg-secondary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.price-slider::-moz-range-track {
+  height: 6px;
+  background: transparent;
+}
+
+.price-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  border: 2px solid var(--bg-secondary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  pointer-events: auto;
+  cursor: pointer;
+}

@@ -82,7 +82,8 @@ export default function AdminDashboardPage() {
       const phonesData = await phonesResponse.json();
       const contactsData = await contactsResponse.json();
 
-      setPhones(phonesData);
+      setPhones(phonesData.phones);
+      
       setContacts(contactsData);
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);

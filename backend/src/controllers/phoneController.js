@@ -5,13 +5,115 @@ const mongoose = require("mongoose");
 const fs = require("fs");
 const path = require("path");
 
-// Get all phones
+// Get phones with filtering and pagination
 const getPhones = async (req, res) => {
   try {
-    const phones = await Phone.find().sort({
-      createdAt: -1,
-    });
+    const {
+      page = 1,
+      limit = 6,
+      search = "",
+      brand = "",
+      variant = "",
+      ram = "",
+      rom = "",
+      minPrice,
+      maxPrice,
+    } = req.query;
 
+    // Convert and validate pagination values
+    const currentPage = Math.max(parseInt(page, 10) || 1, 1);
+
+    const requestedLimit = parseInt(limit, 10) || 9;
+
+    // Prevent very large requests
+    const pageSize = Math.min(Math.max(requestedLimit, 1), 50);
+
+    const skip = (currentPage - 1) * pageSize;
+
+    // Build MongoDB filter
+    const filter = {};
+
+    // Search by phone name or brand
+    if (search.trim()) {
+      const searchValue = search.trim();
+
+      filter.$or = [
+        {
+          name: {
+            $regex: searchValue,
+            $options: "i",
+          },
+        },
+        {
+          brand: {
+            $regex: searchValue,
+            $options: "i",
+          },
+        },
+      ];
+    }
+
+    // Exact filters
+    if (brand.trim()) {
+      filter.brand = brand.trim();
+    }
+
+    if (variant.trim()) {
+      filter.variant = variant.trim();
+    }
+
+    if (ram.trim()) {
+      filter.ram = ram.trim();
+    }
+
+    if (rom.trim()) {
+      filter.rom = rom.trim();
+    }
+
+    // Price range
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      filter.price = {};
+
+      if (minPrice !== undefined) {
+        const minimumPrice = Number(minPrice);
+
+        if (!Number.isNaN(minimumPrice) && minimumPrice >= 0) {
+          filter.price.$gte = minimumPrice;
+        }
+      }
+
+      if (maxPrice !== undefined) {
+        const maximumPrice = Number(maxPrice);
+
+        if (!Number.isNaN(maximumPrice) && maximumPrice >= 0) {
+          filter.price.$lte = maximumPrice;
+        }
+      }
+
+      // Remove empty price object
+      if (Object.keys(filter.price).length === 0) {
+        delete filter.price;
+      }
+    }
+
+    // Get total number of matching phones
+    const totalItems = await Phone.countDocuments(filter);
+
+    // Get only the phones needed for this page
+    const phones = await Phone.find(filter)
+      .sort({
+        createdAt: -1,
+      })
+      .skip(skip)
+      .limit(pageSize);
+
+    // Calculate total pages
+    const totalPages =
+      totalItems === 0
+        ? 0
+        : Math.ceil(totalItems / pageSize);
+
+    // Convert image paths
     const phonesWithImages = phones.map((phone) => {
       const phoneData = phone.toObject();
 
@@ -27,12 +129,69 @@ const getPhones = async (req, res) => {
       return phoneData;
     });
 
-    res.status(200).json(phonesWithImages);
+    res.status(200).json({
+      phones: phonesWithImages,
+
+      pagination: {
+        currentPage,
+        pageSize,
+        totalItems,
+        totalPages,
+        hasNextPage: currentPage < totalPages,
+        hasPreviousPage: currentPage > 1,
+      },
+    });
   } catch (error) {
     console.error("Failed to fetch phones:", error);
 
     res.status(500).json({
       message: "Failed to fetch phones",
+    });
+  }
+};
+
+// Get available phone filter options
+const getPhoneFilters = async (req, res) => {
+  try {
+    const [brands, variants, rams, roms, priceStats] =
+      await Promise.all([
+        Phone.distinct("brand"),
+        Phone.distinct("variant"),
+        Phone.distinct("ram"),
+        Phone.distinct("rom"),
+
+        Phone.aggregate([
+          {
+            $group: {
+              _id: null,
+              minPrice: { $min: "$price" },
+              maxPrice: { $max: "$price" },
+            },
+          },
+        ]),
+      ]);
+
+    const priceRange = priceStats[0] || {
+      minPrice: 0,
+      maxPrice: 0,
+    };
+
+    res.status(200).json({
+      brands: brands.filter(Boolean).sort(),
+      variants: variants.filter(Boolean).sort(),
+      rams: rams.filter(Boolean).sort(),
+      roms: roms.filter(Boolean).sort(),
+
+      price: {
+        min: priceRange.minPrice,
+        max: priceRange.maxPrice,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to fetch phone filters:", error);
+
+    res.status(500).json({
+      message: "Failed to fetch phone filters",
     });
   }
 };
@@ -349,4 +508,5 @@ module.exports = {
   createPhone,
   updatePhone,
   deletePhone,
+  getPhoneFilters
 };

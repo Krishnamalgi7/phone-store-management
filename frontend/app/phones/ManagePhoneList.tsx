@@ -33,7 +33,8 @@ export default function ManagePhoneList({ onEdit }: ManagePhoneListProps) {
 
       const data = await response.json();
 
-      setPhones(data);
+      setPhones(data.phones);
+      
     } catch (error) {
       console.error("Failed to fetch phones:", error);
     } finally {
