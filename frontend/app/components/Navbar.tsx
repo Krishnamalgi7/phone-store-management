@@ -76,7 +76,7 @@ export default function Navbar() {
             color: "var(--text-primary)",
           }}
         >
-          Nothing
+          Sangam 
         </a>
 
         {/* ================= DESKTOP NAVIGATION ================= */}

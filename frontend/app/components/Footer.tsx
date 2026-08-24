@@ -30,7 +30,7 @@ export default function Footer() {
                 color: "var(--text-primary)",
               }}
             >
-              NOTHING
+              Sangam
             </h2>
 
             <p
@@ -101,7 +101,7 @@ export default function Footer() {
             color: "var(--text-secondary)",
           }}
         >
-          © 2026 NOTHING. All rights reserved.
+          © 2026 Sangam Mobiles. All rights reserved.
         </div>
       </div>
     </footer>

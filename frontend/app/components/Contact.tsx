@@ -131,7 +131,7 @@ export default function Contact() {
               color: "var(--text-secondary)",
             }}
           >
-            We'd love to hear from you. Get in touch with the NOTHING team for
+            We'd love to hear from you. Get in touch with the Sangam team for
             product information or general enquiries.
           </p>
 
@@ -141,7 +141,7 @@ export default function Contact() {
             {/* Email */}
 
             <a
-              href="https://mail.google.com/mail/?view=cm&fs=1&to=hello@nothing.com"
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=hello@sangam.com"
               target="_blank"
               rel="noopener noreferrer"
               className="cursor-pointer rounded-2xl bg-gray-100 px-5 py-4 transition hover:bg-gray-200"
@@ -164,7 +164,7 @@ export default function Contact() {
                   color: "var(--text-primary)",
                 }}
               >
-                hello@nothing.com
+                hello@phone.com
               </p>
             </a>
 

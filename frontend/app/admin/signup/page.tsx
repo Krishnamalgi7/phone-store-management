@@ -55,7 +55,7 @@ export default function AdminSignupPage() {
           <h1 className="text-3xl font-bold">Admin Signup</h1>
 
           <p className="mt-2 text-sm opacity-70">
-            Create the administrator account for Phone Store Nova
+            Create the administrator account for Phone Store
           </p>
         </div>
 

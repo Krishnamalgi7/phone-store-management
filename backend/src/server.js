@@ -23,7 +23,7 @@ const PORT = process.env.PORT || 5000;
 
 app.get("/", (req, res) => {
   res.json({
-    message: "Nothing Backend API is running",
+    message: "Node Backend API is running",
   });
 });
 
