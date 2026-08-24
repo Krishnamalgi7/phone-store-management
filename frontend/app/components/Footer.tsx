@@ -30,7 +30,7 @@ export default function Footer() {
                 color: "var(--text-primary)",
               }}
             >
-              Sangam
+              Nova
             </h2>
 
             <p
@@ -101,7 +101,7 @@ export default function Footer() {
             color: "var(--text-secondary)",
           }}
         >
-          © 2026 Sangam Mobiles. All rights reserved.
+          © 2026 Nova Mobiles. All rights reserved.
         </div>
       </div>
     </footer>

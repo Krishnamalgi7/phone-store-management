@@ -69,15 +69,29 @@ export default function Navbar() {
       >
         {/* LOGO */}
 
-        <a
-          href="#home"
-          className="text-2xl font-bold"
-          style={{
-            color: "var(--text-primary)",
-          }}
-        >
-          Sangam 
-        </a>
+        {/* LOGO */}
+
+{/* LOGO */}
+
+<a
+  href="#home"
+  className="flex items-center gap-3"
+>
+  <img
+    src="/logo.png"
+    alt="Phone Store Nova"
+    className="h-10 w-auto"
+  />
+
+  <span
+    className="text-2xl font-bold"
+    style={{
+      color: "var(--text-primary)",
+    }}
+  >
+    Phone Store 
+  </span>
+</a>
 
         {/* ================= DESKTOP NAVIGATION ================= */}
 
