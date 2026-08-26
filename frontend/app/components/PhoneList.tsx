@@ -1,29 +1,61 @@
 "use client";
 
-import { ChevronDown, Search } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
-import { RotateCcw } from "lucide-react";
+import { ChevronDown, Search, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import PhoneCard from "./PhoneCard";
+
+type MasterItem = {
+  _id: string;
+  name?: string;
+  value?: string;
+  isActive: boolean;
+};
 
 type Phone = {
   _id: string;
   name: string;
-  brand: string;
-  variant: string;
+
+  brand:
+    | string
+    | {
+        _id: string;
+        name: string;
+      };
+
+  variant:
+    | string
+    | {
+        _id: string;
+        name: string;
+      };
+
+  ram:
+    | string
+    | {
+        _id: string;
+        value: string;
+      };
+
+  rom:
+    | string
+    | {
+        _id: string;
+        value: string;
+      };
+
   price: number;
   description: string;
   image: string;
   isNewPhone: boolean;
-  ram: string;
-  rom: string;
 };
 
 type PhoneFilters = {
-  brands: string[];
-  variants: string[];
-  rams: string[];
-  roms: string[];
+  brands: MasterItem[];
+  variants: MasterItem[];
+  rams: MasterItem[];
+  roms: MasterItem[];
+
   price: {
     min: number;
     max: number;
@@ -32,6 +64,7 @@ type PhoneFilters = {
 
 export default function PhoneList() {
   const [phones, setPhones] = useState<Phone[]>([]);
+
   const [filters, setFilters] = useState<PhoneFilters>({
     brands: [],
     variants: [],
@@ -44,42 +77,65 @@ export default function PhoneList() {
   });
 
   const [loading, setLoading] = useState(true);
+
   const [isFetching, setIsFetching] = useState(false);
+
   const [error, setError] = useState("");
 
-  //Pagination states
+  // Pagination
+
   const [currentPage, setCurrentPage] = useState(1);
+
   const [totalPages, setTotalPages] = useState(0);
 
-  // Search and filters
+  // Search
+
   const [searchTerm, setSearchTerm] = useState("");
+
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
+  // Selected master-data IDs
+
   const [selectedBrand, setSelectedBrand] = useState("");
+
   const [selectedVariant, setSelectedVariant] = useState("");
+
   const [selectedRam, setSelectedRam] = useState("");
+
   const [selectedRom, setSelectedRom] = useState("");
 
   // Price
+
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 0]);
+
   const [priceChanged, setPriceChanged] = useState(false);
+
   const [showPriceFilter, setShowPriceFilter] = useState(false);
+
   const priceFilterRef = useRef<HTMLDivElement>(null);
-  
 
-  // Find highest phone price
-  const maxPrice = filters.price.max;
+  /*
+   * ------------------------------------------------
+   * BUILD API PARAMETERS
+   * ------------------------------------------------
+   */
 
-  // b
   const buildParams = () => {
     const params = new URLSearchParams();
 
     params.set("page", String(currentPage));
-    params.set("limit", "6");
+
+    // 9 phones per page
+    params.set("limit", "9");
 
     if (debouncedSearch.trim()) {
-  params.set("search", debouncedSearch.trim());
-}
+      params.set("search", debouncedSearch.trim());
+    }
+
+    /*
+     * These are now IDs,
+     * not names.
+     */
 
     if (selectedBrand) {
       params.set("brand", selectedBrand);
@@ -98,49 +154,69 @@ export default function PhoneList() {
     }
 
     if (priceChanged) {
-  params.set("minPrice", String(priceRange[0]));
-  params.set("maxPrice", String(priceRange[1]));
-}
+      params.set("minPrice", String(priceRange[0]));
+
+      params.set("maxPrice", String(priceRange[1]));
+    }
 
     return params;
   };
+
+  /*
+   * ------------------------------------------------
+   * RESET PAGE
+   * ------------------------------------------------
+   */
 
   const resetToFirstPage = () => {
     setCurrentPage(1);
   };
 
+  /*
+   * ------------------------------------------------
+   * CLEAR FILTERS
+   * ------------------------------------------------
+   */
+
   const clearFilters = () => {
-  setSearchTerm("");
-  setDebouncedSearch("");
+    setSearchTerm("");
 
-  setSelectedBrand("");
-  setSelectedVariant("");
-  setSelectedRam("");
-  setSelectedRom("");
+    setDebouncedSearch("");
 
-  setPriceChanged(false);
+    setSelectedBrand("");
 
-  if (filters.price.max > 0) {
-    setPriceRange([
-      0,
-      filters.price.max,
-    ]);
-  } else {
-    setPriceRange([0, 0]);
-  }
+    setSelectedVariant("");
 
-  setCurrentPage(1);
-};
+    setSelectedRam("");
 
-  // Fetch phones
+    setSelectedRom("");
+
+    setPriceChanged(false);
+
+    setCurrentPage(1);
+
+    if (filters.price.max > 0) {
+      setPriceRange([filters.price.min, filters.price.max]);
+    } else {
+      setPriceRange([0, 0]);
+    }
+  };
+
+  /*
+   * ------------------------------------------------
+   * FETCH PHONES
+   * ------------------------------------------------
+   */
+
   useEffect(() => {
     const fetchPhones = async () => {
-      if (phones.length === 0) {
-        setLoading(true);
-      }
-
       try {
+        if (phones.length === 0) {
+          setLoading(true);
+        }
+
         setIsFetching(true);
+
         setError("");
 
         const params = buildParams();
@@ -155,13 +231,16 @@ export default function PhoneList() {
 
         const data = await response.json();
 
-        setPhones(data.phones);
-        setTotalPages(data.pagination.totalPages);
+        setPhones(data.phones || []);
+
+        setTotalPages(data.pagination?.totalPages || 0);
       } catch (error) {
         console.error("Error fetching phones:", error);
+
         setError("Unable to load phones.");
       } finally {
         setLoading(false);
+
         setIsFetching(false);
       }
     };
@@ -175,7 +254,14 @@ export default function PhoneList() {
     selectedRam,
     selectedRom,
     priceRange,
+    priceChanged,
   ]);
+
+  /*
+   * ------------------------------------------------
+   * FETCH FILTER OPTIONS
+   * ------------------------------------------------
+   */
 
   useEffect(() => {
     const fetchFilters = async () => {
@@ -191,6 +277,14 @@ export default function PhoneList() {
         const data: PhoneFilters = await response.json();
 
         setFilters(data);
+
+        /*
+         * Set initial price only once.
+         */
+
+        if (data.price.max > 0) {
+          setPriceRange([data.price.min, data.price.max]);
+        }
       } catch (error) {
         console.error("Error fetching phone filters:", error);
       }
@@ -199,12 +293,11 @@ export default function PhoneList() {
     fetchFilters();
   }, []);
 
-  // Set initial price range after phones are loaded
-  useEffect(() => {
-    if (filters.price.max > 0) {
-      setPriceRange([0, filters.price.max]);
-    }
-  }, [filters]);
+  /*
+   * ------------------------------------------------
+   * SEARCH DEBOUNCE
+   * ------------------------------------------------
+   */
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -216,33 +309,64 @@ export default function PhoneList() {
     };
   }, [searchTerm]);
 
+  /*
+   * ------------------------------------------------
+   * CLOSE PRICE POPUP WHEN CLICKING OUTSIDE
+   * ------------------------------------------------
+   */
+
   useEffect(() => {
-  const handleOutsideClick = (event: MouseEvent) => {
-    if (
-      priceFilterRef.current &&
-      !priceFilterRef.current.contains(event.target as Node)
-    ) {
-      setShowPriceFilter(false);
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        priceFilterRef.current &&
+        !priceFilterRef.current.contains(event.target as Node)
+      ) {
+        setShowPriceFilter(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
+  /*
+   * ------------------------------------------------
+   * HELPERS
+   * ------------------------------------------------
+   */
+
+  const getBrandName = (brand: Phone["brand"]) => {
+    if (typeof brand === "string") {
+      return brand;
     }
+
+    return brand?.name || "";
   };
 
-  document.addEventListener("mousedown", handleOutsideClick);
-
-  return () => {
-    document.removeEventListener(
-      "mousedown",
-      handleOutsideClick,
-    );
-  };
-}, []);
+  /*
+   * ------------------------------------------------
+   * ACTIVE FILTER CHECK
+   * ------------------------------------------------
+   */
 
   const hasActiveFilters =
-  searchTerm.trim() !== "" ||
-  selectedBrand !== "" ||
-  selectedVariant !== "" ||
-  selectedRam !== "" ||
-  selectedRom !== "" ||
-  priceChanged;
+    searchTerm.trim() !== "" ||
+    selectedBrand !== "" ||
+    selectedVariant !== "" ||
+    selectedRam !== "" ||
+    selectedRom !== "" ||
+    priceChanged;
+
+  /*
+   * ------------------------------------------------
+   * PRICE
+   * ------------------------------------------------
+   */
+
+  const maxPrice = filters.price.max;
 
   return (
     <section
@@ -253,9 +377,9 @@ export default function PhoneList() {
         color: "var(--text-primary)",
       }}
     >
-      {/* Section container */}
       <div className="mx-auto max-w-7xl">
-        {/* Section heading */}
+        {/* HEADING */}
+
         <h2
           className="text-3xl font-bold"
           style={{
@@ -265,9 +389,11 @@ export default function PhoneList() {
           Explore Our Phones
         </h2>
 
-        {/* Filter row */}
+        {/* FILTER ROW */}
+
         <div className="mt-6 flex flex-nowrap items-center gap-2 overflow-visible pb-2">
-          {/* Search */}
+          {/* SEARCH */}
+
           <div
             className="flex w-56 shrink-0 items-center gap-3 rounded-xl border px-4 py-3"
             style={{
@@ -288,6 +414,7 @@ export default function PhoneList() {
               value={searchTerm}
               onChange={(event) => {
                 setSearchTerm(event.target.value);
+
                 resetToFirstPage();
               }}
               placeholder="Search phones..."
@@ -298,11 +425,13 @@ export default function PhoneList() {
             />
           </div>
 
-          {/* Brand */}
+          {/* BRAND */}
+
           <select
             value={selectedBrand}
             onChange={(event) => {
               setSelectedBrand(event.target.value);
+
               resetToFirstPage();
             }}
             className="w-24 shrink-0 cursor-pointer rounded-xl border px-3 py-3 outline-none"
@@ -315,17 +444,19 @@ export default function PhoneList() {
             <option value="">Brand</option>
 
             {filters.brands.map((brand) => (
-              <option key={brand} value={brand}>
-                {brand}
+              <option key={brand._id} value={brand._id}>
+                {brand.name}
               </option>
             ))}
           </select>
 
-          {/* Variant */}
+          {/* VARIANT */}
+
           <select
             value={selectedVariant}
             onChange={(event) => {
               setSelectedVariant(event.target.value);
+
               resetToFirstPage();
             }}
             className="w-24 shrink-0 cursor-pointer rounded-xl border px-3 py-3 outline-none"
@@ -338,17 +469,19 @@ export default function PhoneList() {
             <option value="">Variant</option>
 
             {filters.variants.map((variant) => (
-              <option key={variant} value={variant}>
-                {variant}
+              <option key={variant._id} value={variant._id}>
+                {variant.name}
               </option>
             ))}
           </select>
 
           {/* RAM */}
+
           <select
             value={selectedRam}
             onChange={(event) => {
               setSelectedRam(event.target.value);
+
               resetToFirstPage();
             }}
             className="w-24 shrink-0 cursor-pointer rounded-xl border px-3 py-3 outline-none"
@@ -361,17 +494,19 @@ export default function PhoneList() {
             <option value="">RAM</option>
 
             {filters.rams.map((ram) => (
-              <option key={ram} value={ram}>
-                {ram}
+              <option key={ram._id} value={ram._id}>
+                {ram.value}
               </option>
             ))}
           </select>
 
           {/* ROM */}
+
           <select
             value={selectedRom}
             onChange={(event) => {
               setSelectedRom(event.target.value);
+
               resetToFirstPage();
             }}
             className="w-24 shrink-0 cursor-pointer rounded-xl border px-3 py-3 outline-none"
@@ -384,17 +519,15 @@ export default function PhoneList() {
             <option value="">ROM</option>
 
             {filters.roms.map((rom) => (
-              <option key={rom} value={rom}>
-                {rom}
+              <option key={rom._id} value={rom._id}>
+                {rom.value}
               </option>
             ))}
           </select>
 
-          {/* Price */}
-          <div 
-           ref={priceFilterRef}
-          className="relative shrink-0">
-            {/* Price button */}
+          {/* PRICE */}
+
+          <div ref={priceFilterRef} className="relative shrink-0">
             <button
               type="button"
               onClick={() => setShowPriceFilter((current) => !current)}
@@ -407,15 +540,11 @@ export default function PhoneList() {
             >
               <span>Price</span>
 
-              <ChevronDown
-                size={16}
-                style={{
-                  color: "var(--text-primary)",
-                }}
-              />
+              <ChevronDown size={16} />
             </button>
 
-            {/* Price popup */}
+            {/* PRICE POPUP */}
+
             {showPriceFilter && (
               <div
                 className="absolute left-0 top-full z-30 mt-2 w-80 rounded-2xl border p-5 shadow-xl"
@@ -425,19 +554,11 @@ export default function PhoneList() {
                   borderColor: "var(--border-color)",
                 }}
               >
-                {/* Title */}
-                <p
-                  className="text-sm font-semibold"
-                  style={{
-                    color: "var(--text-primary)",
-                  }}
-                >
-                  PRICE
-                </p>
+                <p className="text-sm font-semibold">PRICE</p>
 
-                {/* Two-handle price slider */}
+                {/* SLIDER */}
+
                 <div className="relative mt-6 h-6">
-                  {/* Background track */}
                   <div
                     className="absolute left-0 right-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full"
                     style={{
@@ -445,26 +566,26 @@ export default function PhoneList() {
                     }}
                   />
 
-                  {/* Selected range */}
                   <div
                     className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full"
                     style={{
-                      left: `${
-                        maxPrice > 0 ? (priceRange[0] / maxPrice) * 100 : 0
-                      }%`,
-                      right: `${
+                      left:
                         maxPrice > 0
-                          ? 100 - (priceRange[1] / maxPrice) * 100
-                          : 0
-                      }%`,
+                          ? `${(priceRange[0] / maxPrice) * 100}%`
+                          : "0%",
+                      right:
+                        maxPrice > 0
+                          ? `${100 - (priceRange[1] / maxPrice) * 100}%`
+                          : "0%",
                       backgroundColor: "var(--accent-color)",
                     }}
                   />
 
-                  {/* Minimum handle */}
+                  {/* MIN */}
+
                   <input
                     type="range"
-                    min={0}
+                    min={filters.price.min}
                     max={maxPrice}
                     value={priceRange[0]}
                     onChange={(event) => {
@@ -475,8 +596,9 @@ export default function PhoneList() {
                         priceRange[1],
                       ]);
 
-                      resetToFirstPage();
                       setPriceChanged(true);
+
+                      resetToFirstPage();
                     }}
                     className="price-slider absolute inset-0 w-full"
                     style={{
@@ -484,10 +606,11 @@ export default function PhoneList() {
                     }}
                   />
 
-                  {/* Maximum handle */}
+                  {/* MAX */}
+
                   <input
                     type="range"
-                    min={0}
+                    min={filters.price.min}
                     max={maxPrice}
                     value={priceRange[1]}
                     onChange={(event) => {
@@ -498,8 +621,9 @@ export default function PhoneList() {
                         Math.max(maximum, priceRange[0]),
                       ]);
 
-                      resetToFirstPage();
                       setPriceChanged(true);
+
+                      resetToFirstPage();
                     }}
                     className="price-slider absolute inset-0 w-full"
                     style={{
@@ -508,15 +632,14 @@ export default function PhoneList() {
                   />
                 </div>
 
-                {/* Price values */}
+                {/* PRICE VALUES */}
+
                 <div className="mt-4 flex items-center gap-3">
-                  {/* Minimum */}
                   <div
                     className="flex-1 rounded-lg border px-3 py-2 text-sm"
                     style={{
                       borderColor: "var(--border-color)",
                       backgroundColor: "var(--bg-primary)",
-                      color: "var(--text-primary)",
                     }}
                   >
                     ₹{priceRange[0].toLocaleString("en-IN")}
@@ -531,40 +654,40 @@ export default function PhoneList() {
                     to
                   </span>
 
-                  {/* Maximum */}
                   <div
                     className="flex-1 rounded-lg border px-3 py-2 text-sm"
                     style={{
                       borderColor: "var(--border-color)",
                       backgroundColor: "var(--bg-primary)",
-                      color: "var(--text-primary)",
                     }}
                   >
                     ₹{priceRange[1].toLocaleString("en-IN")}
                   </div>
-                  
                 </div>
-                
               </div>
-              
             )}
           </div>
+
+          {/* CLEAR */}
+
           {hasActiveFilters && (
-<button
-  type="button"
-  onClick={clearFilters}
-  title="Clear filters"
-  className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border transition"
-  style={{
-    backgroundColor: "var(--bg-secondary)",
-    color: "var(--text-primary)",
-    borderColor: "var(--border-color)",
-  }}
->
-  <RotateCcw size={17} strokeWidth={2.0} />
-</button>
-)}
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="flex shrink-0 cursor-pointer items-center gap-2 rounded-xl border px-4 py-3 text-sm transition hover:opacity-70"
+              style={{
+                backgroundColor: "var(--bg-secondary)",
+                color: "var(--text-primary)",
+                borderColor: "var(--border-color)",
+              }}
+            >
+              <X size={15} />
+              Clear
+            </button>
+          )}
         </div>
+
+        {/* FETCHING INDICATOR */}
 
         {isFetching && !loading && (
           <div
@@ -583,9 +706,9 @@ export default function PhoneList() {
           </div>
         )}
 
-        {/* Phone grid */}
+        {/* PHONE GRID */}
+
         <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* Loading */}
           {loading && (
             <p
               className="col-span-full text-center"
@@ -597,7 +720,6 @@ export default function PhoneList() {
             </p>
           )}
 
-          {/* Error */}
           {error && (
             <p
               className="col-span-full text-center"
@@ -609,14 +731,13 @@ export default function PhoneList() {
             </p>
           )}
 
-          {/* Phones */}
           {!loading &&
             !error &&
             phones.map((phone) => (
               <PhoneCard
                 key={phone._id}
                 id={phone._id}
-                brand={phone.brand}
+                brand={getBrandName(phone.brand)}
                 name={phone.name}
                 description={phone.description}
                 price={phone.price}
@@ -625,7 +746,6 @@ export default function PhoneList() {
               />
             ))}
 
-          {/* No results */}
           {!loading && !error && phones.length === 0 && (
             <p
               className="col-span-full py-10 text-center"
@@ -638,14 +758,14 @@ export default function PhoneList() {
           )}
         </div>
 
+        {/* PAGINATION */}
+
         {!loading && !error && totalPages > 1 && (
           <div className="mt-10 flex items-center justify-center gap-4">
             <button
               type="button"
               disabled={currentPage === 1}
-              onClick={() => {
-                setCurrentPage((page) => page - 1);
-              }}
+              onClick={() => setCurrentPage((page) => page - 1)}
               className="cursor-pointer rounded-xl border px-5 py-3 transition disabled:cursor-not-allowed disabled:opacity-40"
               style={{
                 backgroundColor: "var(--bg-secondary)",
@@ -668,9 +788,7 @@ export default function PhoneList() {
             <button
               type="button"
               disabled={currentPage === totalPages}
-              onClick={() => {
-                setCurrentPage((page) => page + 1);
-              }}
+              onClick={() => setCurrentPage((page) => page + 1)}
               className="cursor-pointer rounded-xl border px-5 py-3 transition disabled:cursor-not-allowed disabled:opacity-40"
               style={{
                 backgroundColor: "var(--bg-secondary)",

@@ -105,8 +105,27 @@ const loginAdmin = async (req, res) => {
   }
 };
 
+const checkAdminExists = async (req, res) => {
+  try {
+    const adminExists = await Admin.exists({});
+
+    return res.status(200).json({
+      exists: !!adminExists,
+    });
+  } catch (error) {
+    console.error(
+      "Admin status check error:",
+      error,
+    );
+
+    return res.status(500).json({
+      message: "Failed to check admin status",
+    });
+  }
+};
+
 module.exports = {
   signupAdmin,
-  loginAdmin
-
+  loginAdmin,
+  checkAdminExists,
 };

@@ -8,6 +8,10 @@ const phoneRoutes = require("./routes/phoneRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const phoneSettingRoutes = require("./routes/phoneSettingRoutes");
+const brandRoutes = require("./routes/brandRoutes");
+const variantRoutes = require("./routes/variantRoutes");
+const ramRoutes = require("./routes/ramRoutes");
+const romRoutes = require("./routes/romRoutes");
 
 const app = express();
 
@@ -18,6 +22,10 @@ app.use("/api/contacts", contactRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use("/api/admin", adminRoutes);
 app.use("/api/settings", phoneSettingRoutes);
+app.use("/api/brands", brandRoutes);
+app.use("/api/variants", variantRoutes);
+app.use("/api/rams", ramRoutes);
+app.use("/api/roms", romRoutes);
 
 const PORT = process.env.PORT || 5000;
 

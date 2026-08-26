@@ -1,5 +1,7 @@
 const express = require("express");
+
 const upload = require("../config/upload");
+
 const verifyToken = require("../middleware/authMiddleware");
 
 const {
@@ -9,6 +11,7 @@ const {
   updatePhone,
   deletePhone,
   getPhoneFilters,
+  togglePhoneStatus,
 } = require("../controllers/phoneController");
 
 const router = express.Router();
@@ -27,6 +30,9 @@ router.get("/:id", getPhoneById);
 
 // Update a phone with Admin JWT required
 router.put("/:id", verifyToken, upload.single("image"), updatePhone);
+
+// Toggle phone active / inactive
+router.patch("/:id/status", verifyToken, togglePhoneStatus);
 
 // Delete a phone with Admin JWT required
 router.delete("/:id", verifyToken, deletePhone);

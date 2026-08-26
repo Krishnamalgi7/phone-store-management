@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 export default function AdminDashboardPage() {
   const router = useRouter();
   const [adminName, setAdminName] = useState("");
-  const [showManager, setShowManager] = useState(false);
+  
   const [showSettings, setShowSettings] = useState(false);
 
   const [phones, setPhones] = useState<any[]>([]);
@@ -21,6 +21,7 @@ export default function AdminDashboardPage() {
   //Count phone brands
   const brandCounts = phones.reduce((counts: Record<string, number>, phone) => {
     const brand = phone.brand || "Unknown";
+    
 
     counts[brand] = (counts[brand] || 0) + 1;
 
@@ -145,33 +146,17 @@ export default function AdminDashboardPage() {
 
         <div className="flex items-center gap-3">
           <button
-            type="button"
-            onClick={() => {
-              setShowManager((current) => {
-                const nextState = !current;
-
-                if (nextState) {
-                  setTimeout(() => {
-                    document
-                      .getElementById("manage-phones-section")
-                      ?.scrollIntoView({
-                        behavior: "smooth",
-                      });
-                  }, 0);
-                }
-
-                return nextState;
-              });
-            }}
-            className="cursor-pointer rounded-lg px-4 py-2 font-medium transition hover:!bg-[var(--accent-color)]"
-            style={{
-              backgroundColor: "var(--text-primary)",
-              color: "var(--bg-secondary)",
-              border: "1px solid var(--border-color)",
-            }}
-          >
-            {showManager ? "Close Phones" : "Manage Phones"}
-          </button>
+  type="button"
+  onClick={() => router.push("/admin/phones")}
+  className="cursor-pointer rounded-lg px-4 py-2 font-medium transition hover:!bg-[var(--accent-color)]"
+  style={{
+    backgroundColor: "var(--text-primary)",
+    color: "var(--bg-secondary)",
+    border: "1px solid var(--border-color)",
+  }}
+>
+  Manage Phones
+</button>
 
           <button
             type="button"
@@ -455,12 +440,7 @@ export default function AdminDashboardPage() {
               </div>
             )}
 
-            <div id="manage-phones-section">
-              <PhoneManagement
-                showManager={showManager}
-                onShowManagerChange={setShowManager}
-              />
-            </div>
+            
 
             {showSettings && (
               <div

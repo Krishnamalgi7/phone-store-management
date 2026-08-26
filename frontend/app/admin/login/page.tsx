@@ -143,14 +143,14 @@ export default function AdminLoginPage() {
           style={{ color: "var(--text-secondary)" }}
         >
           Don't have an admin account?{" "}
-          <button
+          {/* <button
             type="button"
             onClick={() => router.push("/admin/signup")}
             className="cursor-pointer font-medium transition hover:!text-[var(--accent-color)] hover:underline"
             style={{ color: "var(--text-primary)" }}
           >
             Sign up
-          </button>
+          </button> */}
         </p>
 
                 <button

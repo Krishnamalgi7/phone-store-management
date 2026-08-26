@@ -1,6 +1,8 @@
 const Phone = require("../models/Phone");
-const PhoneSetting = require("../models/PhoneSetting");
-const mongoose = require("mongoose");
+const Brand = require("../models/Brand");
+const Variant = require("../models/Variant");
+const Ram = require("../models/Ram");
+const Rom = require("../models/Rom");
 
 const fs = require("fs");
 const path = require("path");
@@ -34,8 +36,21 @@ const getPhones = async (req, res) => {
     const filter = {};
 
     // Search by phone name or brand
+    // Search by phone name or brand
     if (search.trim()) {
       const searchValue = search.trim();
+
+      const [matchingBrands] = await Promise.all([
+        Brand.find({
+          name: {
+            $regex: searchValue,
+            $options: "i",
+          },
+          isActive: true,
+        }).select("_id"),
+      ]);
+
+      const brandIds = matchingBrands.map((brand) => brand._id);
 
       filter.$or = [
         {
@@ -45,9 +60,8 @@ const getPhones = async (req, res) => {
           },
         },
         {
-          brand: {
-            $regex: searchValue,
-            $options: "i",
+          brandId: {
+            $in: brandIds,
           },
         },
       ];
@@ -55,19 +69,19 @@ const getPhones = async (req, res) => {
 
     // Exact filters
     if (brand.trim()) {
-      filter.brand = brand.trim();
+      filter.brandId = brand.trim();
     }
 
     if (variant.trim()) {
-      filter.variant = variant.trim();
+      filter.variantId = variant.trim();
     }
 
     if (ram.trim()) {
-      filter.ram = ram.trim();
+      filter.ramId = ram.trim();
     }
 
     if (rom.trim()) {
-      filter.rom = rom.trim();
+      filter.romId = rom.trim();
     }
 
     // Price range
@@ -101,6 +115,10 @@ const getPhones = async (req, res) => {
 
     // Get only the phones needed for this page
     const phones = await Phone.find(filter)
+      .populate("brandId", "name")
+      .populate("variantId", "name")
+      .populate("ramId", "value")
+      .populate("romId", "value")
       .sort({
         createdAt: -1,
       })
@@ -108,10 +126,7 @@ const getPhones = async (req, res) => {
       .limit(pageSize);
 
     // Calculate total pages
-    const totalPages =
-      totalItems === 0
-        ? 0
-        : Math.ceil(totalItems / pageSize);
+    const totalPages = totalItems === 0 ? 0 : Math.ceil(totalItems / pageSize);
 
     // Convert image paths
     const phonesWithImages = phones.map((phone) => {
@@ -150,37 +165,65 @@ const getPhones = async (req, res) => {
   }
 };
 
-// Get available phone filter options
 const getPhoneFilters = async (req, res) => {
   try {
-    const [brands, variants, rams, roms, priceStats] =
-      await Promise.all([
-        Phone.distinct("brand"),
-        Phone.distinct("variant"),
-        Phone.distinct("ram"),
-        Phone.distinct("rom"),
+    const [
+      brands,
+      variants,
+      rams,
+      roms,
+      priceStats,
+    ] = await Promise.all([
+      Brand.find({
+        isActive: true,
+      })
+        .select("_id name")
+        .sort({ name: 1 }),
 
-        Phone.aggregate([
-          {
-            $group: {
-              _id: null,
-              minPrice: { $min: "$price" },
-              maxPrice: { $max: "$price" },
+      Variant.find({
+        isActive: true,
+      })
+        .select("_id name")
+        .sort({ name: 1 }),
+
+      Ram.find({
+        isActive: true,
+      })
+        .select("_id value")
+        .sort({ value: 1 }),
+
+      Rom.find({
+        isActive: true,
+      })
+        .select("_id value")
+        .sort({ value: 1 }),
+
+      Phone.aggregate([
+        {
+          $group: {
+            _id: null,
+            minPrice: {
+              $min: "$price",
+            },
+            maxPrice: {
+              $max: "$price",
             },
           },
-        ]),
-      ]);
+        },
+      ]),
+    ]);
 
-    const priceRange = priceStats[0] || {
-      minPrice: 0,
-      maxPrice: 0,
-    };
+    const priceRange =
+      priceStats[0] || {
+        minPrice: 0,
+        maxPrice: 0,
+      };
 
     res.status(200).json({
-      brands: brands.filter(Boolean).sort(),
-      variants: variants.filter(Boolean).sort(),
-      rams: rams.filter(Boolean).sort(),
-      roms: roms.filter(Boolean).sort(),
+      brands,
+      variants,
+      rams,
+      roms,
 
       price: {
         min: priceRange.minPrice,
@@ -188,10 +231,14 @@ const getPhoneFilters = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Failed to fetch phone filters:", error);
+    console.error(
+      "Failed to fetch phone filters:",
+      error,
+    );
 
     res.status(500).json({
-      message: "Failed to fetch phone filters",
+      message:
+        "Failed to fetch phone filters",
     });
   }
 };
@@ -232,58 +279,42 @@ const createPhone = async (req, res) => {
   try {
     const {
       name,
-      brand,
-      variant,
-      ram,
-      rom,
+      brandId,
+      variantId,
+      ramId,
+      romId,
       price,
       description,
       isNewPhone,
       imageUrl,
     } = req.body;
 
-    const settings = await PhoneSetting.find({
-      type: { $in: ["brand", "variant", "ram", "rom"] },
-      isActive: true,
-    });
+    const [brand, variant, ram, rom] = await Promise.all([
+      Brand.findOne({ _id: brandId, isActive: true }),
+      Variant.findOne({ _id: variantId, isActive: true }),
+      Ram.findOne({ _id: ramId, isActive: true }),
+      Rom.findOne({ _id: romId, isActive: true }),
+    ]);
 
-    const activeValues = {
-      brand: settings
-        .filter((setting) => setting.type === "brand")
-        .map((setting) => setting.value),
-
-      variant: settings
-        .filter((setting) => setting.type === "variant")
-        .map((setting) => setting.value),
-
-      ram: settings
-        .filter((setting) => setting.type === "ram")
-        .map((setting) => setting.value),
-
-      rom: settings
-        .filter((setting) => setting.type === "rom")
-        .map((setting) => setting.value),
-    };
-
-    if (!activeValues.brand.includes(brand)) {
+    if (!brand) {
       return res.status(400).json({
         message: "Selected brand is inactive or invalid",
       });
     }
 
-    if (!activeValues.variant.includes(variant)) {
+    if (!variant) {
       return res.status(400).json({
         message: "Selected variant is inactive or invalid",
       });
     }
 
-    if (!activeValues.ram.includes(ram)) {
+    if (!ram) {
       return res.status(400).json({
         message: "Selected RAM is inactive or invalid",
       });
     }
 
-    if (!activeValues.rom.includes(rom)) {
+    if (!rom) {
       return res.status(400).json({
         message: "Selected ROM is inactive or invalid",
       });
@@ -298,15 +329,24 @@ const createPhone = async (req, res) => {
 
     const phone = await Phone.create({
       name,
-      brand,
-      variant,
-      ram,
-      rom,
+
+      // Keep these temporarily for compatibility
+      brand: brand.name,
+      variant: variant.name,
+      ram: ram.value,
+      rom: rom.value,
+
+      // New normalized references
+      brandId: brand._id,
+      variantId: variant._id,
+      ramId: ram._id,
+      romId: rom._id,
+
       price,
       description,
       isNewPhone,
       imageUrl: imageUrl || null,
-      image: image,
+      image,
     });
 
     res.status(201).json({
@@ -325,7 +365,10 @@ const createPhone = async (req, res) => {
 // Update a phone
 const updatePhone = async (req, res) => {
   try {
-    const phone = await Phone.findById(req.params.id);
+    const phone =
+      await Phone.findById(
+        req.params.id,
+      );
 
     if (!phone) {
       return res.status(404).json({
@@ -335,10 +378,10 @@ const updatePhone = async (req, res) => {
 
     const {
       name,
-      brand,
-      variant,
-      ram,
-      rom,
+      brandId,
+      variantId,
+      ramId,
+      romId,
       price,
       description,
       isNewPhone,
@@ -346,120 +389,231 @@ const updatePhone = async (req, res) => {
       imageRemoved,
     } = req.body;
 
-    const settings = await PhoneSetting.find({
-      type: { $in: ["brand", "variant", "ram", "rom"] },
-      isActive: true,
-    });
+    /*
+     * -----------------------------------------
+     * VALIDATE MASTER DATA
+     * -----------------------------------------
+     */
 
-    const activeValues = {
-      brand: settings
-        .filter((setting) => setting.type === "brand")
-        .map((setting) => setting.value),
-
-      variant: settings
-        .filter((setting) => setting.type === "variant")
-        .map((setting) => setting.value),
-
-      ram: settings
-        .filter((setting) => setting.type === "ram")
-        .map((setting) => setting.value),
-
-      rom: settings
-        .filter((setting) => setting.type === "rom")
-        .map((setting) => setting.value),
-    };
-
-    if (!activeValues.brand.includes(brand)) {
-      return res.status(400).json({
-        message: "Selected brand is inactive or invalid",
-      });
-    }
-
-    if (!activeValues.variant.includes(variant)) {
-      return res.status(400).json({
-        message: "Selected variant is inactive or invalid",
-      });
-    }
-
-    if (!activeValues.ram.includes(ram)) {
-      return res.status(400).json({
-        message: "Selected RAM is inactive or invalid",
-      });
-    }
-
-    if (!activeValues.rom.includes(rom)) {
-      return res.status(400).json({
-        message: "Selected ROM is inactive or invalid",
-      });
-    }
-
-    const updateData = {
-      name,
+    const [
       brand,
       variant,
       ram,
       rom,
+    ] = await Promise.all([
+      Brand.findOne({
+        _id: brandId,
+        isActive: true,
+      }),
+
+      Variant.findOne({
+        _id: variantId,
+        isActive: true,
+      }),
+
+      Ram.findOne({
+        _id: ramId,
+        isActive: true,
+      }),
+
+      Rom.findOne({
+        _id: romId,
+        isActive: true,
+      }),
+    ]);
+
+    if (!brand) {
+      return res.status(400).json({
+        message:
+          "Selected brand is inactive or invalid",
+      });
+    }
+
+    if (!variant) {
+      return res.status(400).json({
+        message:
+          "Selected variant is inactive or invalid",
+      });
+    }
+
+    if (!ram) {
+      return res.status(400).json({
+        message:
+          "Selected RAM is inactive or invalid",
+      });
+    }
+
+    if (!rom) {
+      return res.status(400).json({
+        message:
+          "Selected ROM is inactive or invalid",
+      });
+    }
+
+    /*
+     * -----------------------------------------
+     * UPDATE DATA
+     * -----------------------------------------
+     *
+     * IMPORTANT:
+     *
+     * We are NOT putting:
+     *
+     * brand: brand.name
+     *
+     * into a Mongoose update because your
+     * current schema expects brand as ObjectId.
+     *
+     * The reference fields are updated instead.
+     */
+
+    const updateData = {
+      name,
+
+      brandId: brand._id,
+      variantId: variant._id,
+      ramId: ram._id,
+      romId: rom._id,
+
       price,
       description,
       isNewPhone,
     };
 
-    // If a new image was uploaded
+    /*
+     * -----------------------------------------
+     * IMAGE UPLOAD
+     * -----------------------------------------
+     */
+
     if (req.file) {
-      // Delete the old local image
-      if (phone.image && phone.image.startsWith("/uploads/")) {
-        const oldImageName = path.basename(phone.image);
+      /*
+       * Delete old local image
+       */
+      if (
+        phone.image &&
+        phone.image.startsWith(
+          "/uploads/",
+        )
+      ) {
+        const oldImageName =
+          path.basename(
+            phone.image,
+          );
 
-        const oldImagePath = path.join(
-          __dirname,
-          "../../uploads",
-          oldImageName,
-        );
+        const oldImagePath =
+          path.join(
+            __dirname,
+            "../../uploads",
+            oldImageName,
+          );
 
-        if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath);
+        if (
+          fs.existsSync(
+            oldImagePath,
+          )
+        ) {
+          fs.unlinkSync(
+            oldImagePath,
+          );
         }
       }
 
-      // Save the new image path
-      updateData.image = `/uploads/${req.file.filename}`;
+      /*
+       * Save new image
+       */
+      updateData.image =
+        `/uploads/${req.file.filename}`;
+
       updateData.imageUrl = null;
-    } else if (imageRemoved === "true") {
-      // Delete the existing local image
-      if (phone.image && phone.image.startsWith("/uploads/")) {
-        const oldImageName = path.basename(phone.image);
+    }
 
-        const oldImagePath = path.join(
-          __dirname,
-          "../../uploads",
-          oldImageName,
-        );
+    /*
+     * -----------------------------------------
+     * REMOVE IMAGE
+     * -----------------------------------------
+     */
 
-        if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath);
+    else if (
+      imageRemoved === "true"
+    ) {
+      /*
+       * Delete existing local image
+       */
+      if (
+        phone.image &&
+        phone.image.startsWith(
+          "/uploads/",
+        )
+      ) {
+        const oldImageName =
+          path.basename(
+            phone.image,
+          );
+
+        const oldImagePath =
+          path.join(
+            __dirname,
+            "../../uploads",
+            oldImageName,
+          );
+
+        if (
+          fs.existsSync(
+            oldImagePath,
+          )
+        ) {
+          fs.unlinkSync(
+            oldImagePath,
+          );
         }
       }
 
-      // Remove image path from MongoDB
       updateData.image = null;
       updateData.imageUrl = null;
     }
 
-    const updatedPhone = await Phone.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      {
-        new: true,
-        runValidators: true,
-      },
+    /*
+     * -----------------------------------------
+     * IMAGE URL
+     * -----------------------------------------
+     */
+
+    else if (imageUrl) {
+      updateData.imageUrl =
+        imageUrl;
+    }
+
+    /*
+     * -----------------------------------------
+     * UPDATE PHONE
+     * -----------------------------------------
+     */
+
+    const updatedPhone =
+      await Phone.findByIdAndUpdate(
+        req.params.id,
+        updateData,
+        {
+          new: true,
+          runValidators: true,
+        },
+      );
+
+    res.status(200).json({
+      message:
+        "Phone updated successfully",
+      phone: updatedPhone,
+    });
+  } catch (error) {
+    console.error(
+      "Failed to update phone:",
+      error,
     );
 
-    res.status(200).json(updatedPhone);
-  } catch (error) {
-    console.error("Failed to update phone:", error);
-
     res.status(500).json({
-      message: "Failed to update phone",
+      message:
+        "Failed to update phone",
     });
   }
 };
@@ -502,11 +656,47 @@ const deletePhone = async (req, res) => {
   }
 };
 
+// Toggle phone active / inactive status
+const togglePhoneStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const phone = await Phone.findById(id);
+
+    if (!phone) {
+      return res.status(404).json({
+        message: "Phone not found",
+      });
+    }
+
+    phone.isActive = !phone.isActive;
+
+    await phone.save();
+
+    return res.status(200).json({
+      message: `Phone ${
+        phone.isActive ? "activated" : "deactivated"
+      } successfully`,
+      phone,
+    });
+  } catch (error) {
+    console.error(
+      "Toggle phone status error:",
+      error,
+    );
+
+    return res.status(500).json({
+      message: "Failed to update phone status",
+    });
+  }
+};
+
 module.exports = {
   getPhones,
   getPhoneById,
   createPhone,
   updatePhone,
   deletePhone,
-  getPhoneFilters
+  getPhoneFilters,
+  togglePhoneStatus,
 };
