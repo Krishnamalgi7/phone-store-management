@@ -24,16 +24,14 @@ export default function AddPhonePage() {
           onClick={() =>
             router.push("/admin/phones")
           }
-          className="mb-6 flex cursor-pointer items-center gap-2 text-sm font-semibold transition hover:opacity-70"
-          style={{
-            color:
-              "var(--text-primary)",
-          }}
-        >
-          <ArrowLeft size={18} />
-
-          Back to Manage Phones
-        </button>
+          className="mb-6 flex cursor-pointer items-center gap-2 text-sm font-semibold transition-colors hover:!text-[var(--accent-color)]"
+  style={{
+    color: "var(--text-primary)",
+  }}
+>
+  <ArrowLeft size={18} />
+  Back to Manage Phones
+</button>
 
         {/* EXISTING PHONE FORM */}
         <PhoneForm

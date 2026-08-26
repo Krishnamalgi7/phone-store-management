@@ -104,11 +104,14 @@ export default function EditPhonePage() {
           onClick={() =>
             router.push("/admin/phones")
           }
-          className="flex cursor-pointer items-center gap-2 font-semibold"
-        >
-          <ArrowLeft size={18} />
-          Back to Manage Phones
-        </button>
+          className="mb-6 flex cursor-pointer items-center gap-2 text-sm font-semibold transition-colors hover:!text-[var(--accent-color)]"
+  style={{
+    color: "var(--text-primary)",
+  }}
+>
+  <ArrowLeft size={18} />
+  Back to Manage Phones
+</button>
 
         <p className="mt-8">
           {error || "Phone not found."}

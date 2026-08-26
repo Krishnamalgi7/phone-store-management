@@ -1,27 +1,26 @@
 "use client";
 
 import PhoneManagement from "../../components/PhoneManagement";
-import AdminSettingsPage from "../settings/page";
+// import AdminSettingsPage from "../settings/page";
 
-import { X, MessageSquare, Smartphone } from "lucide-react";
+import { X, MessageSquare, Smartphone, LogOut, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
   const [adminName, setAdminName] = useState("");
-  
-  const [showSettings, setShowSettings] = useState(false);
+
+  // const [showSettings, setShowSettings] = useState(false);
 
   const [phones, setPhones] = useState<any[]>([]);
   const [contacts, setContacts] = useState<any[]>([]);
 
-  const [showQueries, setShowQueries] = useState(false);
+  // const [showQueries, setShowQueries] = useState(false);
 
   //Count phone brands
   const brandCounts = phones.reduce((counts: Record<string, number>, phone) => {
     const brand = phone.brand || "Unknown";
-    
 
     counts[brand] = (counts[brand] || 0) + 1;
 
@@ -84,7 +83,7 @@ export default function AdminDashboardPage() {
       const contactsData = await contactsResponse.json();
 
       setPhones(phonesData.phones);
-      
+
       setContacts(contactsData);
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
@@ -148,43 +147,47 @@ export default function AdminDashboardPage() {
           <button
   type="button"
   onClick={() => router.push("/admin/phones")}
-  className="cursor-pointer rounded-lg px-4 py-2 font-medium transition hover:!bg-[var(--accent-color)]"
+  className="flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 font-medium transition hover:!bg-[var(--accent-color)]"
   style={{
     backgroundColor: "var(--text-primary)",
     color: "var(--bg-secondary)",
     border: "1px solid var(--border-color)",
   }}
 >
+  <Smartphone size={17} />
   Manage Phones
+</button>
+            
+          <button
+  type="button"
+  onClick={() => router.push("/admin/settings")}
+  className="flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 font-medium transition hover:!bg-[var(--accent-color)]"
+  style={{
+    backgroundColor: "var(--text-primary)",
+    color: "var(--bg-secondary)",
+    border: "1px solid var(--border-color)",
+  }}
+>
+  <Settings size={17} />
+  Settings
 </button>
 
           <button
-            type="button"
-            onClick={() => setShowSettings(true)}
-            className="cursor-pointer rounded-lg px-4 py-2 font-medium transition hover:!bg-[var(--accent-color)]"
-            style={{
-              backgroundColor: "var(--text-primary)",
-              color: "var(--bg-secondary)",
-              border: "1px solid var(--border-color)",
-            }}
-          >
-            Settings
-          </button>
-
-          <button
-            onClick={handleLogout}
-            className="theme-danger-hover cursor-pointer rounded-lg px-4 py-2 font-medium transition"
-            style={{
-              backgroundColor: "var(--text-primary)",
-              color: "var(--bg-secondary)",
-            }}
-          >
-            Logout
-          </button>
+  onClick={handleLogout}
+  className="theme-danger-hover flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 font-medium transition"
+  style={{
+    backgroundColor: "var(--text-primary)",
+    color: "var(--bg-secondary)",
+  }}
+>
+  <LogOut size={17} />
+  Logout
+</button>
         </div>
       </nav>
 
       <section className="px-6 py-10">
+        
         <div className="mx-auto max-w-7xl">
           <h2 className="text-3xl font-bold">Welcome, {adminName}</h2>
 
@@ -304,7 +307,9 @@ export default function AdminDashboardPage() {
 
                     <button
                       type="button"
-                      onClick={() => setShowQueries(true)}
+                      onClick={() =>
+  router.push("/admin/queries")
+}
                       className="theme-accent-hover mt-5 w-full cursor-pointer rounded-lg border px-4 py-2.5 text-sm font-medium transition"
                       style={{
                         backgroundColor: "var(--text-primary)",
@@ -318,164 +323,6 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
             </div>
-
-            {showQueries && (
-              <div
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4"
-                onMouseDown={(event) => {
-                  if (event.target === event.currentTarget) {
-                    setShowQueries(false);
-                  }
-                }}
-              >
-                <div
-                  className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl border p-6 shadow-2xl"
-                  style={{
-                    backgroundColor: "var(--bg-primary)",
-                    color: "var(--text-primary)",
-                    borderColor: "var(--border-color)",
-                  }}
-                >
-                  <button
-                    type="button"
-                    onClick={() => setShowQueries(false)}
-                    className="theme-accent-hover absolute right-5 top-5 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition"
-                    style={{
-                      backgroundColor: "transparent",
-                      color: "var(--text-primary)",
-                    }}
-                    aria-label="Close customer queries"
-                  >
-                    <X size={22} strokeWidth={2.5} />
-                  </button>
-
-                  <div className="pr-12">
-                    <h3 className="text-2xl font-bold">Customer Queries</h3>
-
-                    <p
-                      className="mt-1 text-sm"
-                      style={{ color: "var(--text-secondary)" }}
-                    >
-                      View and manage messages received from customers.
-                    </p>
-                  </div>
-
-                  <div className="mt-6 space-y-4">
-                    {contacts.length === 0 ? (
-                      <div
-                        className="rounded-xl border p-6 text-center"
-                        style={{
-                          borderColor: "var(--border-color)",
-                          backgroundColor: "var(--bg-secondary)",
-                        }}
-                      >
-                        <p style={{ color: "var(--text-secondary)" }}>
-                          No customer queries yet.
-                        </p>
-                      </div>
-                    ) : (
-                      contacts.map((contact) => (
-                        <div
-                          key={contact._id}
-                          className="rounded-xl border p-5"
-                          style={{
-                            backgroundColor: "var(--bg-secondary)",
-                            borderColor: "var(--border-color)",
-                          }}
-                        >
-                          <div className="flex items-start justify-between gap-4">
-                            <div>
-                              <h4 className="font-semibold">{contact.name}</h4>
-
-                              <p
-                                className="mt-1 text-sm"
-                                style={{ color: "var(--text-secondary)" }}
-                              >
-                                {contact.phone}
-                              </p>
-                            </div>
-
-                            <span
-                              className="rounded-full px-3 py-1 text-xs font-medium"
-                              style={{
-                                backgroundColor:
-                                  contact.status === "completed"
-                                    ? "var(--bg-primary)"
-                                    : "var(--accent-color)",
-                                color:
-                                  contact.status === "completed"
-                                    ? "var(--text-secondary)"
-                                    : "var(--text-primary)",
-                              }}
-                            >
-                              {contact.status === "completed"
-                                ? "Completed"
-                                : "Pending"}
-                            </span>
-                          </div>
-
-                          <p className="mt-4 text-sm leading-6">
-                            {contact.message}
-                          </p>
-
-                          {contact.status === "pending" && (
-                            <div className="mt-4 flex justify-end">
-                              <button
-                                type="button"
-                                onClick={() => handleCompleteQuery(contact._id)}
-                                className="cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium transition hover:bg-green-500 hover:text-white"
-                                style={{
-                                  borderColor: "var(--border-color)",
-                                }}
-                              >
-                                Mark Complete
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            
-
-            {showSettings && (
-              <div
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4"
-                onMouseDown={(event) => {
-                  if (event.target === event.currentTarget) {
-                    setShowSettings(false);
-                  }
-                }}
-              >
-                <div
-                  className="relative max-h-[90vh] w-full max-w-7xl overflow-y-auto rounded-2xl border shadow-2xl"
-                  style={{
-                    backgroundColor: "var(--bg-primary)",
-                    color: "var(--text-primary)",
-                    borderColor: "var(--border-color)",
-                  }}
-                >
-                  <button
-                    type="button"
-                    onClick={() => setShowSettings(false)}
-                    className="theme-accent-hover absolute right-5 top-5 z-10 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition"
-                    style={{
-                      backgroundColor: "transparent",
-                      color: "var(--text-primary)",
-                    }}
-                    aria-label="Close settings"
-                  >
-                    <X size={22} strokeWidth={2.5} />
-                  </button>
-
-                  <AdminSettingsPage />
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </section>

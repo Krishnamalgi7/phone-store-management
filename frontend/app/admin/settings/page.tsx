@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, ChevronRight, Pencil, Plus, Search, X } from "lucide-react";
 
 type SectionType = "brands" | "variants" | "rams" | "roms";
@@ -53,6 +54,8 @@ const sections = [
 ];
 
 export default function AdminSettingsPage() {
+  const router = useRouter();
+
   const [openSection, setOpenSection] = useState<SectionType | null>(null);
 
   const [items, setItems] = useState<MasterItem[]>([]);
@@ -521,20 +524,20 @@ export default function AdminSettingsPage() {
         }}
       >
         <div className="mx-auto max-w-4xl">
-          {/* BACK */}
+          {/* BACK TO settings */}
 
           <button
-            type="button"
-            onClick={handleBack}
-            className="mb-8 flex cursor-pointer items-center gap-2 text-sm font-medium transition-opacity hover:opacity-70"
-          >
-            <ArrowLeft size={17} />
-            Back to Settings
-          </button>
+  type="button"
+  onClick={handleBack}
+  className="mb-8 flex cursor-pointer items-center gap-2 text-sm font-medium transition-colors hover:text-[var(--accent-color)]"
+>
+  <ArrowLeft size={17} />
+  Back to Settings
+</button>
 
           {/* HEADER */}
 
-          <div className="mb-8">
+          <div className="mb-10">
             <p
               className="mb-2 text-sm font-semibold uppercase tracking-wider"
               style={{
@@ -888,6 +891,20 @@ export default function AdminSettingsPage() {
         {/* HEADER */}
 
         <div className="mb-10">
+          <button
+  type="button"
+  onClick={() =>
+    router.push("/admin/dashboard")
+  }
+  className="mb-6 flex cursor-pointer items-center gap-2 text-sm font-semibold transition-colors hover:!text-[var(--accent-color)]"
+  style={{
+    color: "var(--text-primary)",
+  }}
+>
+  <ArrowLeft size={18} />
+  Back to Dashboard
+</button>
+
           <p
             className="mb-2 text-sm font-semibold uppercase tracking-wider"
             style={{
