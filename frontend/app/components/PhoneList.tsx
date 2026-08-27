@@ -100,6 +100,8 @@ export default function PhoneList() {
 
   const [selectedVariant, setSelectedVariant] = useState("");
 
+  const [brandVariants, setBrandVariants] = useState<MasterItem[]>([]);
+
   const [selectedRam, setSelectedRam] = useState("");
 
   const [selectedRom, setSelectedRom] = useState("");
@@ -293,6 +295,57 @@ export default function PhoneList() {
     fetchFilters();
   }, []);
 
+  useEffect(() => {
+    const fetchVariantsByBrand = async () => {
+      if (!selectedBrand) {
+        setBrandVariants([]);
+        setSelectedVariant("");
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/phones/variants?brandId=${selectedBrand}`,
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch variants");
+        }
+
+        const data = await response.json();
+
+        setBrandVariants(data);
+
+        setSelectedVariant((currentVariant) => {
+          // If the current variant is valid for this brand,
+          // keep it selected.
+          const stillValid = data.some(
+            (variant: MasterItem) => variant._id === currentVariant,
+          );
+
+          if (stillValid) {
+            return currentVariant;
+          }
+
+          // If there is only one valid variant,
+          // automatically select it.
+          if (data.length === 1) {
+            return data[0]._id;
+          }
+
+          // If there are multiple valid variants,
+          // let the user choose.
+          return "";
+        });
+      } catch (error) {
+        console.error("Error fetching brand variants:", error);
+      }
+    };
+
+    fetchVariantsByBrand();
+  }, [selectedBrand]);
+
+      
   /*
    * ------------------------------------------------
    * SEARCH DEBOUNCE
@@ -468,11 +521,13 @@ export default function PhoneList() {
           >
             <option value="">Variant</option>
 
-            {filters.variants.map((variant) => (
-              <option key={variant._id} value={variant._id}>
-                {variant.name}
-              </option>
-            ))}
+            {(selectedBrand ? brandVariants : filters.variants).map(
+  (variant) => (
+    <option key={variant._id} value={variant._id}>
+      {variant.name}
+    </option>
+  ),
+)}
           </select>
 
           {/* RAM */}

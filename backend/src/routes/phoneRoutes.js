@@ -12,12 +12,15 @@ const {
   deletePhone,
   getPhoneFilters,
   togglePhoneStatus,
+  getVariantsByBrand,
 } = require("../controllers/phoneController");
 
 const router = express.Router();
 
 // Get all phones
 router.get("/", getPhones);
+
+router.get("/variants", getVariantsByBrand);
 
 // Create a phone with Admin JWT required
 router.post("/", verifyToken, upload.single("image"), createPhone);

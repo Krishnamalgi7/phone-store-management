@@ -165,6 +165,50 @@ const getPhones = async (req, res) => {
   }
 };
 
+// Filter logic for brand with variant
+const getVariantsByBrand = async (req, res) => {
+  try {
+    const { brandId } = req.query;
+
+    if (!brandId) {
+      return res.status(400).json({
+        message: "Brand ID is required",
+      });
+    }
+
+    // Find phones belonging to the selected brand
+    const phones = await Phone.find({
+      brandId,
+    }).select("variantId");
+
+    // Get unique variant IDs
+    const variantIds = [
+      ...new Set(
+        phones
+          .map((phone) => phone.variantId?.toString())
+          .filter(Boolean),
+      ),
+    ];
+
+    // Find active variants
+    const variants = await Variant.find({
+      _id: { $in: variantIds },
+      isActive: true,
+    }).select("_id name");
+
+    res.status(200).json(variants);
+  } catch (error) {
+    console.error(
+      "Failed to fetch variants by brand:",
+      error,
+    );
+
+    res.status(500).json({
+      message: "Failed to fetch variants",
+    });
+  }
+};
+
 const getPhoneFilters = async (req, res) => {
   try {
     const [brands, variants, rams, roms, priceStats] = await Promise.all([
@@ -624,4 +668,5 @@ module.exports = {
   deletePhone,
   getPhoneFilters,
   togglePhoneStatus,
+  getVariantsByBrand,
 };
