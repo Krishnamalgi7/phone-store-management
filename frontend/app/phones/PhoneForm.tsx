@@ -102,99 +102,72 @@ export default function PhoneForm({
    * ------------------------------------------------
    */
 
-useEffect(() => {
-  if (editingPhone) {
-    setFormData({
-      name: editingPhone.name,
+  useEffect(() => {
+    if (editingPhone) {
+      setFormData({
+        name: editingPhone.name,
 
-      brand:
-        editingPhone.brandId ||
-        (
-          typeof editingPhone.brand ===
-          "string"
+        brand:
+          editingPhone.brandId ||
+          (typeof editingPhone.brand === "string"
             ? editingPhone.brand
-            : editingPhone.brand?._id ||
-              ""
-        ),
+            : editingPhone.brand?._id || ""),
 
-      variant:
-        editingPhone.variantId ||
-        (
-          typeof editingPhone.variant ===
-          "string"
+        variant:
+          editingPhone.variantId ||
+          (typeof editingPhone.variant === "string"
             ? editingPhone.variant
-            : editingPhone.variant?._id ||
-              ""
-        ),
+            : editingPhone.variant?._id || ""),
 
-      ram:
-        editingPhone.ramId ||
-        (
-          typeof editingPhone.ram ===
-          "string"
+        ram:
+          editingPhone.ramId ||
+          (typeof editingPhone.ram === "string"
             ? editingPhone.ram
-            : editingPhone.ram?._id ||
-              ""
-        ),
+            : editingPhone.ram?._id || ""),
 
-      rom:
-        editingPhone.romId ||
-        (
-          typeof editingPhone.rom ===
-          "string"
+        rom:
+          editingPhone.romId ||
+          (typeof editingPhone.rom === "string"
             ? editingPhone.rom
-            : editingPhone.rom?._id ||
-              ""
-        ),
+            : editingPhone.rom?._id || ""),
 
-      price: String(
-        editingPhone.price,
-      ),
+        price: String(editingPhone.price),
 
-      description:
-        editingPhone.description,
+        description: editingPhone.description,
 
-      imageUrl:
-        editingPhone.imageUrl || "",
+        imageUrl: editingPhone.imageUrl || "",
 
-      isNewPhone:
-        editingPhone.isNewPhone,
-    });
+        isNewPhone: editingPhone.isNewPhone,
+      });
 
-    setImageFile(null);
+      setImageFile(null);
 
-    setImageType(
-      editingPhone.imageUrl
-        ? "url"
-        : "upload",
-    );
+      setImageType(editingPhone.imageUrl ? "url" : "upload");
 
-    setImagePreview(
-      editingPhone.image,
-    );
+      setImagePreview(editingPhone.image);
 
-    setImageRemoved(false);
-    setStatus("");
-  } else {
-    setFormData({
-      name: "",
-      brand: "",
-      variant: "",
-      ram: "",
-      rom: "",
-      price: "",
-      description: "",
-      imageUrl: "",
-      isNewPhone: false,
-    });
+      setImageRemoved(false);
+      setStatus("");
+    } else {
+      setFormData({
+        name: "",
+        brand: "",
+        variant: "",
+        ram: "",
+        rom: "",
+        price: "",
+        description: "",
+        imageUrl: "",
+        isNewPhone: false,
+      });
 
-    setImageFile(null);
-    setImagePreview(null);
-    setImageType("upload");
-    setImageRemoved(false);
-    setStatus("");
-  }
-}, [editingPhone]);
+      setImageFile(null);
+      setImagePreview(null);
+      setImageType("upload");
+      setImageRemoved(false);
+      setStatus("");
+    }
+  }, [editingPhone]);
 
   /*
    * ------------------------------------------------
@@ -377,168 +350,110 @@ useEffect(() => {
    * ------------------------------------------------
    */
 
-const handleSubmit = async (
-  event: React.FormEvent<HTMLFormElement>,
-) => {
-  event.preventDefault();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-  try {
-    setStatus(
-      editingPhone
-        ? "Updating phone..."
-        : "Adding phone...",
-    );
+    try {
+      setStatus(editingPhone ? "Updating phone..." : "Adding phone...");
 
-    const data = new FormData();
+      const data = new FormData();
 
-    data.append(
-      "name",
-      formData.name,
-    );
+      data.append("name", formData.name);
 
-    /*
-     * Send reference IDs
-     */
-    data.append(
-      "brandId",
-      formData.brand,
-    );
+      /*
+       * Send reference IDs
+       */
+      data.append("brandId", formData.brand);
 
-    data.append(
-      "variantId",
-      formData.variant,
-    );
+      data.append("variantId", formData.variant);
 
-    data.append(
-      "ramId",
-      formData.ram,
-    );
+      data.append("ramId", formData.ram);
 
-    data.append(
-      "romId",
-      formData.rom,
-    );
+      data.append("romId", formData.rom);
 
-    data.append(
-      "price",
-      formData.price,
-    );
+      data.append("price", formData.price);
 
-    data.append(
-      "description",
-      formData.description,
-    );
+      data.append("description", formData.description);
 
-    data.append(
-      "isNewPhone",
-      String(formData.isNewPhone),
-    );
+      data.append("isNewPhone", String(formData.isNewPhone));
 
-    /*
-     * Upload image
-     */
-    if (
-      imageType === "upload" &&
-      imageFile
-    ) {
-      data.append(
-        "image",
-        imageFile,
-      );
-    }
+      /*
+       * Upload image
+       */
+      if (imageType === "upload" && imageFile) {
+        data.append("image", imageFile);
+      }
 
-    /*
-     * Image URL
-     */
-    if (
-      imageType === "url" &&
-      formData.imageUrl
-    ) {
-      data.append(
-        "imageUrl",
-        formData.imageUrl,
-      );
-    }
+      /*
+       * Image URL
+       */
+      if (imageType === "url" && formData.imageUrl) {
+        data.append("imageUrl", formData.imageUrl);
+      }
 
-    /*
-     * Image removed
-     */
-    if (imageRemoved) {
-      data.append(
-        "imageRemoved",
-        "true",
-      );
-    }
+      /*
+       * Image removed
+       */
+      if (imageRemoved) {
+        data.append("imageRemoved", "true");
+      }
 
-    const url = editingPhone
-      ? `http://localhost:5000/api/phones/${editingPhone._id}`
-      : "http://localhost:5000/api/phones";
+      const url = editingPhone
+        ? `http://localhost:5000/api/phones/${editingPhone._id}`
+        : "http://localhost:5000/api/phones";
 
-    const method = editingPhone
-      ? "PUT"
-      : "POST";
+      const method = editingPhone ? "PUT" : "POST";
 
-    const token =
-      localStorage.getItem(
-        "adminToken",
-      );
+      const token = localStorage.getItem("adminToken");
 
-    const response = await fetch(
-      url,
-      {
+      //temp debug logs for check
+      // console.log("EDIT PHONE FORM DATA:", formData);
+      // console.log("RAM ID BEING SENT:", formData.ram);
+      // console.log("ROM ID BEING SENT:", formData.rom);
+
+      for (const [key, value] of data.entries()) {
+        console.log(key, value);
+      }
+
+      const response = await fetch(url, {
         method,
 
         headers: {
-          Authorization:
-            `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
 
         body: data,
-      },
-    );
+      });
 
-    const result =
-      await response.json();
+      const result = await response.json();
 
-    if (!response.ok) {
-      throw new Error(
-        result.message ||
-          "Operation failed",
+      if (!response.ok) {
+        throw new Error(result.message || "Operation failed");
+      }
+
+      setStatus(
+        editingPhone
+          ? "Phone updated successfully."
+          : "Phone added successfully.",
+      );
+
+      resetForm();
+
+      if (editingPhone) {
+        onEditComplete?.();
+        return;
+      }
+
+      // Add Phone successful
+      onEditComplete?.();
+    } catch (error) {
+      console.error("Phone form error:", error);
+
+      setStatus(
+        editingPhone ? "Failed to update phone." : "Failed to add phone.",
       );
     }
-
-    setStatus(
-      editingPhone
-        ? "Phone updated successfully."
-        : "Phone added successfully.",
-    );
-
-
-
-resetForm();
-
-if (editingPhone) {
-  onEditComplete?.();
-  return;
-}
-
-// Add Phone successful
-onEditComplete?.();
-
-
-  } catch (error) {
-    console.error(
-      "Phone form error:",
-      error,
-    );
-
-    setStatus(
-      editingPhone
-        ? "Failed to update phone."
-        : "Failed to add phone.",
-    );
-  }
-};
+  };
 
   /*
    * ------------------------------------------------

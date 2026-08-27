@@ -167,13 +167,7 @@ const getPhones = async (req, res) => {
 
 const getPhoneFilters = async (req, res) => {
   try {
-    const [
-      brands,
-      variants,
-      rams,
-      roms,
-      priceStats,
-    ] = await Promise.all([
+    const [brands, variants, rams, roms, priceStats] = await Promise.all([
       Brand.find({
         isActive: true,
       })
@@ -213,11 +207,10 @@ const getPhoneFilters = async (req, res) => {
       ]),
     ]);
 
-    const priceRange =
-      priceStats[0] || {
-        minPrice: 0,
-        maxPrice: 0,
-      };
+    const priceRange = priceStats[0] || {
+      minPrice: 0,
+      maxPrice: 0,
+    };
 
     res.status(200).json({
       brands,
@@ -231,14 +224,10 @@ const getPhoneFilters = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(
-      "Failed to fetch phone filters:",
-      error,
-    );
+    console.error("Failed to fetch phone filters:", error);
 
     res.status(500).json({
-      message:
-        "Failed to fetch phone filters",
+      message: "Failed to fetch phone filters",
     });
   }
 };
@@ -364,11 +353,13 @@ const createPhone = async (req, res) => {
 
 // Update a phone
 const updatePhone = async (req, res) => {
+  //temp debug logs
+  // console.log("========== UPDATE PHONE ==========");
+  // console.log("PHONE ID:", req.params.id);
+  // console.log("BODY:", req.body);
+
   try {
-    const phone =
-      await Phone.findById(
-        req.params.id,
-      );
+    const phone = await Phone.findById(req.params.id);
 
     if (!phone) {
       return res.status(404).json({
@@ -395,12 +386,7 @@ const updatePhone = async (req, res) => {
      * -----------------------------------------
      */
 
-    const [
-      brand,
-      variant,
-      ram,
-      rom,
-    ] = await Promise.all([
+    const [brand, variant, ram, rom] = await Promise.all([
       Brand.findOne({
         _id: brandId,
         isActive: true,
@@ -424,52 +410,38 @@ const updatePhone = async (req, res) => {
 
     if (!brand) {
       return res.status(400).json({
-        message:
-          "Selected brand is inactive or invalid",
+        message: "Selected brand is inactive or invalid",
       });
     }
 
     if (!variant) {
       return res.status(400).json({
-        message:
-          "Selected variant is inactive or invalid",
+        message: "Selected variant is inactive or invalid",
       });
     }
 
     if (!ram) {
       return res.status(400).json({
-        message:
-          "Selected RAM is inactive or invalid",
+        message: "Selected RAM is inactive or invalid",
       });
     }
 
     if (!rom) {
       return res.status(400).json({
-        message:
-          "Selected ROM is inactive or invalid",
+        message: "Selected ROM is inactive or invalid",
       });
     }
-
-    /*
-     * -----------------------------------------
-     * UPDATE DATA
-     * -----------------------------------------
-     *
-     * IMPORTANT:
-     *
-     * We are NOT putting:
-     *
-     * brand: brand.name
-     *
-     * into a Mongoose update because your
-     * current schema expects brand as ObjectId.
-     *
-     * The reference fields are updated instead.
-     */
 
     const updateData = {
       name,
 
+      // Actual values
+      brand: brand.name,
+      variant: variant.name,
+      ram: ram.value,
+      rom: rom.value,
+
+      // Reference IDs
       brandId: brand._id,
       variantId: variant._id,
       ramId: ram._id,
@@ -490,98 +462,60 @@ const updatePhone = async (req, res) => {
       /*
        * Delete old local image
        */
-      if (
-        phone.image &&
-        phone.image.startsWith(
-          "/uploads/",
-        )
-      ) {
-        const oldImageName =
-          path.basename(
-            phone.image,
-          );
+      if (phone.image && phone.image.startsWith("/uploads/")) {
+        const oldImageName = path.basename(phone.image);
 
-        const oldImagePath =
-          path.join(
-            __dirname,
-            "../../uploads",
-            oldImageName,
-          );
+        const oldImagePath = path.join(
+          __dirname,
+          "../../uploads",
+          oldImageName,
+        );
 
-        if (
-          fs.existsSync(
-            oldImagePath,
-          )
-        ) {
-          fs.unlinkSync(
-            oldImagePath,
-          );
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
         }
       }
 
       /*
        * Save new image
        */
-      updateData.image =
-        `/uploads/${req.file.filename}`;
+      updateData.image = `/uploads/${req.file.filename}`;
 
       updateData.imageUrl = null;
-    }
+    } else if (imageRemoved === "true") {
 
     /*
      * -----------------------------------------
      * REMOVE IMAGE
      * -----------------------------------------
      */
-
-    else if (
-      imageRemoved === "true"
-    ) {
       /*
        * Delete existing local image
        */
-      if (
-        phone.image &&
-        phone.image.startsWith(
-          "/uploads/",
-        )
-      ) {
-        const oldImageName =
-          path.basename(
-            phone.image,
-          );
+      if (phone.image && phone.image.startsWith("/uploads/")) {
+        const oldImageName = path.basename(phone.image);
 
-        const oldImagePath =
-          path.join(
-            __dirname,
-            "../../uploads",
-            oldImageName,
-          );
+        const oldImagePath = path.join(
+          __dirname,
+          "../../uploads",
+          oldImageName,
+        );
 
-        if (
-          fs.existsSync(
-            oldImagePath,
-          )
-        ) {
-          fs.unlinkSync(
-            oldImagePath,
-          );
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
         }
       }
 
       updateData.image = null;
       updateData.imageUrl = null;
-    }
+    } else if (imageUrl) {
 
     /*
      * -----------------------------------------
      * IMAGE URL
      * -----------------------------------------
      */
-
-    else if (imageUrl) {
-      updateData.imageUrl =
-        imageUrl;
+      updateData.imageUrl = imageUrl;
     }
 
     /*
@@ -590,30 +524,24 @@ const updatePhone = async (req, res) => {
      * -----------------------------------------
      */
 
-    const updatedPhone =
-      await Phone.findByIdAndUpdate(
-        req.params.id,
-        updateData,
-        {
-          new: true,
-          runValidators: true,
-        },
-      );
+    const updatedPhone = await Phone.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      {
+        returnDocument: "after",
+        runValidators: true,
+      },
+    );
 
     res.status(200).json({
-      message:
-        "Phone updated successfully",
+      message: "Phone updated successfully",
       phone: updatedPhone,
     });
   } catch (error) {
-    console.error(
-      "Failed to update phone:",
-      error,
-    );
+    console.error("Failed to update phone:", error);
 
     res.status(500).json({
-      message:
-        "Failed to update phone",
+      message: "Failed to update phone",
     });
   }
 };
@@ -680,10 +608,7 @@ const togglePhoneStatus = async (req, res) => {
       phone,
     });
   } catch (error) {
-    console.error(
-      "Toggle phone status error:",
-      error,
-    );
+    console.error("Toggle phone status error:", error);
 
     return res.status(500).json({
       message: "Failed to update phone status",
