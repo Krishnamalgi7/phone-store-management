@@ -145,7 +145,7 @@ export default function Navbar() {
                 "var(--text-primary)",
             }}
           >
-            Phone Store
+            Nova
           </span>
         </a>
 
