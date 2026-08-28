@@ -9,36 +9,34 @@ export default function AddPhonePage() {
 
   return (
     <main
-      className="min-h-screen"
-      style={{
-        backgroundColor:
-          "var(--bg-primary)",
-        color:
-          "var(--text-primary)",
-      }}
-    >
-      <div className="mx-auto max-w-5xl px-8 py-6">
+        className="min-h-screen px-6 py-8"
+        style={{
+          background: "var(--bg-primary)",
+          color: "var(--text-primary)",
+        }}
+      >
+        <div className="mx-auto max-w-7xl">
         {/* BACK */}
         <button
           type="button"
-          onClick={() =>
-            router.push("/admin/phones")
-          }
+          onClick={() => router.push("/admin/dashboard")}
           className="mb-6 flex cursor-pointer items-center gap-2 text-sm font-semibold transition-colors hover:!text-[var(--accent-color)]"
-  style={{
-    color: "var(--text-primary)",
-  }}
->
-  <ArrowLeft size={18} />
-  Back to Manage Phones
-</button>
+          style={{
+            color: "var(--text-primary)",
+          }}
+        >
+          <ArrowLeft size={18} />
+          Back to dashboard
+        </button>
 
+        {/* PAGE TITLE */}
+        <h1 className="mb-6 text-2xl font-bold">Add your Phone</h1>
+    
+    
         {/* EXISTING PHONE FORM */}
         <PhoneForm
           editingPhone={null}
-          onEditComplete={() =>
-            router.push("/admin/phones")
-          }
+          onEditComplete={() => router.push("/admin/phones")}
         />
       </div>
     </main>

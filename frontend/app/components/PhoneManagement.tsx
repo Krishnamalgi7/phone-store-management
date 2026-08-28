@@ -44,7 +44,7 @@ export default function PhoneManagement() {
 
   return (
     <section
-      className="mx-auto max-w-7xl px-8 pb-16"
+      className="mx-auto max-w-7xl"
       style={{
         color: "var(--text-primary)",
       }}
@@ -63,33 +63,10 @@ export default function PhoneManagement() {
               color: "var(--text-secondary)",
             }}
           >
-            Add, update, or delete phones.
+            Edit or update phones.
           </p>
         </div>
 
-        {/* ADD PHONE
-            IMPORTANT:
-            This goes to the existing Add Phone PAGE.
-            No popup.
-        */}
-        <button
-          type="button"
-          onClick={() =>
-            router.push("/admin/phones/add")
-          }
-          className="theme-accent-hover flex w-fit cursor-pointer items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition"
-          style={{
-            backgroundColor: "var(--text-primary)",
-            color: "var(--bg-primary)",
-          }}
-        >
-          <Plus
-            size={16}
-            strokeWidth={2.2}
-          />
-
-          Add Phone
-        </button>
       </div>
 
       {/* EXISTING PHONES */}

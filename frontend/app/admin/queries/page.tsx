@@ -113,7 +113,7 @@ export default function CustomerQueriesPage() {
       }}
     >
       <section className="px-6 py-10">
-        <div className="mx-auto max-w-4xl">
+        <div className="mx-auto max-w-7xl">
 
           {/* BACK TO DASHBOARD */}
 

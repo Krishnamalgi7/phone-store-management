@@ -78,17 +78,7 @@ export default function Footer() {
               <Mail size={17} />
               Contact
             </a>
-
-            <a
-              href="/admin/login"
-              className="nav-link flex items-center gap-2 transition"
-              style={{
-                color: "var(--text-primary)",
-              }}
-            >
-              <LogIn size={17} />
-              Admin Auth
-            </a>
+            
           </div>
         </div>
 

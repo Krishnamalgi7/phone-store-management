@@ -476,17 +476,6 @@ export default function PhoneForm({
     >
       {/* TITLE */}
 
-      <div className="mb-5 flex items-center justify-between">
-        <h2
-          className="text-xl font-bold"
-          style={{
-            color: "var(--text-primary)",
-          }}
-        >
-          {editingPhone ? "Edit Phone" : "Add Phone"}
-        </h2>
-      </div>
-
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* NAME / BRAND / VARIANT */}
 

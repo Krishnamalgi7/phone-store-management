@@ -282,16 +282,7 @@ export default function ManagePhoneList({
    */
   return (
     <section className="mt-16">
-      <h2
-        className="text-3xl font-bold"
-        style={{
-          color:
-            "var(--text-primary)",
-        }}
-      >
-        Existing Phones
-      </h2>
-
+  
       <div className="mt-8 space-y-4">
         {phones.length === 0 ? (
           <div
@@ -331,7 +322,7 @@ export default function ManagePhoneList({
                 className="flex items-center gap-6 rounded-2xl border p-5 transition"
                 style={{
                   backgroundColor:
-                    "var(--bg-primary)",
+                    "var(--bg-secondary)",
                   borderColor:
                     "var(--border-color)",
                 }}
@@ -450,28 +441,7 @@ export default function ManagePhoneList({
                     Edit
                   </button>
 
-                  {/* DELETE */}
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setPhoneToDelete(
-                        phone,
-                      )
-                    }
-                    className="flex cursor-pointer items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition"
-                    style={{
-                      color:
-                        "rgb(239 68 68)",
-                      borderColor:
-                        "rgb(239 68 68)",
-                    }}
-                  >
-                    <Trash2
-                      size={15}
-                    />
 
-                    Delete
-                  </button>
                 </div>
               </div>
             );

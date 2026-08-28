@@ -9,6 +9,7 @@ import {
   Settings,
   Menu,
   X,
+  LogIn,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -211,6 +212,20 @@ export default function Navbar() {
             Contact
           </a>
 
+
+{/* LOGIN */}
+
+<button
+  type="button"
+  onClick={handleLogin}
+  className="nav-link flex cursor-pointer items-center gap-2 transition"
+  style={{
+    color: "var(--text-primary)",
+  }}
+>
+  <LogIn size={18} />
+  Login
+</button>
          
         </div>
 

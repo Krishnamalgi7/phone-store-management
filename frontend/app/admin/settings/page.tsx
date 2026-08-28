@@ -107,6 +107,8 @@ export default function AdminSettingsPage() {
     value: string;
   } | null>(null);
 
+  const [confirmItem, setConfirmItem] = useState<MasterItem | null>(null);
+
   /*
    * ------------------------------------------------
    * FETCH METADATA
@@ -430,6 +432,15 @@ export default function AdminSettingsPage() {
    * ACTIVATE / DEACTIVATE
    * ------------------------------------------------
    */
+  const confirmToggle = async () => {
+    if (!confirmItem) {
+      return;
+    }
+
+    await handleToggle(confirmItem);
+
+    setConfirmItem(null);
+  };
 
   const handleToggle = async (item: MasterItem) => {
     if (!openSection) {
@@ -523,17 +534,17 @@ export default function AdminSettingsPage() {
           color: "var(--text-primary)",
         }}
       >
-        <div className="mx-auto max-w-4xl">
+        <div className="mx-auto max-w-7xl">
           {/* BACK TO settings */}
 
           <button
-  type="button"
-  onClick={handleBack}
-  className="mb-8 flex cursor-pointer items-center gap-2 text-sm font-medium transition-colors hover:text-[var(--accent-color)]"
->
-  <ArrowLeft size={17} />
-  Back to Settings
-</button>
+            type="button"
+            onClick={handleBack}
+            className="mb-8 flex cursor-pointer items-center gap-2 text-sm font-medium transition-colors hover:text-[var(--accent-color)]"
+          >
+            <ArrowLeft size={17} />
+            Back to Settings
+          </button>
 
           {/* HEADER */}
 
@@ -792,24 +803,7 @@ export default function AdminSettingsPage() {
                       <>
                         <button
                           type="button"
-                          onClick={() =>
-                            setEditing({
-                              id: item._id,
-                              value,
-                            })
-                          }
-                          className="flex cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-2 text-sm transition-opacity hover:opacity-70"
-                          style={{
-                            borderColor: "var(--border-color)",
-                          }}
-                        >
-                          <Pencil size={14} />
-                          Edit
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => handleToggle(item)}
+                          onClick={() => setConfirmItem(item)}
                           disabled={saving}
                           className="cursor-pointer rounded-lg border px-3 py-2 text-sm font-medium transition-opacity hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-50"
                           style={{
@@ -869,6 +863,71 @@ export default function AdminSettingsPage() {
             </div>
           )}
         </div>
+
+        {/* Confirmation Popup */}
+        {confirmItem && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+            <div
+              className="w-full max-w-md rounded-2xl border p-6 shadow-xl"
+              style={{
+                backgroundColor: "var(--bg-secondary)",
+                borderColor: "var(--border-color)",
+                color: "var(--text-primary)",
+              }}
+            >
+              <h2 className="text-xl font-bold">
+                {confirmItem.isActive
+                  ? "Confirm Deactivation"
+                  : "Confirm Activation"}
+              </h2>
+
+              <p
+                className="mt-3 text-sm leading-6"
+                style={{
+                  color: "var(--text-secondary)",
+                }}
+              >
+                Are you sure you want to{" "}
+                {confirmItem.isActive ? "deactivate" : "activate"}{" "}
+                <span
+                  className="font-semibold"
+                  style={{
+                    color: "var(--text-primary)",
+                  }}
+                >
+                  "{confirmItem.name || confirmItem.value}"
+                </span>
+                ?
+              </p>
+
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setConfirmItem(null)}
+                  className="cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium transition-opacity hover:opacity-70"
+                  style={{
+                    borderColor: "var(--border-color)",
+                  }}
+                >
+                  Cancel
+                </button>
+
+                <button
+  type="button"
+  onClick={confirmToggle}
+  disabled={saving}
+  className={`cursor-pointer rounded-lg px-4 py-2 text-sm font-medium transition ${
+    confirmItem.isActive
+      ? "bg-red-600 text-white hover:bg-red-700"
+      : "bg-green-600 text-white hover:bg-green-700"
+  } disabled:cursor-not-allowed disabled:opacity-50`}
+>
+  {confirmItem.isActive ? "Deactivate" : "Activate"}
+</button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     );
   }
@@ -881,29 +940,27 @@ export default function AdminSettingsPage() {
 
   return (
     <main
-      className="min-h-screen px-6 py-10"
+      className="min-h-screen px-6 py-8"
       style={{
-        background: "var(--bg-primary)",
+        backgroundColor: "var(--bg-primary)",
         color: "var(--text-primary)",
       }}
     >
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto max-w-7xl">
         {/* HEADER */}
 
         <div className="mb-10">
           <button
-  type="button"
-  onClick={() =>
-    router.push("/admin/dashboard")
-  }
-  className="mb-6 flex cursor-pointer items-center gap-2 text-sm font-semibold transition-colors hover:!text-[var(--accent-color)]"
-  style={{
-    color: "var(--text-primary)",
-  }}
->
-  <ArrowLeft size={18} />
-  Back to Dashboard
-</button>
+            type="button"
+            onClick={() => router.push("/admin/dashboard")}
+            className="mb-6 flex cursor-pointer items-center gap-2 text-sm font-semibold transition-colors hover:!text-[var(--accent-color)]"
+            style={{
+              color: "var(--text-primary)",
+            }}
+          >
+            <ArrowLeft size={18} />
+            Back to Dashboard
+          </button>
 
           <p
             className="mb-2 text-sm font-semibold uppercase tracking-wider"

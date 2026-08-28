@@ -122,15 +122,13 @@ export default function EditPhonePage() {
 
   return (
     <main
-      className="min-h-screen"
-      style={{
-        backgroundColor:
-          "var(--bg-primary)",
-        color:
-          "var(--text-primary)",
-      }}
-    >
-      <div className="mx-auto max-w-5xl px-8 py-6">
+        className="min-h-screen px-6 py-10"
+        style={{
+          background: "var(--bg-primary)",
+          color: "var(--text-primary)",
+        }}
+      >
+        <div className="mx-auto max-w-7xl">
         {/* BACK */}
         <button
           type="button"

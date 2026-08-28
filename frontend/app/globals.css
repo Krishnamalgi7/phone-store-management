@@ -114,3 +114,10 @@ body {
   pointer-events: auto;
   cursor: pointer;
 }
+
+.admin-logout-link:hover {
+  color: #dc2626 !important;
+  text-decoration: underline;
+  text-decoration-color: #dc2626;
+  text-underline-offset: 6px;
+}

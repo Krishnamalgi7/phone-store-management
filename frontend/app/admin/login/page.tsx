@@ -138,22 +138,7 @@ export default function AdminLoginPage() {
           </button>
         </form>
 
-        <p
-          className="mt-4 text-center text-sm"
-          style={{ color: "var(--text-secondary)" }}
-        >
-          Don't have an admin account?{" "}
-          {/* <button
-            type="button"
-            onClick={() => router.push("/admin/signup")}
-            className="cursor-pointer font-medium transition hover:!text-[var(--accent-color)] hover:underline"
-            style={{ color: "var(--text-primary)" }}
-          >
-            Sign up
-          </button> */}
-        </p>
-
-                <button
+        <button
           type="button"
           onClick={() => router.push("/")}
           className="theme-accent-text-hover mt-3 block w-full cursor-pointer text-center text-sm font-medium transition hover:underline"
@@ -163,7 +148,6 @@ export default function AdminLoginPage() {
         >
           ← Back to Home
         </button>
-        
       </div>
     </main>
   );
