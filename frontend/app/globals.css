@@ -115,9 +115,15 @@ body {
   cursor: pointer;
 }
 
-.admin-logout-link:hover {
+/* .admin-logout-link:hover {
   color: #dc2626 !important;
   text-decoration: underline;
   text-decoration-color: #dc2626;
   text-underline-offset: 6px;
+} */
+
+.admin-logout-link:hover {
+  background-color: red;
+  color: white;
+  border-color: red;
 }

@@ -141,9 +141,10 @@ export default function AdminDashboardPage() {
       className="min-h-screen"
       style={{ backgroundColor: "var(--bg-primary)" }}
     >
-      <div className="mx-auto mt-4 max-w-7xl">
+      <div className="mx-auto mt-4 flex max-w-7xl items-center gap-3">
         <nav
-          className="flex items-center justify-between rounded-full border px-7 py-4 shadow-sm"
+        
+  className="flex flex-1 items-center justify-between rounded-full border px-7 py-4 shadow-sm"
           style={{
             backgroundColor: "var(--bg-primary)",
             borderColor: "var(--border-color)",
@@ -207,19 +208,24 @@ export default function AdminDashboardPage() {
               View Queries
             </button>
 
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="admin-logout-link flex cursor-pointer items-center gap-2 transition"
-              style={{
-                color: "var(--text-primary)",
-              }}
-            >
-              <LogOut size={17} />
-              Logout
-            </button>
+           
           </div>
         </nav>
+
+<button
+  type="button"
+  onClick={handleLogout}
+  className="flex cursor-pointer items-center gap-3 rounded-full border px-5 py-4 font-medium transition hover:!bg-red-500 hover:!text-white hover:!border-red-500"
+  style={{
+    backgroundColor: "var(--bg-primary)",
+    color: "var(--text-primary)",
+    borderColor: "var(--border-color)",
+  }}
+>
+  <LogOut size={18} />
+  Logout
+</button>
+
       </div>
 
       <section className="px-6 py-10">

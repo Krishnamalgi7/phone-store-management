@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Minus, Plus } from "lucide-react";
 
 type Phone = {
   _id: string;
@@ -621,26 +622,62 @@ export default function PhoneForm({
           </select>
 
           {/* PRICE */}
-
-          <input
-            name="price"
-            type="number"
-            min="0"
-            value={formData.price}
-            onChange={handleChange}
-            placeholder="Price"
-            required
-            className="w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition focus:ring-1"
+          <div
+            className="flex w-full items-center rounded-lg border"
             style={{
               backgroundColor: "var(--bg-primary)",
-
-              color: "var(--text-primary)",
-
               borderColor: "var(--border-color)",
-
-              outlineColor: "var(--accent-color)",
             }}
-          />
+          >
+            <button
+              type="button"
+              onClick={() =>
+                setFormData((current) => ({
+                  ...current,
+                  price: String(
+                    Math.max(0, parseInt(current.price || "0", 10) - 1),
+                  ),
+                }))
+              }
+              className="flex h-full cursor-pointer items-center justify-center px-4 py-2.5 transition hover:opacity-70"
+              style={{
+                color: "var(--text-primary)",
+              }}
+            >
+              <Minus size={18} />
+            </button>
+
+            <input
+              name="price"
+              type="number"
+              min="0"
+              value={formData.price}
+              onChange={handleChange}
+              onWheel={(event) => event.currentTarget.blur()}
+              placeholder="Price"
+              required
+              className="w-full bg-transparent text-center text-sm outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              style={{
+                color: "var(--text-primary)",
+              }}
+            />
+
+            <button
+              type="button"
+              onClick={() =>
+                setFormData((current) => ({
+                  ...current,
+                  price: String(parseInt(current.price || "0", 10) + 1),
+                }))
+              }
+              className="flex h-full cursor-pointer items-center justify-center px-4 py-2.5 transition hover:opacity-70"
+              style={{
+                color: "var(--text-primary)",
+              }}
+            >
+              <Plus size={18} />
+            </button>
+          </div>
         </div>
 
         {/* DESCRIPTION */}
