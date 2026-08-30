@@ -184,9 +184,7 @@ const getVariantsByBrand = async (req, res) => {
     // Get unique variant IDs
     const variantIds = [
       ...new Set(
-        phones
-          .map((phone) => phone.variantId?.toString())
-          .filter(Boolean),
+        phones.map((phone) => phone.variantId?.toString()).filter(Boolean),
       ),
     ];
 
@@ -198,10 +196,7 @@ const getVariantsByBrand = async (req, res) => {
 
     res.status(200).json(variants);
   } catch (error) {
-    console.error(
-      "Failed to fetch variants by brand:",
-      error,
-    );
+    console.error("Failed to fetch variants by brand:", error);
 
     res.status(500).json({
       message: "Failed to fetch variants",
@@ -211,6 +206,8 @@ const getVariantsByBrand = async (req, res) => {
 
 const getPhoneFilters = async (req, res) => {
   try {
+    const { brandId } = req.query;
+
     const [brands, variants, rams, roms, priceStats] = await Promise.all([
       Brand.find({
         isActive: true,
@@ -224,17 +221,43 @@ const getPhoneFilters = async (req, res) => {
         .select("_id name")
         .sort({ name: 1 }),
 
-      Ram.find({
-        isActive: true,
-      })
-        .select("_id value")
-        .sort({ value: 1 }),
+      brandId
+        ? (async () => {
+            const ramIds = await Phone.distinct("ramId", {
+              brandId,
+            });
 
-      Rom.find({
-        isActive: true,
-      })
-        .select("_id value")
-        .sort({ value: 1 }),
+            return Ram.find({
+              _id: { $in: ramIds },
+              isActive: true,
+            })
+              .select("_id value")
+              .sort({ value: 1 });
+          })()
+        : Ram.find({
+            isActive: true,
+          })
+            .select("_id value")
+            .sort({ value: 1 }),
+
+      brandId
+        ? (async () => {
+            const romIds = await Phone.distinct("romId", {
+              brandId,
+            });
+
+            return Rom.find({
+              _id: { $in: romIds },
+              isActive: true,
+            })
+              .select("_id value")
+              .sort({ value: 1 });
+          })()
+        : Rom.find({
+            isActive: true,
+          })
+            .select("_id value")
+            .sort({ value: 1 }),
 
       Phone.aggregate([
         {
@@ -527,15 +550,7 @@ const updatePhone = async (req, res) => {
 
       updateData.imageUrl = null;
     } else if (imageRemoved === "true") {
-
-    /*
-     * -----------------------------------------
-     * REMOVE IMAGE
-     * -----------------------------------------
-     */
-      /*
-       * Delete existing local image
-       */
+      // REMOVE IMAGE
       if (phone.image && phone.image.startsWith("/uploads/")) {
         const oldImageName = path.basename(phone.image);
 
@@ -553,21 +568,11 @@ const updatePhone = async (req, res) => {
       updateData.image = null;
       updateData.imageUrl = null;
     } else if (imageUrl) {
-
-    /*
-     * -----------------------------------------
-     * IMAGE URL
-     * -----------------------------------------
-     */
+      //IMAGE URL
       updateData.imageUrl = imageUrl;
     }
 
-    /*
-     * -----------------------------------------
-     * UPDATE PHONE
-     * -----------------------------------------
-     */
-
+    //UPDATE PHONE
     const updatedPhone = await Phone.findByIdAndUpdate(
       req.params.id,
       updateData,

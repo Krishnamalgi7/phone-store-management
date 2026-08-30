@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Pencil, Trash2, X } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { ChevronDown, Pencil, Search, X } from "lucide-react";
 
 type ReferenceValue =
   | string
@@ -43,9 +43,14 @@ type ManagePhoneListProps = {
   refreshKey: number;
 };
 
-const getReferenceText = (
-  value?: ReferenceValue,
-) => {
+type MasterItem = {
+  _id: string;
+  name?: string;
+  value?: string;
+  isActive: boolean;
+};
+
+const getReferenceText = (value?: ReferenceValue) => {
   if (!value) {
     return "—";
   }
@@ -63,196 +68,316 @@ export default function ManagePhoneList({
 }: ManagePhoneListProps) {
   const [phones, setPhones] = useState<Phone[]>([]);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
 
-  const [updatingId, setUpdatingId] =
-    useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [selectedVariant, setSelectedVariant] = useState("");
+  const [selectedRam, setSelectedRam] = useState("");
+  const [selectedRom, setSelectedRom] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  /*
-   * Phone selected for deletion.
-   *
-   * null = confirmation popup is closed
-   */
-  const [phoneToDelete, setPhoneToDelete] =
-    useState<Phone | null>(null);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 0]);
 
-  /*
-   * -----------------------------------------
-   * FETCH PHONES
-   * -----------------------------------------
-   */
+  const [priceChanged, setPriceChanged] = useState(false);
+  const [showPriceFilter, setShowPriceFilter] = useState(false);
+
+  const [brandVariants, setBrandVariants] = useState<MasterItem[]>([]);
+
+  const priceFilterRef = useRef<HTMLDivElement>(null);
+
+  const [filters, setFilters] = useState<{
+    brands: MasterItem[];
+    variants: MasterItem[];
+    rams: MasterItem[];
+    roms: MasterItem[];
+    price: {
+      min: number;
+      max: number;
+    };
+  }>({
+    brands: [],
+    variants: [],
+    rams: [],
+    roms: [],
+    price: {
+      min: 0,
+      max: 0,
+    },
+  });
+
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+/*
+ * -----------------------------------------
+ * SEARCH DEBOUNCE
+ * -----------------------------------------
+ */
+
+useEffect(() => {
+  const timer = setTimeout(() => {
+    setDebouncedSearch(searchTerm);
+  }, 400);
+
+  return () => {
+    clearTimeout(timer);
+  };
+}, [searchTerm]);
+
+/*
+ * -----------------------------------------
+ * FETCH PHONES
+ * -----------------------------------------
+ */
+
+useEffect(() => {
   const fetchPhones = async () => {
     try {
-      setLoading(true);
+  if (phones.length === 0) {
+    setLoading(true);
+  }
 
-      const response = await fetch(
-        "http://localhost:5000/api/phones",
-      );
+  setIsFetching(true);
 
-      const data =
-        await response.json();
+  const params = new URLSearchParams();
 
-      if (!response.ok) {
-        throw new Error(
-          data.message ||
-            "Failed to fetch phones",
-        );
+      if (debouncedSearch.trim()) {
+        params.set("search", debouncedSearch.trim());
       }
 
-      setPhones(
-        Array.isArray(data.phones)
-          ? data.phones
-          : [],
+      if (selectedBrand) {
+        params.set("brand", selectedBrand);
+      }
+
+      if (selectedVariant) {
+        params.set("variant", selectedVariant);
+      }
+
+      if (selectedRam) {
+        params.set("ram", selectedRam);
+      }
+
+      if (selectedRom) {
+        params.set("rom", selectedRom);
+      }
+
+      if (priceChanged) {
+        params.set("minPrice", String(priceRange[0]));
+        params.set("maxPrice", String(priceRange[1]));
+      }
+
+      const response = await fetch(
+        `http://localhost:5000/api/phones?${params.toString()}`
       );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch phones");
+      }
+
+      const data = await response.json();
+
+      setPhones(data.phones || []);
     } catch (error) {
-      console.error(
-        "Failed to fetch phones:",
-        error,
-      );
+      console.error("Error fetching phones:", error);
     } finally {
-      setLoading(false);
+  setLoading(false);
+  setIsFetching(false);
+}
+  };
+
+  fetchPhones();
+}, [
+  refreshKey,
+  debouncedSearch,
+  selectedBrand,
+  selectedVariant,
+  selectedRam,
+  selectedRom,
+  priceRange,
+  priceChanged,
+]);
+
+/*
+ * -----------------------------------------
+ * FETCH FILTER OPTIONS
+ * -----------------------------------------
+ */
+
+useEffect(() => {
+  const fetchFilters = async () => {
+    try {
+      const params = new URLSearchParams();
+
+      if (selectedBrand) {
+        params.set("brandId", selectedBrand);
+      }
+
+      const response = await fetch(
+        `http://localhost:5000/api/phones/filters?${params.toString()}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch phone filters");
+      }
+
+      const data = await response.json();
+
+      setFilters(data);
+    } catch (error) {
+      console.error("Error fetching phone filters:", error);
     }
   };
 
-  /*
-   * Fetch when component loads.
-   *
-   * refreshKey changes after an edit,
-   * so the Existing Phones section gets
-   * the latest data.
-   */
-  useEffect(() => {
-    fetchPhones();
-  }, [refreshKey]);
+  fetchFilters();
+}, [selectedBrand]);
+
+/*
+ * -----------------------------------------
+ * FETCH VARIANTS BY BRAND
+ * -----------------------------------------
+ */
+
+useEffect(() => {
+  const fetchVariantsByBrand = async () => {
+    if (!selectedBrand) {
+      setBrandVariants([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/phones/variants?brandId=${selectedBrand}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch variants");
+      }
+
+      const data = await response.json();
+
+      setBrandVariants(data);
+    } catch (error) {
+      console.error("Error fetching brand variants:", error);
+    }
+  };
+
+  fetchVariantsByBrand();
+}, [selectedBrand]);
+
+/*
+ * -----------------------------------------
+ * RESET DEPENDENT FILTERS
+ * -----------------------------------------
+ */
+
+useEffect(() => {
+  setSelectedVariant("");
+  setSelectedRam("");
+  setSelectedRom("");
+}, [selectedBrand]);
+
+/*
+ * -----------------------------------------
+ * SET INITIAL PRICE RANGE
+ * -----------------------------------------
+ */
+
+useEffect(() => {
+  if (filters.price.max > 0 && !priceChanged) {
+    setPriceRange([0, filters.price.max]);
+  }
+}, [filters.price.max, priceChanged]);
+
+/*
+ * -----------------------------------------
+ * CLOSE PRICE POPUP
+ * -----------------------------------------
+ */
+
+useEffect(() => {
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (
+      priceFilterRef.current &&
+      !priceFilterRef.current.contains(event.target as Node)
+    ) {
+      setShowPriceFilter(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleOutsideClick);
+
+  return () => {
+    document.removeEventListener("mousedown", handleOutsideClick);
+  };
+}, []);
+
+/*
+ * -----------------------------------------
+ * CLEAR FILTERS
+ * -----------------------------------------
+ */
+
+const clearFilters = () => {
+  setSearchTerm("");
+  setDebouncedSearch("");
+
+  setSelectedBrand("");
+  setSelectedVariant("");
+  setSelectedRam("");
+  setSelectedRom("");
+
+  setPriceChanged(false);
+  setShowPriceFilter(false);
+
+  if (filters.price.max > 0) {
+    setPriceRange([filters.price.min, filters.price.max]);
+  } else {
+    setPriceRange([0, 0]);
+  }
+};
 
   /*
    * -----------------------------------------
    * TOGGLE ACTIVE / INACTIVE
    * -----------------------------------------
    */
-  const togglePhoneStatus = async (
-    phone: Phone,
-  ) => {
+  const togglePhoneStatus = async (phone: Phone) => {
     try {
       setUpdatingId(phone._id);
 
-      const token =
-        localStorage.getItem(
-          "adminToken",
-        );
+      const token = localStorage.getItem("adminToken");
 
       const response = await fetch(
         `http://localhost:5000/api/phones/${phone._id}/status`,
         {
           method: "PATCH",
           headers: {
-            Authorization:
-              `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         },
       );
 
-      const data =
-        await response.json();
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.message ||
-            "Failed to update phone status",
-        );
+        throw new Error(data.message || "Failed to update phone status");
       }
 
-      setPhones(
-        (currentPhones) =>
-          currentPhones.map(
-            (currentPhone) =>
-              currentPhone._id ===
-              phone._id
-                ? {
-                    ...currentPhone,
-                    isActive:
-                      data.phone
-                        ?.isActive ??
-                      !currentPhone.isActive,
-                  }
-                : currentPhone,
-          ),
+      setPhones((currentPhones) =>
+        currentPhones.map((currentPhone) =>
+          currentPhone._id === phone._id
+            ? {
+                ...currentPhone,
+                isActive: data.phone?.isActive ?? !currentPhone.isActive,
+              }
+            : currentPhone,
+        ),
       );
     } catch (error) {
-      console.error(
-        "Toggle phone status error:",
-        error,
-      );
+      console.error("Toggle phone status error:", error);
     } finally {
       setUpdatingId(null);
-    }
-  };
-
-  /*
-   * -----------------------------------------
-   * DELETE PHONE
-   * -----------------------------------------
-   *
-   * This function runs only after the user
-   * confirms deletion in the popup.
-   */
-  const confirmDelete = async () => {
-    if (!phoneToDelete) {
-      return;
-    }
-
-    const id =
-      phoneToDelete._id;
-
-    try {
-      const token =
-        localStorage.getItem(
-          "adminToken",
-        );
-
-      const response = await fetch(
-        `http://localhost:5000/api/phones/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        },
-      );
-
-      const data =
-        await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message ||
-            "Failed to delete phone",
-        );
-      }
-
-      /*
-       * Remove the deleted phone from the
-       * screen immediately.
-       */
-      setPhones(
-        (currentPhones) =>
-          currentPhones.filter(
-            (phone) =>
-              phone._id !== id,
-          ),
-      );
-
-      /*
-       * Close confirmation popup.
-       */
-      setPhoneToDelete(null);
-    } catch (error) {
-      console.error(
-        "Delete phone error:",
-        error,
-      );
     }
   };
 
@@ -266,8 +391,7 @@ export default function ManagePhoneList({
       <p
         className="mt-12"
         style={{
-          color:
-            "var(--text-secondary)",
+          color: "var(--text-secondary)",
         }}
       >
         Loading phones...
@@ -281,50 +405,311 @@ export default function ManagePhoneList({
    * -----------------------------------------
    */
   return (
-    <section className="mt-16">
-  
+    <section className="mt-6">
+      <div className="mt-6 flex flex-nowrap items-center gap-2 overflow-visible pb-2">
+        {/* SEARCH */}
+
+        <div
+          className="flex w-56 shrink-0 items-center gap-3 rounded-xl border px-4 py-3"
+          style={{
+            backgroundColor: "var(--bg-secondary)",
+            borderColor: "var(--border-color)",
+            color: "var(--text-primary)",
+          }}
+        >
+          <Search
+            size={20}
+            style={{
+              color: "var(--text-secondary)",
+            }}
+          />
+
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+            }}
+            placeholder="Search phones..."
+            className="w-full bg-transparent outline-none"
+            style={{
+              color: "var(--text-primary)",
+            }}
+          />
+        </div>
+
+        {/* BRAND */}
+
+        <select
+          value={selectedBrand}
+          onChange={(event) => {
+            setSelectedBrand(event.target.value);
+          }}
+          className="w-24 shrink-0 cursor-pointer rounded-xl border px-3 py-3 outline-none"
+          style={{
+            backgroundColor: "var(--bg-secondary)",
+            color: "var(--text-primary)",
+            borderColor: "var(--border-color)",
+          }}
+        >
+          <option value="">Brand</option>
+
+          {filters.brands.map((brand) => (
+            <option key={brand._id} value={brand._id}>
+              {brand.name}
+            </option>
+          ))}
+        </select>
+
+        {/* VARIANT */}
+
+        <select
+          value={selectedVariant}
+          onChange={(event) => {
+            setSelectedVariant(event.target.value);
+          }}
+          className="w-24 shrink-0 cursor-pointer rounded-xl border px-3 py-3 outline-none"
+          style={{
+            backgroundColor: "var(--bg-secondary)",
+            color: "var(--text-primary)",
+            borderColor: "var(--border-color)",
+          }}
+        >
+          <option value="">Variant</option>
+
+          {(selectedBrand ? brandVariants : filters.variants).map((variant) => (
+            <option key={variant._id} value={variant._id}>
+              {variant.name}
+            </option>
+          ))}
+        </select>
+
+        {/* RAM */}
+
+        <select
+          value={selectedRam}
+          onChange={(event) => {
+            setSelectedRam(event.target.value);
+          }}
+          className="w-24 shrink-0 cursor-pointer rounded-xl border px-3 py-3 outline-none"
+          style={{
+            backgroundColor: "var(--bg-secondary)",
+            color: "var(--text-primary)",
+            borderColor: "var(--border-color)",
+          }}
+        >
+          <option value="">RAM</option>
+
+          {filters.rams.map((ram) => (
+            <option key={ram._id} value={ram._id}>
+              {ram.value}
+            </option>
+          ))}
+        </select>
+
+        {/* ROM */}
+
+        <select
+          value={selectedRom}
+          onChange={(event) => {
+            setSelectedRom(event.target.value);
+          }}
+          className="w-24 shrink-0 cursor-pointer rounded-xl border px-3 py-3 outline-none"
+          style={{
+            backgroundColor: "var(--bg-secondary)",
+            color: "var(--text-primary)",
+            borderColor: "var(--border-color)",
+          }}
+        >
+          <option value="">ROM</option>
+
+          {filters.roms.map((rom) => (
+            <option key={rom._id} value={rom._id}>
+              {rom.value}
+            </option>
+          ))}
+        </select>
+
+        {/* PRICE */}
+
+        <div ref={priceFilterRef} className="relative shrink-0">
+          <button
+            type="button"
+            onClick={() => setShowPriceFilter((current) => !current)}
+            className="flex w-24 shrink-0 cursor-pointer items-center justify-center gap-1 rounded-xl border px-3 py-3 outline-none transition"
+            style={{
+              backgroundColor: "var(--bg-secondary)",
+              color: "var(--text-primary)",
+              borderColor: "var(--border-color)",
+            }}
+          >
+            <span>Price</span>
+
+            <ChevronDown size={16} />
+          </button>
+
+          {showPriceFilter && (
+            <div
+              className="absolute left-0 top-full z-30 mt-2 w-80 rounded-2xl border p-5 shadow-xl"
+              style={{
+                backgroundColor: "var(--bg-secondary)",
+                color: "var(--text-primary)",
+                borderColor: "var(--border-color)",
+              }}
+            >
+              <p className="text-sm font-semibold">PRICE</p>
+
+              <div className="relative mt-6 h-6">
+                <div
+                  className="absolute left-0 right-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full"
+                  style={{
+                    backgroundColor: "var(--border-color)",
+                  }}
+                />
+
+                <div
+                  className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full"
+                  style={{
+                    left:
+                      filters.price.max > 0
+                        ? `${(priceRange[0] / filters.price.max) * 100}%`
+                        : "0%",
+                    right:
+                      filters.price.max > 0
+                        ? `${100 - (priceRange[1] / filters.price.max) * 100}%`
+                        : "0%",
+                    backgroundColor: "var(--accent-color)",
+                  }}
+                />
+
+                {/* MIN */}
+
+                <input
+                  type="range"
+                  min={0}
+                  max={filters.price.max}
+                  value={priceRange[0]}
+                  onChange={(event) => {
+                    const minimum = Number(event.target.value);
+
+                    setPriceRange([
+                      Math.min(minimum, priceRange[1]),
+                      priceRange[1],
+                    ]);
+
+                    setPriceChanged(true);
+                  }}
+                  className="price-slider absolute inset-0 w-full"
+                  style={{
+                    zIndex: 3,
+                  }}
+                />
+
+                {/* MAX */}
+
+                <input
+                  type="range"
+                  min={filters.price.min}
+                  max={filters.price.max}
+                  value={priceRange[1]}
+                  onChange={(event) => {
+                    const maximum = Number(event.target.value);
+
+                    setPriceRange([
+                      priceRange[0],
+                      Math.max(maximum, priceRange[0]),
+                    ]);
+
+                    setPriceChanged(true);
+                  }}
+                  className="price-slider absolute inset-0 w-full"
+                  style={{
+                    zIndex: 2,
+                  }}
+                />
+              </div>
+
+              <div className="mt-4 flex items-center gap-3">
+                <div
+                  className="flex-1 rounded-lg border px-3 py-2 text-sm"
+                  style={{
+                    borderColor: "var(--border-color)",
+                    backgroundColor: "var(--bg-primary)",
+                  }}
+                >
+                  ₹{priceRange[0].toLocaleString("en-IN")}
+                </div>
+
+                <span
+                  className="text-sm"
+                  style={{
+                    color: "var(--text-secondary)",
+                  }}
+                >
+                  to
+                </span>
+
+                <div
+                  className="flex-1 rounded-lg border px-3 py-2 text-sm"
+                  style={{
+                    borderColor: "var(--border-color)",
+                    backgroundColor: "var(--bg-primary)",
+                  }}
+                >
+                  ₹{priceRange[1].toLocaleString("en-IN")}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+        {(searchTerm ||
+          selectedBrand ||
+          selectedVariant ||
+          selectedRam ||
+          selectedRom ||
+          priceChanged) && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="flex shrink-0 cursor-pointer items-center gap-1 rounded-xl px-3 py-3 text-sm font-medium transition"
+            style={{
+              color: "var(--text-primary)",
+            }}
+          >
+            <X size={16} />
+            Clear
+          </button>
+        )}
+      </div>
       <div className="mt-8 space-y-4">
         {phones.length === 0 ? (
           <div
             className="rounded-2xl border p-8 text-center"
             style={{
-              backgroundColor:
-                "var(--bg-secondary)",
-              color:
-                "var(--text-secondary)",
-              borderColor:
-                "var(--border-color)",
+              backgroundColor: "var(--bg-secondary)",
+              color: "var(--text-secondary)",
+              borderColor: "var(--border-color)",
             }}
           >
             No phones found.
           </div>
         ) : (
           phones.map((phone) => {
-            const brand =
-              phone.brandId ||
-              phone.brand;
+            const brand = phone.brandId || phone.brand;
 
-            const variant =
-              phone.variantId ||
-              phone.variant;
+            const variant = phone.variantId || phone.variant;
 
-            const ram =
-              phone.ramId ||
-              phone.ram;
+            const ram = phone.ramId || phone.ram;
 
-            const rom =
-              phone.romId ||
-              phone.rom;
+            const rom = phone.romId || phone.rom;
 
             return (
               <div
                 key={phone._id}
                 className="flex items-center gap-6 rounded-2xl border p-5 transition"
                 style={{
-                  backgroundColor:
-                    "var(--bg-secondary)",
-                  borderColor:
-                    "var(--border-color)",
+                  backgroundColor: "var(--bg-secondary)",
+                  borderColor: "var(--border-color)",
                 }}
               >
                 {/* IMAGE */}
@@ -339,8 +724,7 @@ export default function ManagePhoneList({
                     <span
                       className="text-xs"
                       style={{
-                        color:
-                          "var(--text-secondary)",
+                        color: "var(--text-secondary)",
                       }}
                     >
                       No image
@@ -353,20 +737,16 @@ export default function ManagePhoneList({
                   <p
                     className="text-sm"
                     style={{
-                      color:
-                        "var(--text-secondary)",
+                      color: "var(--text-secondary)",
                     }}
                   >
-                    {getReferenceText(
-                      brand,
-                    )}
+                    {getReferenceText(brand)}
                   </p>
 
                   <h3
                     className="text-xl font-bold"
                     style={{
-                      color:
-                        "var(--text-primary)",
+                      color: "var(--text-primary)",
                     }}
                   >
                     {phone.name}
@@ -375,46 +755,27 @@ export default function ManagePhoneList({
                   <p
                     className="mt-1"
                     style={{
-                      color:
-                        "var(--text-secondary)",
+                      color: "var(--text-secondary)",
                     }}
                   >
-                    ₹
-                    {phone.price.toLocaleString(
-                      "en-IN",
-                    )}
+                    ₹{phone.price.toLocaleString("en-IN")}
                   </p>
 
                   <div
                     className="mt-2 flex flex-wrap gap-2 text-xs"
                     style={{
-                      color:
-                        "var(--text-secondary)",
+                      color: "var(--text-secondary)",
                     }}
                   >
-                    <span>
-                      {getReferenceText(
-                        variant,
-                      )}
-                    </span>
+                    <span>{getReferenceText(variant)}</span>
 
                     <span>•</span>
 
-                    <span>
-                      {getReferenceText(
-                        ram,
-                      )}{" "}
-                      RAM
-                    </span>
+                    <span>{getReferenceText(ram)} RAM</span>
 
                     <span>•</span>
 
-                    <span>
-                      {getReferenceText(
-                        rom,
-                      )}{" "}
-                      ROM
-                    </span>
+                    <span>{getReferenceText(rom)} ROM</span>
                   </div>
                 </div>
 
@@ -423,154 +784,22 @@ export default function ManagePhoneList({
                   {/* EDIT */}
                   <button
                     type="button"
-                    onClick={() =>
-                      onEdit(phone)
-                    }
+                    onClick={() => onEdit(phone)}
                     className="flex cursor-pointer items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition"
                     style={{
-                      backgroundColor:
-                        "var(--text-primary)",
-                      color:
-                        "var(--bg-primary)",
+                      backgroundColor: "var(--text-primary)",
+                      color: "var(--bg-primary)",
                     }}
                   >
-                    <Pencil
-                      size={15}
-                    />
-
+                    <Pencil size={15} />
                     Edit
                   </button>
-
-
                 </div>
               </div>
             );
           })
         )}
-      </div>
-
-      {/* =====================================
-          DELETE CONFIRMATION POPUP
-          ===================================== */}
-
-      {phoneToDelete && (
-        <div
-          className="fixed inset-0 z-[60] flex items-center justify-center p-4"
-          style={{
-            backgroundColor:
-              "rgba(0, 0, 0, 0.55)",
-          }}
-          onMouseDown={(event) => {
-            if (
-              event.target ===
-              event.currentTarget
-            ) {
-              setPhoneToDelete(null);
-            }
-          }}
-        >
-          <div
-            className="relative w-full max-w-md rounded-2xl border p-6 shadow-2xl"
-            style={{
-              backgroundColor:
-                "var(--bg-primary)",
-              color:
-                "var(--text-primary)",
-              borderColor:
-                "var(--border-color)",
-            }}
-          >
-            {/* CLOSE */}
-            <button
-              type="button"
-              onClick={() =>
-                setPhoneToDelete(null)
-              }
-              className="absolute right-4 top-4 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full transition"
-              style={{
-                color:
-                  "var(--text-primary)",
-              }}
-              aria-label="Close"
-            >
-              <X
-                size={20}
-                strokeWidth={2.5}
-              />
-            </button>
-
-            {/* CONTENT */}
-            <div className="pr-10">
-              <h2 className="text-xl font-bold">
-                Delete Phone?
-              </h2>
-
-              <p
-                className="mt-3 text-sm leading-6"
-                style={{
-                  color:
-                    "var(--text-secondary)",
-                }}
-              >
-                Are you sure you want
-                to delete{" "}
-                <span
-                  className="font-semibold"
-                  style={{
-                    color:
-                      "var(--text-primary)",
-                  }}
-                >
-                  {phoneToDelete.name}
-                </span>
-                ?
-              </p>
-
-              <p
-                className="mt-2 text-xs"
-                style={{
-                  color:
-                    "var(--text-secondary)",
-                }}
-              >
-                This action cannot be
-                undone.
-              </p>
-            </div>
-
-            {/* ACTIONS */}
-            <div className="mt-6 flex justify-end gap-3">
-              {/* CANCEL */}
-              <button
-                type="button"
-                onClick={() =>
-                  setPhoneToDelete(null)
-                }
-                className="cursor-pointer rounded-full border px-5 py-2.5 text-sm font-semibold transition"
-                style={{
-                  borderColor:
-                    "var(--border-color)",
-                  color:
-                    "var(--text-primary)",
-                  backgroundColor:
-                    "transparent",
-                }}
-              >
-                Cancel
-              </button>
-
-              {/* CONFIRM DELETE */}
-              <button
-                type="button"
-                onClick={confirmDelete}
-                className="cursor-pointer rounded-full bg-red-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-600"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      </div>      
     </section>
   );
 }

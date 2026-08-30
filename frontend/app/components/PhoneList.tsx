@@ -265,37 +265,41 @@ export default function PhoneList() {
    * ------------------------------------------------
    */
 
-  useEffect(() => {
-    const fetchFilters = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:5000/api/phones/filters",
-        );
+useEffect(() => {
+  const fetchFilters = async () => {
+    try {
+      const params = new URLSearchParams();
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch phone filters");
-        }
-
-        const data: PhoneFilters = await response.json();
-
-        setFilters(data);
-
-        /*
-         * Set initial price only once.
-         */
-
-        if (data.price.max > 0) {
-          setPriceRange([data.price.min, data.price.max]);
-        }
-      } catch (error) {
-        console.error("Error fetching phone filters:", error);
+      if (selectedBrand) {
+        params.set("brandId", selectedBrand);
       }
-    };
 
-    fetchFilters();
-  }, []);
+      const response = await fetch(
+        `http://localhost:5000/api/phones/filters?${params.toString()}`,
+      );
 
-  useEffect(() => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch phone filters");
+      }
+
+      const data: PhoneFilters = await response.json();
+
+      setFilters(data);
+    } catch (error) {
+      console.error("Error fetching phone filters:", error);
+    }
+  };
+
+  fetchFilters();
+}, [selectedBrand]);
+
+useEffect(() => {
+  setSelectedVariant("");
+  setSelectedRam("");
+  setSelectedRom("");
+}, [selectedBrand]);
+  
+useEffect(() => {
     const fetchVariantsByBrand = async () => {
       if (!selectedBrand) {
         setBrandVariants([]);
@@ -727,18 +731,16 @@ export default function PhoneList() {
 
           {hasActiveFilters && (
             <button
-              type="button"
-              onClick={clearFilters}
-              className="flex shrink-0 cursor-pointer items-center gap-2 rounded-xl border px-4 py-3 text-sm transition hover:opacity-70"
-              style={{
-                backgroundColor: "var(--bg-secondary)",
-                color: "var(--text-primary)",
-                borderColor: "var(--border-color)",
-              }}
-            >
-              <X size={15} />
-              Clear
-            </button>
+            type="button"
+            onClick={clearFilters}
+            className="flex shrink-0 cursor-pointer items-center gap-1 rounded-xl px-3 py-3 text-sm font-medium transition"
+            style={{
+              color: "var(--text-primary)",
+            }}
+          >
+            <X size={16} />
+            Clear
+          </button>
           )}
         </div>
 

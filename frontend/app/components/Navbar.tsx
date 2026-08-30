@@ -13,17 +13,13 @@ import {
 } from "lucide-react";
 
 export default function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] =
-    useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const [isSettingsOpen, setIsSettingsOpen] =
-    useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  const [theme, setTheme] =
-    useState("default");
+  const [theme, setTheme] = useState("default");
 
-  const settingsRef =
-    useRef<HTMLDivElement>(null);
+  const settingsRef = useRef<HTMLDivElement>(null);
 
   /*
    * ---------------------------------------------
@@ -32,8 +28,7 @@ export default function Navbar() {
    */
 
   const handleLogin = () => {
-    window.location.href =
-      "/admin/login";
+    window.location.href = "/admin/login";
   };
 
   /*
@@ -52,22 +47,13 @@ export default function Navbar() {
    * ---------------------------------------------
    */
 
-  const changeTheme = (
-    selectedTheme: string,
-  ) => {
+  const changeTheme = (selectedTheme: string) => {
     setTheme(selectedTheme);
 
-    if (
-      selectedTheme === "default"
-    ) {
-      document.documentElement.removeAttribute(
-        "data-theme",
-      );
+    if (selectedTheme === "default") {
+      document.documentElement.removeAttribute("data-theme");
     } else {
-      document.documentElement.setAttribute(
-        "data-theme",
-        selectedTheme,
-      );
+      document.documentElement.setAttribute("data-theme", selectedTheme);
     }
 
     setIsSettingsOpen(false);
@@ -80,318 +66,246 @@ export default function Navbar() {
    */
 
   useEffect(() => {
-    const handleClickOutside = (
-      event: MouseEvent,
-    ) => {
+    const handleClickOutside = (event: MouseEvent) => {
       if (
         settingsRef.current &&
-        !settingsRef.current.contains(
-          event.target as Node,
-        )
+        !settingsRef.current.contains(event.target as Node)
       ) {
         setIsSettingsOpen(false);
       }
     };
 
-    document.addEventListener(
-      "mousedown",
-      handleClickOutside,
-    );
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside,
-      );
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   return (
-    <div className="relative mx-auto mt-4 max-w-7xl">
+    <div className="relative mx-auto mt-5 max-w-7xl">
+      <div className="flex items-center gap-2">
+        <nav
+          className="relative flex flex-1 items-center rounded-full border px-7 py-4 shadow-sm"
+          style={{
+            backgroundColor: "var(--bg-primary)",
 
-      {/* =================================================
-          PUBLIC NAVBAR
-      ================================================== */}
+            borderColor: "var(--border-color)",
 
-      <nav
-        className="flex items-center rounded-full border px-7 py-4 pr-20 shadow-sm"
-        style={{
-          backgroundColor:
-            "var(--bg-primary)",
-
-          borderColor:
-            "var(--border-color)",
-
-          color:
-            "var(--text-primary)",
-        }}
-      >
-
-        {/* LOGO */}
-
-        <a
-          href="#home"
-          className="flex items-center gap-3"
+            color: "var(--text-primary)",
+          }}
         >
-          <img
-            src="/logo.png"
-            alt="Phone Store Nova"
-            className="h-10 w-auto"
-          />
+          {/* LOGO */}
 
-          <span
-            className="text-2xl font-bold"
-            style={{
-              color:
-                "var(--text-primary)",
-            }}
-          >
-            Nova
-          </span>
-        </a>
+          <a href="#home" className="flex items-center gap-3">
+            <img
+              src="/logo.png"
+              alt="Phone Store Nova"
+              className="h-10 w-auto"
+            />
 
-        {/* =================================================
+            <span
+              className="text-2xl font-bold"
+              style={{
+                color: "var(--text-primary)",
+              }}
+            >
+              Nova
+            </span>
+          </a>
+
+          {/* =================================================
             DESKTOP NAVIGATION
         ================================================== */}
 
-        <div className="ml-auto hidden items-center gap-7 md:flex">
+          <div className="ml-auto mr-4 hidden items-center gap-7 md:flex">
+            {/* HOME */}
 
-          {/* HOME */}
+            <a
+              href="#home"
+              className="nav-link flex items-center gap-2 transition"
+              style={{
+                color: "var(--text-primary)",
+              }}
+            >
+              <House size={18} />
+              Home
+            </a>
 
-          <a
-            href="#home"
-            className="nav-link flex items-center gap-2 transition"
-            style={{
-              color:
-                "var(--text-primary)",
-            }}
-          >
-            <House size={18} />
-            Home
-          </a>
+            {/* PHONES */}
 
-          {/* PHONES */}
+            <a
+              href="#phones"
+              className="nav-link flex items-center gap-2 transition"
+              style={{
+                color: "var(--text-primary)",
+              }}
+            >
+              <Smartphone size={18} />
+              Phones
+            </a>
 
-          <a
-            href="#phones"
-            className="nav-link flex items-center gap-2 transition"
-            style={{
-              color:
-                "var(--text-primary)",
-            }}
-          >
-            <Smartphone size={18} />
-            Phones
-          </a>
+            {/* ABOUT */}
 
-          {/* ABOUT */}
+            <a
+              href="#about"
+              className="nav-link flex items-center gap-2 transition"
+              style={{
+                color: "var(--text-primary)",
+              }}
+            >
+              <Info size={18} />
+              About
+            </a>
 
-          <a
-            href="#about"
-            className="nav-link flex items-center gap-2 transition"
-            style={{
-              color:
-                "var(--text-primary)",
-            }}
-          >
-            <Info size={18} />
-            About
-          </a>
+            {/* CONTACT */}
 
-          {/* CONTACT */}
+            <a
+              href="#contact"
+              className="nav-link flex items-center gap-2 transition"
+              style={{
+                color: "var(--text-primary)",
+              }}
+            >
+              <Mail size={18} />
+              Contact
+            </a>
 
-          <a
-            href="#contact"
-            className="nav-link flex items-center gap-2 transition"
-            style={{
-              color:
-                "var(--text-primary)",
-            }}
-          >
-            <Mail size={18} />
-            Contact
-          </a>
+          </div>
 
-
-{/* LOGIN */}
-
-<button
-  type="button"
-  onClick={handleLogin}
-  className="nav-link flex cursor-pointer items-center gap-2 transition"
-  style={{
-    color: "var(--text-primary)",
-  }}
->
-  <LogIn size={18} />
-  Login
-</button>
-         
-        </div>
-
-        {/* =================================================
+          {/* =================================================
             MOBILE MENU BUTTON
         ================================================== */}
 
-        <button
-          type="button"
-          onClick={() =>
-            setIsMenuOpen(
-              !isMenuOpen,
-            )
-          }
-          className="ml-auto cursor-pointer rounded-full p-2 transition hover:bg-gray-100 hover:text-yellow-600 md:hidden"
-          aria-label="Toggle navigation"
-        >
-          {isMenuOpen ? (
-            <X size={24} />
-          ) : (
-            <Menu size={24} />
-          )}
-        </button>
-      </nav>
+          <button
+            type="button"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="ml-auto cursor-pointer rounded-full p-2 transition hover:bg-gray-100 hover:text-yellow-600 md:hidden"
+            aria-label="Toggle navigation"
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
 
-      {/* =================================================
+          {/* =================================================
           SETTINGS
       ================================================== */}
 
-      <div
-        ref={settingsRef}
-        className="absolute right-3 top-4 z-50"
-      >
+          <div ref={settingsRef} className="relative ml-2 ">
+            {/* SETTINGS BUTTON */}
 
-        {/* SETTINGS BUTTON */}
+            <button
+              type="button"
+              onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+              className="cursor-pointer rounded-full p-3 shadow-md transition hover:bg-gray-100 hover:text-yellow-600"
+              style={{
+                backgroundColor: "var(--bg-primary)",
+
+                color: "var(--text-primary)",
+              }}
+              aria-label="Open settings"
+            >
+              <Settings size={22} />
+            </button>
+
+            {/* SETTINGS MENU */}
+
+            {isSettingsOpen && (
+              <div
+                className="absolute right-0 top-14 w-56 rounded-2xl border p-4 shadow-2xl"
+                style={{
+                  backgroundColor: "var(--bg-primary)",
+
+                  borderColor: "var(--border-color)",
+
+                  color: "var(--text-primary)",
+                }}
+              >
+                <h2
+                  className="mb-3 text-sm font-semibold"
+                  style={{
+                    color: "var(--text-primary)",
+                  }}
+                >
+                  Select Theme
+                </h2>
+
+                {/* DEFAULT */}
+
+                <button
+                  type="button"
+                  onClick={() => changeTheme("default")}
+                  className="theme-option flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition"
+                >
+                  <span>Default</span>
+
+                  {theme === "default" && (
+                    <span
+                      style={{
+                        color: "var(--accent-color)",
+                      }}
+                    >
+                      ✓
+                    </span>
+                  )}
+                </button>
+
+                {/* DARK */}
+
+                <button
+                  type="button"
+                  onClick={() => changeTheme("dark")}
+                  className="theme-option flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition"
+                >
+                  <span>Dark</span>
+
+                  {theme === "dark" && (
+                    <span
+                      style={{
+                        color: "var(--accent-color)",
+                      }}
+                    >
+                      ✓
+                    </span>
+                  )}
+                </button>
+
+                {/* OCEAN */}
+
+                <button
+                  type="button"
+                  onClick={() => changeTheme("ocean")}
+                  className="theme-option flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition"
+                >
+                  <span>ocean</span>
+
+                  {theme === "ocean" && (
+                    <span
+                      style={{
+                        color: "var(--accent-color)",
+                      }}
+                    >
+                      ✓
+                    </span>
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
+        </nav>
 
         <button
           type="button"
-          onClick={() =>
-            setIsSettingsOpen(
-              !isSettingsOpen,
-            )
-          }
-          className="cursor-pointer rounded-full p-3 shadow-md transition hover:bg-gray-100 hover:text-yellow-600"
+          onClick={handleLogin}
+          className="theme-accent-hover flex cursor-pointer items-center gap-3 rounded-full border px-5 py-4 font-medium transition"
           style={{
-            backgroundColor:
-              "var(--bg-primary)",
-
-            color:
-              "var(--text-primary)",
+            backgroundColor: "var(--bg-primary)",
+            color: "var(--text-primary)",
+            borderColor: "var(--border-color)",
           }}
-          aria-label="Open settings"
         >
-          <Settings size={22} />
+          <LogIn size={18} />
+          Login
         </button>
-
-        {/* SETTINGS MENU */}
-
-        {isSettingsOpen && (
-          <div
-            className="absolute right-0 top-14 w-56 rounded-2xl border p-4 shadow-2xl"
-            style={{
-              backgroundColor:
-                "var(--bg-primary)",
-
-              borderColor:
-                "var(--border-color)",
-
-              color:
-                "var(--text-primary)",
-            }}
-          >
-            <h2
-              className="mb-3 text-sm font-semibold"
-              style={{
-                color:
-                  "var(--text-primary)",
-              }}
-            >
-              Select Theme
-            </h2>
-
-            {/* DEFAULT */}
-
-            <button
-              type="button"
-              onClick={() =>
-                changeTheme(
-                  "default",
-                )
-              }
-              className="theme-option flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition"
-            >
-              <span>
-                Default
-              </span>
-
-              {theme ===
-                "default" && (
-                <span
-                  style={{
-                    color:
-                      "var(--accent-color)",
-                  }}
-                >
-                  ✓
-                </span>
-              )}
-            </button>
-
-            {/* DARK */}
-
-            <button
-              type="button"
-              onClick={() =>
-                changeTheme(
-                  "dark",
-                )
-              }
-              className="theme-option flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition"
-            >
-              <span>
-                Dark
-              </span>
-
-              {theme === "dark" && (
-                <span
-                  style={{
-                    color:
-                      "var(--accent-color)",
-                  }}
-                >
-                  ✓
-                </span>
-              )}
-            </button>
-
-            {/* OCEAN */}
-
-            <button
-              type="button"
-              onClick={() =>
-                changeTheme(
-                  "ocean",
-                )
-              }
-              className="theme-option flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition"
-            >
-              <span>
-                ocean
-              </span>
-
-              {theme ===
-                "ocean" && (
-                <span
-                  style={{
-                    color:
-                      "var(--accent-color)",
-                  }}
-                >
-                  ✓
-                </span>
-              )}
-            </button>
-          </div>
-        )}
       </div>
 
       {/* =================================================
@@ -402,25 +316,19 @@ export default function Navbar() {
         <div
           className="absolute right-4 top-20 z-40 w-56 rounded-2xl border p-4 shadow-2xl md:hidden"
           style={{
-            backgroundColor:
-              "var(--bg-primary)",
+            backgroundColor: "var(--bg-primary)",
 
-            borderColor:
-              "var(--border-color)",
+            borderColor: "var(--border-color)",
 
-            color:
-              "var(--text-primary)",
+            color: "var(--text-primary)",
           }}
         >
           <div className="flex flex-col gap-2">
-
             {/* HOME */}
 
             <a
               href="#home"
-              onClick={
-                handleNavClick
-              }
+              onClick={handleNavClick}
               className="flex items-center gap-3 rounded-xl px-4 py-3 transition hover:bg-gray-100 hover:text-yellow-600"
             >
               <House size={18} />
@@ -431,14 +339,10 @@ export default function Navbar() {
 
             <a
               href="#phones"
-              onClick={
-                handleNavClick
-              }
+              onClick={handleNavClick}
               className="flex items-center gap-3 rounded-xl px-4 py-3 transition hover:bg-gray-100 hover:text-yellow-600"
             >
-              <Smartphone
-                size={18}
-              />
+              <Smartphone size={18} />
               Phones
             </a>
 
@@ -446,9 +350,7 @@ export default function Navbar() {
 
             <a
               href="#about"
-              onClick={
-                handleNavClick
-              }
+              onClick={handleNavClick}
               className="flex items-center gap-3 rounded-xl px-4 py-3 transition hover:bg-gray-100 hover:text-yellow-600"
             >
               <Info size={18} />
@@ -459,9 +361,7 @@ export default function Navbar() {
 
             <a
               href="#contact"
-              onClick={
-                handleNavClick
-              }
+              onClick={handleNavClick}
               className="flex items-center gap-3 rounded-xl px-4 py-3 transition hover:bg-gray-100 hover:text-yellow-600"
             >
               <Mail size={18} />
