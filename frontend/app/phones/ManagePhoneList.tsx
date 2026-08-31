@@ -209,8 +209,12 @@ useEffect(() => {
     try {
       const params = new URLSearchParams();
 
-      if (selectedBrand) {
+       if (selectedBrand) {
         params.set("brandId", selectedBrand);
+      }
+
+      if (selectedVariant) {
+        params.set("variantId", selectedVariant);
       }
 
       const response = await fetch(
@@ -224,13 +228,26 @@ useEffect(() => {
       const data = await response.json();
 
       setFilters(data);
+
+      if (data.rams.length === 1) {
+  setSelectedRam(data.rams[0]._id);
+} else if (data.rams.length > 1) {
+  setSelectedRam("");
+}
+
+if (data.roms.length === 1) {
+  setSelectedRom(data.roms[0]._id);
+} else if (data.roms.length > 1) {
+  setSelectedRom("");
+}
+
     } catch (error) {
       console.error("Error fetching phone filters:", error);
     }
   };
 
   fetchFilters();
-}, [selectedBrand]);
+}, [selectedBrand, selectedVariant]);
 
 /*
  * -----------------------------------------
@@ -257,6 +274,22 @@ useEffect(() => {
       const data = await response.json();
 
       setBrandVariants(data);
+      setSelectedVariant((currentVariant) => {
+  const stillValid = data.some(
+    (variant: MasterItem) => variant._id === currentVariant,
+  );
+
+  if (stillValid) {
+    return currentVariant;
+  }
+
+  if (data.length === 1) {
+    return data[0]._id;
+  }
+
+  return "";
+});
+
     } catch (error) {
       console.error("Error fetching brand variants:", error);
     }
@@ -445,6 +478,7 @@ const clearFilters = () => {
           onChange={(event) => {
             setSelectedBrand(event.target.value);
           }}
+          
           className="w-24 shrink-0 cursor-pointer rounded-xl border px-3 py-3 outline-none"
           style={{
             backgroundColor: "var(--bg-secondary)",
@@ -468,6 +502,7 @@ const clearFilters = () => {
           onChange={(event) => {
             setSelectedVariant(event.target.value);
           }}
+          disabled={selectedBrand !== "" && brandVariants.length === 1}
           className="w-24 shrink-0 cursor-pointer rounded-xl border px-3 py-3 outline-none"
           style={{
             backgroundColor: "var(--bg-secondary)",
@@ -491,6 +526,7 @@ const clearFilters = () => {
           onChange={(event) => {
             setSelectedRam(event.target.value);
           }}
+          disabled={filters.rams.length === 1}
           className="w-24 shrink-0 cursor-pointer rounded-xl border px-3 py-3 outline-none"
           style={{
             backgroundColor: "var(--bg-secondary)",
@@ -514,6 +550,7 @@ const clearFilters = () => {
           onChange={(event) => {
             setSelectedRom(event.target.value);
           }}
+          disabled={filters.roms.length === 1}
           className="w-24 shrink-0 cursor-pointer rounded-xl border px-3 py-3 outline-none"
           style={{
             backgroundColor: "var(--bg-secondary)",

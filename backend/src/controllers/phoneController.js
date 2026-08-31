@@ -206,7 +206,7 @@ const getVariantsByBrand = async (req, res) => {
 
 const getPhoneFilters = async (req, res) => {
   try {
-    const { brandId } = req.query;
+    const { brandId, variantId} = req.query;
 
     const [brands, variants, rams, roms, priceStats] = await Promise.all([
       Brand.find({
@@ -221,43 +221,71 @@ const getPhoneFilters = async (req, res) => {
         .select("_id name")
         .sort({ name: 1 }),
 
-      brandId
-        ? (async () => {
-            const ramIds = await Phone.distinct("ramId", {
-              brandId,
-            });
+variantId
+  ? (async () => {
+      const ramIds = await Phone.distinct("ramId", {
+        brandId,
+        variantId,
+      });
 
-            return Ram.find({
-              _id: { $in: ramIds },
-              isActive: true,
-            })
-              .select("_id value")
-              .sort({ value: 1 });
-          })()
-        : Ram.find({
-            isActive: true,
-          })
-            .select("_id value")
-            .sort({ value: 1 }),
+      return Ram.find({
+        _id: { $in: ramIds },
+        isActive: true,
+      })
+        .select("_id value")
+        .sort({ value: 1 });
+    })()
+  : brandId
+    ? (async () => {
+        const ramIds = await Phone.distinct("ramId", {
+          brandId,
+        });
 
-      brandId
-        ? (async () => {
-            const romIds = await Phone.distinct("romId", {
-              brandId,
-            });
+        return Ram.find({
+          _id: { $in: ramIds },
+          isActive: true,
+        })
+          .select("_id value")
+          .sort({ value: 1 });
+      })()
+    : Ram.find({
+        isActive: true,
+      })
+        .select("_id value")
+        .sort({ value: 1 }),
 
-            return Rom.find({
-              _id: { $in: romIds },
-              isActive: true,
-            })
-              .select("_id value")
-              .sort({ value: 1 });
-          })()
-        : Rom.find({
-            isActive: true,
-          })
-            .select("_id value")
-            .sort({ value: 1 }),
+variantId
+  ? (async () => {
+      const romIds = await Phone.distinct("romId", {
+        brandId,
+        variantId,
+      });
+
+      return Rom.find({
+        _id: { $in: romIds },
+        isActive: true,
+      })
+        .select("_id value")
+        .sort({ value: 1 });
+    })()
+  : brandId
+    ? (async () => {
+        const romIds = await Phone.distinct("romId", {
+          brandId,
+        });
+
+        return Rom.find({
+          _id: { $in: romIds },
+          isActive: true,
+        })
+          .select("_id value")
+          .sort({ value: 1 });
+      })()
+    : Rom.find({
+        isActive: true,
+      })
+        .select("_id value")
+        .sort({ value: 1 }),
 
       Phone.aggregate([
         {

@@ -265,41 +265,57 @@ export default function PhoneList() {
    * ------------------------------------------------
    */
 
-useEffect(() => {
-  const fetchFilters = async () => {
-    try {
-      const params = new URLSearchParams();
+  useEffect(() => {
+    const fetchFilters = async () => {
+      try {
+        const params = new URLSearchParams();
 
-      if (selectedBrand) {
-        params.set("brandId", selectedBrand);
+        if (selectedBrand) {
+          params.set("brandId", selectedBrand);
+        }
+
+        if (selectedVariant) {
+          params.set("variantId", selectedVariant);
+        }
+
+        const response = await fetch(
+          `http://localhost:5000/api/phones/filters?${params.toString()}`,
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch phone filters");
+        }
+
+        const data: PhoneFilters = await response.json();
+
+        setFilters(data);
+
+        if (data.rams.length === 1) {
+          setSelectedRam(data.rams[0]._id);
+        } else if (data.rams.length > 1) {
+          setSelectedRam("");
+        }
+
+        if (data.roms.length === 1) {
+          setSelectedRom(data.roms[0]._id);
+        } else if (data.roms.length > 1) {
+          setSelectedRom("");
+        }
+      } catch (error) {
+        console.error("Error fetching phone filters:", error);
       }
+    };
 
-      const response = await fetch(
-        `http://localhost:5000/api/phones/filters?${params.toString()}`,
-      );
+    fetchFilters();
+  }, [selectedBrand, selectedVariant]);
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch phone filters");
-      }
+  useEffect(() => {
+    setSelectedVariant("");
+    setSelectedRam("");
+    setSelectedRom("");
+  }, [selectedBrand]);
 
-      const data: PhoneFilters = await response.json();
-
-      setFilters(data);
-    } catch (error) {
-      console.error("Error fetching phone filters:", error);
-    }
-  };
-
-  fetchFilters();
-}, [selectedBrand]);
-
-useEffect(() => {
-  setSelectedVariant("");
-  setSelectedRam("");
-  setSelectedRom("");
-}, [selectedBrand]);
-  
-useEffect(() => {
+  useEffect(() => {
     const fetchVariantsByBrand = async () => {
       if (!selectedBrand) {
         setBrandVariants([]);
@@ -349,7 +365,6 @@ useEffect(() => {
     fetchVariantsByBrand();
   }, [selectedBrand]);
 
-      
   /*
    * ------------------------------------------------
    * SEARCH DEBOUNCE
@@ -516,6 +531,7 @@ useEffect(() => {
 
               resetToFirstPage();
             }}
+            disabled={selectedBrand !== "" && brandVariants.length === 1}
             className="w-24 shrink-0 cursor-pointer rounded-xl border px-3 py-3 outline-none"
             style={{
               backgroundColor: "var(--bg-secondary)",
@@ -526,12 +542,12 @@ useEffect(() => {
             <option value="">Variant</option>
 
             {(selectedBrand ? brandVariants : filters.variants).map(
-  (variant) => (
-    <option key={variant._id} value={variant._id}>
-      {variant.name}
-    </option>
-  ),
-)}
+              (variant) => (
+                <option key={variant._id} value={variant._id}>
+                  {variant.name}
+                </option>
+              ),
+            )}
           </select>
 
           {/* RAM */}
@@ -543,6 +559,7 @@ useEffect(() => {
 
               resetToFirstPage();
             }}
+            disabled={filters.rams.length === 1}
             className="w-24 shrink-0 cursor-pointer rounded-xl border px-3 py-3 outline-none"
             style={{
               backgroundColor: "var(--bg-secondary)",
@@ -568,6 +585,7 @@ useEffect(() => {
 
               resetToFirstPage();
             }}
+            disabled={filters.roms.length === 1}
             className="w-24 shrink-0 cursor-pointer rounded-xl border px-3 py-3 outline-none"
             style={{
               backgroundColor: "var(--bg-secondary)",
@@ -731,16 +749,16 @@ useEffect(() => {
 
           {hasActiveFilters && (
             <button
-            type="button"
-            onClick={clearFilters}
-            className="flex shrink-0 cursor-pointer items-center gap-1 rounded-xl px-3 py-3 text-sm font-medium transition"
-            style={{
-              color: "var(--text-primary)",
-            }}
-          >
-            <X size={16} />
-            Clear
-          </button>
+              type="button"
+              onClick={clearFilters}
+              className="flex shrink-0 cursor-pointer items-center gap-1 rounded-xl px-3 py-3 text-sm font-medium transition"
+              style={{
+                color: "var(--text-primary)",
+              }}
+            >
+              <X size={16} />
+              Clear
+            </button>
           )}
         </div>
 

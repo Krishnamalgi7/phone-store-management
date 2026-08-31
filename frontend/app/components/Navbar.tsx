@@ -10,6 +10,7 @@ import {
   Menu,
   X,
   LogIn,
+  LayoutDashboard,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -18,9 +19,10 @@ export default function Navbar() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const [theme, setTheme] = useState("default");
-  
+
   const [brandName, setBrandName] = useState("Phone Store");
-const [logo, setLogo] = useState("/logo.png");
+  const [logo, setLogo] = useState("/logo.png");
+  const [adminName, setAdminName] = useState("");
 
   const settingsRef = useRef<HTMLDivElement>(null);
 
@@ -33,6 +35,22 @@ const [logo, setLogo] = useState("/logo.png");
   const handleLogin = () => {
     window.location.href = "/admin/login";
   };
+
+  useEffect(() => {
+  const adminData = localStorage.getItem("admin");
+
+  if (adminData) {
+    try {
+      const admin = JSON.parse(adminData);
+      setAdminName(admin.name);
+    } catch (error) {
+      console.error("Failed to read admin data:", error);
+      setAdminName("");
+    }
+  } else {
+    setAdminName("");
+  }
+}, []);
 
   /*
    * ---------------------------------------------
@@ -86,252 +104,275 @@ const [logo, setLogo] = useState("/logo.png");
   }, []);
 
   useEffect(() => {
-  const fetchStoreBranding = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:5000/api/store-settings",
-      );
+    const fetchStoreBranding = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/store-settings",
+        );
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch store branding");
+        if (!response.ok) {
+          throw new Error("Failed to fetch store branding");
+        }
+
+        const data = await response.json();
+
+        setBrandName(data.brandName);
+        setLogo(`http://localhost:5000${data.logo}`);
+      } catch (error) {
+        console.error("Failed to fetch store branding:", error);
       }
+    };
 
-      const data = await response.json();
-
-      setBrandName(data.brandName);
-      setLogo(`http://localhost:5000${data.logo}`);
-    } catch (error) {
-      console.error("Failed to fetch store branding:", error);
-    }
-  };
-
-  fetchStoreBranding();
-}, []);
+    fetchStoreBranding();
+  }, []);
 
   return (
     <div className="relative mx-auto mt-4 flex w-full max-w-7xl items-center gap-3 px-0">
       {/* <div className="flex w-full items-center gap-2"> */}
-        <nav
-          className="flex min-w-0 flex-1 items-center rounded-full border px-7 py-4 shadow-sm"
-          style={{
-            backgroundColor: "var(--bg-primary)",
+      <nav
+        className="flex min-w-0 flex-1 items-center rounded-full border px-7 py-4 shadow-sm"
+        style={{
+          backgroundColor: "var(--bg-primary)",
 
-            borderColor: "var(--border-color)",
+          borderColor: "var(--border-color)",
 
-            color: "var(--text-primary)",
-          }}
-        >
-          {/* LOGO */}
+          color: "var(--text-primary)",
+        }}
+      >
+        {/* LOGO */}
 
-          <a href="#home" className="flex items-center gap-3">
-            <img
-              src={logo}
-              alt={brandName}
-              className="h-10 w-auto"
-            />
+        <a href="#home" className="flex items-center gap-3">
+          <img src={logo} alt={brandName} className="h-10 w-auto" />
 
-            <span
-              className="text-2xl font-bold"
-              style={{
-                color: "var(--text-primary)",
-              }}
-            >
-              {brandName}
-            </span>
-          </a>
+          <span
+            className="text-2xl font-bold"
+            style={{
+              color: "var(--text-primary)",
+            }}
+          >
+            {brandName}
+          </span>
+        </a>
 
-          {/* =================================================
+        {/* =================================================
             DESKTOP NAVIGATION
         ================================================== */}
 
-          <div className="ml-auto flex items-center gap-7">
-            {/* HOME */}
+        <div className="ml-auto flex items-center gap-7">
+          {/* HOME */}
 
-            <a
-              href="#home"
-              className="nav-link flex items-center gap-2 transition"
-              style={{
-                color: "var(--text-primary)",
-              }}
-            >
-              <House size={18} />
-              Home
-            </a>
+          <a
+            href="#home"
+            className="nav-link flex items-center gap-2 transition"
+            style={{
+              color: "var(--text-primary)",
+            }}
+          >
+            <House size={18} />
+            Home
+          </a>
 
-            {/* PHONES */}
+          {/* PHONES */}
 
-            <a
-              href="#phones"
-              className="nav-link flex items-center gap-2 transition"
-              style={{
-                color: "var(--text-primary)",
-              }}
-            >
-              <Smartphone size={18} />
-              Phones
-            </a>
+          <a
+            href="#phones"
+            className="nav-link flex items-center gap-2 transition"
+            style={{
+              color: "var(--text-primary)",
+            }}
+          >
+            <Smartphone size={18} />
+            Phones
+          </a>
 
-            {/* ABOUT */}
+          {/* ABOUT */}
 
-            <a
-              href="#about"
-              className="nav-link flex items-center gap-2 transition"
-              style={{
-                color: "var(--text-primary)",
-              }}
-            >
-              <Info size={18} />
-              About
-            </a>
+          <a
+            href="#about"
+            className="nav-link flex items-center gap-2 transition"
+            style={{
+              color: "var(--text-primary)",
+            }}
+          >
+            <Info size={18} />
+            About
+          </a>
 
-            {/* CONTACT */}
+          {/* CONTACT */}
 
-            <a
-              href="#contact"
-              className="nav-link flex items-center gap-2 transition"
-              style={{
-                color: "var(--text-primary)",
-              }}
-            >
-              <Mail size={18} />
-              Contact
-            </a>
+          <a
+            href="#contact"
+            className="nav-link flex items-center gap-2 transition"
+            style={{
+              color: "var(--text-primary)",
+            }}
+          >
+            <Mail size={18} />
+            Contact
+          </a>
+        </div>
 
-          </div>
-
-          {/* =================================================
+        {/* =================================================
             MOBILE MENU BUTTON
           ================================================== */}
 
+        <button
+          type="button"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="ml-auto cursor-pointer rounded-full p-2 transition hover:bg-gray-100 hover:text-yellow-600 md:hidden"
+          aria-label="Toggle navigation"
+        >
+          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        {/* SETTINGS */}
+
+        <div ref={settingsRef} className="relative z-[100] ml-2">
+          {/* SETTINGS BUTTON */}
+
           <button
             type="button"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="ml-auto cursor-pointer rounded-full p-2 transition hover:bg-gray-100 hover:text-yellow-600 md:hidden"
-            aria-label="Toggle navigation"
+            onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+            className="cursor-pointer rounded-full p-3 shadow-md transition hover:bg-gray-100 hover:text-yellow-600"
+            style={{
+              backgroundColor: "var(--bg-primary)",
+
+              color: "var(--text-primary)",
+            }}
+            aria-label="Open settings"
           >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            <Settings size={22} />
           </button>
 
-        
-          {/* SETTINGS */}
-        
-          <div ref={settingsRef} className="relative z-[100] ml-2">
-            {/* SETTINGS BUTTON */}
+          {/* SETTINGS MENU */}
 
-            <button
-              type="button"
-              onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-              className="cursor-pointer rounded-full p-3 shadow-md transition hover:bg-gray-100 hover:text-yellow-600"
+          {isSettingsOpen && (
+            <div
+              className="absolute right-0 top-14 w-56 rounded-2xl border p-4 shadow-2xl"
               style={{
                 backgroundColor: "var(--bg-primary)",
 
+                borderColor: "var(--border-color)",
+
                 color: "var(--text-primary)",
               }}
-              aria-label="Open settings"
             >
-              <Settings size={22} />
-            </button>
-
-            {/* SETTINGS MENU */}
-
-            {isSettingsOpen && (
-              <div
-                className="absolute right-0 top-14 w-56 rounded-2xl border p-4 shadow-2xl"
+              <h2
+                className="mb-3 text-sm font-semibold"
                 style={{
-                  backgroundColor: "var(--bg-primary)",
-
-                  borderColor: "var(--border-color)",
-
                   color: "var(--text-primary)",
                 }}
               >
-                <h2
-                  className="mb-3 text-sm font-semibold"
-                  style={{
-                    color: "var(--text-primary)",
-                  }}
-                >
-                  Select Theme
-                </h2>
+                Select Theme
+              </h2>
 
-                {/* DEFAULT */}
+              {/* DEFAULT */}
 
-                <button
-                  type="button"
-                  onClick={() => changeTheme("default")}
-                  className="theme-option flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition"
-                >
-                  <span>Default</span>
+              <button
+                type="button"
+                onClick={() => changeTheme("default")}
+                className="theme-option flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition"
+              >
+                <span>Default</span>
 
-                  {theme === "default" && (
-                    <span
-                      style={{
-                        color: "var(--accent-color)",
-                      }}
-                    >
-                      ✓
-                    </span>
-                  )}
-                </button>
+                {theme === "default" && (
+                  <span
+                    style={{
+                      color: "var(--accent-color)",
+                    }}
+                  >
+                    ✓
+                  </span>
+                )}
+              </button>
 
-                {/* DARK */}
+              {/* DARK */}
 
-                <button
-                  type="button"
-                  onClick={() => changeTheme("dark")}
-                  className="theme-option flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition"
-                >
-                  <span>Dark</span>
+              <button
+                type="button"
+                onClick={() => changeTheme("dark")}
+                className="theme-option flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition"
+              >
+                <span>Dark</span>
 
-                  {theme === "dark" && (
-                    <span
-                      style={{
-                        color: "var(--accent-color)",
-                      }}
-                    >
-                      ✓
-                    </span>
-                  )}
-                </button>
+                {theme === "dark" && (
+                  <span
+                    style={{
+                      color: "var(--accent-color)",
+                    }}
+                  >
+                    ✓
+                  </span>
+                )}
+              </button>
 
-                {/* OCEAN */}
+              {/* OCEAN */}
 
-                <button
-                  type="button"
-                  onClick={() => changeTheme("ocean")}
-                  className="theme-option flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition"
-                >
-                  <span>ocean</span>
+              <button
+                type="button"
+                onClick={() => changeTheme("ocean")}
+                className="theme-option flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm transition"
+              >
+                <span>ocean</span>
 
-                  {theme === "ocean" && (
-                    <span
-                      style={{
-                        color: "var(--accent-color)",
-                      }}
-                    >
-                      ✓
-                    </span>
-                  )}
-                </button>
-              </div>
-            )}
-          </div>
-        </nav>
+                {theme === "ocean" && (
+                  <span
+                    style={{
+                      color: "var(--accent-color)",
+                    }}
+                  >
+                    ✓
+                  </span>
+                )}
+              </button>
+            </div>
+          )}
+        </div>
+      </nav>
 
-        <button
-          type="button"
-          onClick={handleLogin}
-          className="theme-accent-hover flex cursor-pointer items-center gap-3 rounded-full border px-5 py-4 font-medium transition"
-          style={{
-            backgroundColor: "var(--bg-primary)",
-            color: "var(--text-primary)",
-            borderColor: "var(--border-color)",
-          }}
-        >
-          <LogIn size={18} />
-          Login
-        </button>
-    
+{adminName ? (
+  <div className="flex items-center gap-2">
+    <div
+      className="flex items-center gap-3 rounded-full border px-5 py-4 font-medium"
+      style={{
+        backgroundColor: "var(--bg-primary)",
+        color: "var(--text-primary)",
+        borderColor: "var(--border-color)",
+      }}
+    >
+      Welcome, {adminName}
+    </div>
+
+    <button
+      type="button"
+      onClick={() => (window.location.href = "/admin/dashboard")}
+      className="flex cursor-pointer items-center justify-center rounded-full border p-3 transition hover:opacity-80"
+      style={{
+        backgroundColor: "var(--bg-primary)",
+        color: "var(--text-primary)",
+        borderColor: "var(--border-color)",
+      }}
+      aria-label="Open Admin Panel"
+      title="Admin Panel"
+    >
+      <LayoutDashboard size={20} />
+    </button>
+  </div>
+) : (
+  <button
+    type="button"
+    onClick={handleLogin}
+    className="theme-accent-hover flex cursor-pointer items-center gap-3 rounded-full border px-5 py-4 font-medium transition"
+    style={{
+      backgroundColor: "var(--bg-primary)",
+      color: "var(--text-primary)",
+      borderColor: "var(--border-color)",
+    }}
+  >
+    <LogIn size={18} />
+    Login
+  </button>
+)}
 
       {/* =================================================
           MOBILE MENU

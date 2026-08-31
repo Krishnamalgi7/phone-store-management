@@ -4,12 +4,13 @@ import PhoneManagement from "../../components/PhoneManagement";
 // import AdminSettingsPage from "../settings/page";
 
 import {
-  X,
+  // X,
   MessageSquare,
   Smartphone,
-  LogOut,
-  Settings,
-  Plus,
+  // LogOut,
+  // Settings,
+  // Plus,
+  // House,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -141,88 +142,7 @@ export default function AdminDashboardPage() {
       className="min-h-screen"
       style={{ backgroundColor: "var(--bg-primary)" }}
     >
-      <div className="mx-auto mt-4 flex max-w-7xl items-center gap-3">
-        <nav
-          className="flex flex-1 items-center justify-between rounded-full border px-7 py-4 shadow-sm"
-          style={{
-            backgroundColor: "var(--bg-primary)",
-            borderColor: "var(--border-color)",
-            color: "var(--text-primary)",
-          }}
-        >
-          {/* existing navbar content */}
 
-          <h1 className="text-xl font-bold">Admin</h1>
-
-          <div className="flex items-center gap-6">
-            {/* ADD PHONE */}
-
-            <button
-              type="button"
-              onClick={() => router.push("/admin/phones/add")}
-              className="nav-link flex cursor-pointer items-center gap-2 transition"
-              style={{
-                color: "var(--text-primary)",
-              }}
-            >
-              <Plus size={17} />
-              Add Phone
-            </button>
-
-            {/* SHOW PHONES */}
-
-            <button
-              type="button"
-              onClick={() => router.push("/admin/phones")}
-              className="nav-link flex cursor-pointer items-center gap-2 transition"
-              style={{
-                color: "var(--text-primary)",
-              }}
-            >
-              <Smartphone size={17} />
-              Show Phones
-            </button>
-
-            <button
-              type="button"
-              onClick={() => router.push("/admin/settings")}
-              className="nav-link flex cursor-pointer items-center gap-2 transition"
-              style={{
-                color: "var(--text-primary)",
-              }}
-            >
-              <Settings size={17} />
-              Settings
-            </button>
-
-            <button
-              type="button"
-              onClick={() => router.push("/admin/queries")}
-              className="nav-link flex cursor-pointer items-center gap-2 transition"
-              style={{
-                color: "var(--text-primary)",
-              }}
-            >
-              <MessageSquare size={17} />
-              View Queries
-            </button>
-          </div>
-        </nav>
-
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="flex cursor-pointer items-center gap-3 rounded-full border px-5 py-4 font-medium transition hover:!bg-red-500 hover:!text-white hover:!border-red-500"
-          style={{
-            backgroundColor: "var(--bg-primary)",
-            color: "var(--text-primary)",
-            borderColor: "var(--border-color)",
-          }}
-        >
-          <LogOut size={18} />
-          Logout
-        </button>
-      </div>
 
       <section className="px-6 py-10">
         <div className="mx-auto max-w-7xl">

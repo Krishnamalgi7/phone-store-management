@@ -1039,163 +1039,43 @@ export default function AdminSettingsPage() {
           </p>
         </div>
 
-        {/* BRANDING FIELDS */}
 
-        <div
-          className="mb-6 rounded-2xl border p-6"
-          style={{
-            backgroundColor: "var(--bg-secondary)",
-            borderColor: "var(--border-color)",
-          }}
-        >
-          {/* STORE BRANDING HEADER */}
 
-          <div className="mb-3">
-            <div className="flex items-center">
-              <ImagePlus size={21} />
+{/* STORE BRANDING CARD */}
+<button
+  type="button"
+  onClick={() => router.push("/admin/settings/branding")}
+  className="group mb-4 flex w-full cursor-pointer items-center gap-5 rounded-2xl border p-5 text-left transition-all duration-200 hover:-translate-y-[1px] hover:shadow-sm"
+  style={{
+    borderColor: "var(--border-color)",
+    background: "var(--bg-secondary)",
+  }}
+>
+  <div className="min-w-0 flex-1">
+    <div className="flex items-center gap-3">
+      <h2 className="text-lg font-semibold">
+        Store Branding
+      </h2>
+    </div>
 
-              <h2 className="text-lg font-semibold">Store Branding</h2>
-            </div>
+    <p
+      className="mt-1 text-sm"
+      style={{
+        color: "var(--text-secondary)",
+      }}
+    >
+      Manage your store name and logo
+    </p>
+  </div>
 
-            <p
-              className="mt-1 text-sm"
-              style={{
-                color: "var(--text-secondary)",
-              }}
-            >
-              Change your store name and logo.
-            </p>
-          </div>
-
-          {/* BRANDING FIELDS */}
-
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {/* BRAND NAME */}
-            <div>
-              <label className="mb-2 block text-sm font-medium">
-                Brand Name
-              </label>
-
-              <input
-                type="text"
-                value={brandName}
-                onChange={(event) => setBrandName(event.target.value)}
-                placeholder="Enter brand name"
-                className="w-full rounded-xl border px-4 py-3 outline-none"
-                style={{
-                  backgroundColor: "var(--bg-primary)",
-                  color: "var(--text-primary)",
-                  borderColor: "var(--border-color)",
-                }}
-              />
-            </div>
-
-            {/* LOGO */}
-            <div>
-              <label className="mb-2 block text-sm font-medium">Logo</label>
-
-              <label
-                className="flex h-25 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed transition-opacity hover:opacity-70"
-                style={{
-                  backgroundColor: "var(--bg-secondary)",
-                  borderColor: "var(--border-color)",
-                }}
-              >
-                {logoPreview ? (
-                  <div className="relative flex h-full w-full items-center justify-center">
-                    <img
-                      src={logoPreview}
-                      alt="Logo preview"
-                      className="h-16 max-w-[160px] object-contain"
-                    />
-
-                    <button
-                      type="button"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        setLogo(null);
-                        setLogoPreview("");
-                      }}
-                      className="absolute right-2 top-2 flex cursor-pointer items-center justify-center rounded-full border p-1.5 transition-opacity hover:opacity-70"
-                      style={{
-                        backgroundColor: "var(--bg-primary)",
-                        borderColor: "var(--border-color)",
-                        color: "var(--text-primary)",
-                      }}
-                    >
-                      <X size={15} />
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <div
-                      className="mb-2 flex h-10 w-10 items-center justify-center rounded-full"
-                      style={{
-                        backgroundColor: "var(--bg-primary)",
-                        color: "var(--accent-color)",
-                      }}
-                    >
-                      <Upload size={18} />
-                    </div>
-
-                    <span className="text-sm font-semibold">
-                      Choose your logo
-                    </span>
-
-                    <span
-                      className="mt-1 text-xs"
-                      style={{
-                        color: "var(--text-secondary)",
-                      }}
-                    >
-                      PNG, JPG or WEBP
-                    </span>
-                  </>
-                )}
-
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(event) => {
-                    const file = event.target.files?.[0];
-
-                    if (!file) {
-                      return;
-                    }
-
-                    setLogo(file);
-                    setLogoPreview(URL.createObjectURL(file));
-                  }}
-                  className="sr-only"
-                />
-              </label>
-            </div>
-          </div>
-
-          {/* SAVE */}
-
-          <div
-            className="mt-6 flex justify-end border-t pt-5"
-            style={{
-              borderColor: "var(--border-color)",
-            }}
-          >
-            <button
-              type="button"
-              onClick={handleSaveBranding}
-              disabled={brandingSaving}
-              className="theme-accent-hover flex cursor-pointer items-center gap-2 rounded-xl px-5 py-3 font-semibold transition disabled:cursor-not-allowed disabled:opacity-50"
-              style={{
-                backgroundColor: "var(--accent-primary)",
-                color: "var(--button-text)",
-                border: "1px solid var(--border-color)",
-              }}
-            >
-              <Pencil size={17} />
-              {brandingSaving ? "Saving..." : "Save"}
-            </button>
-          </div>
-        </div>
+  <ChevronRight
+    size={21}
+    className="shrink-0 transition-transform duration-200 group-hover:translate-x-1"
+    style={{
+      color: "var(--text-secondary)",
+    }}
+  />
+</button>
 
         {/* SETTINGS CARDS */}
 
