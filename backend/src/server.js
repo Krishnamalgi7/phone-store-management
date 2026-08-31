@@ -12,6 +12,7 @@ const brandRoutes = require("./routes/brandRoutes");
 const variantRoutes = require("./routes/variantRoutes");
 const ramRoutes = require("./routes/ramRoutes");
 const romRoutes = require("./routes/romRoutes");
+const storeSettingRoutes = require("./routes/storeSettingRoutes");
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use("/api/brands", brandRoutes);
 app.use("/api/variants", variantRoutes);
 app.use("/api/rams", ramRoutes);
 app.use("/api/roms", romRoutes);
+app.use("/api/store-settings", storeSettingRoutes);
 
 const PORT = process.env.PORT || 5000;
 

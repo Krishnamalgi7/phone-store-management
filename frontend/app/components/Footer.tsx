@@ -1,6 +1,33 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Smartphone, Info, Mail, LogIn } from "lucide-react";
 
 export default function Footer() {
+  const [brandName, setBrandName] = useState("Nova");
+
+useEffect(() => {
+  const fetchStoreBranding = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/store-settings",
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch store branding");
+      }
+
+      const data = await response.json();
+
+      setBrandName(data.brandName);
+    } catch (error) {
+      console.error("Failed to fetch store branding:", error);
+    }
+  };
+
+  fetchStoreBranding();
+}, []);
+
   return (
     <footer
       className="px-6 py-10"
@@ -30,7 +57,7 @@ export default function Footer() {
                 color: "var(--text-primary)",
               }}
             >
-              Nova
+             {brandName}
             </h2>
 
             <p
@@ -91,7 +118,7 @@ export default function Footer() {
             color: "var(--text-secondary)",
           }}
         >
-          © 2026 Nova Mobiles. All rights reserved.
+          © 2026 {brandName} Mobiles. All rights reserved.
         </div>
       </div>
     </footer>

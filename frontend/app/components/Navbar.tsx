@@ -18,6 +18,9 @@ export default function Navbar() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const [theme, setTheme] = useState("default");
+  
+  const [brandName, setBrandName] = useState("Phone Store");
+const [logo, setLogo] = useState("/logo.png");
 
   const settingsRef = useRef<HTMLDivElement>(null);
 
@@ -82,11 +85,34 @@ export default function Navbar() {
     };
   }, []);
 
+  useEffect(() => {
+  const fetchStoreBranding = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/store-settings",
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch store branding");
+      }
+
+      const data = await response.json();
+
+      setBrandName(data.brandName);
+      setLogo(`http://localhost:5000${data.logo}`);
+    } catch (error) {
+      console.error("Failed to fetch store branding:", error);
+    }
+  };
+
+  fetchStoreBranding();
+}, []);
+
   return (
-    <div className="relative mx-auto mt-5 max-w-7xl">
-      <div className="flex items-center gap-2">
+    <div className="relative mx-auto mt-4 flex w-full max-w-7xl items-center gap-3 px-0">
+      {/* <div className="flex w-full items-center gap-2"> */}
         <nav
-          className="relative flex flex-1 items-center rounded-full border px-7 py-4 shadow-sm"
+          className="flex min-w-0 flex-1 items-center rounded-full border px-7 py-4 shadow-sm"
           style={{
             backgroundColor: "var(--bg-primary)",
 
@@ -99,8 +125,8 @@ export default function Navbar() {
 
           <a href="#home" className="flex items-center gap-3">
             <img
-              src="/logo.png"
-              alt="Phone Store Nova"
+              src={logo}
+              alt={brandName}
               className="h-10 w-auto"
             />
 
@@ -110,7 +136,7 @@ export default function Navbar() {
                 color: "var(--text-primary)",
               }}
             >
-              Nova
+              {brandName}
             </span>
           </a>
 
@@ -118,7 +144,7 @@ export default function Navbar() {
             DESKTOP NAVIGATION
         ================================================== */}
 
-          <div className="ml-auto mr-4 hidden items-center gap-7 md:flex">
+          <div className="ml-auto flex items-center gap-7">
             {/* HOME */}
 
             <a
@@ -175,7 +201,7 @@ export default function Navbar() {
 
           {/* =================================================
             MOBILE MENU BUTTON
-        ================================================== */}
+          ================================================== */}
 
           <button
             type="button"
@@ -186,11 +212,10 @@ export default function Navbar() {
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
 
-          {/* =================================================
-          SETTINGS
-      ================================================== */}
-
-          <div ref={settingsRef} className="relative ml-2 ">
+        
+          {/* SETTINGS */}
+        
+          <div ref={settingsRef} className="relative z-[100] ml-2">
             {/* SETTINGS BUTTON */}
 
             <button
@@ -306,7 +331,7 @@ export default function Navbar() {
           <LogIn size={18} />
           Login
         </button>
-      </div>
+    
 
       {/* =================================================
           MOBILE MENU

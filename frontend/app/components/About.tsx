@@ -44,7 +44,7 @@ export default function About() {
               color: "var(--text-secondary)",
             }}
           >
-            Nova creates smartphones that combine thoughtful design, powerful
+            Our store smartphones that combine thoughtful design, powerful
             performance and technology that fits naturally into everyday life.
           </p>
 

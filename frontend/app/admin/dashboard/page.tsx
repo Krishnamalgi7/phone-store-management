@@ -143,8 +143,7 @@ export default function AdminDashboardPage() {
     >
       <div className="mx-auto mt-4 flex max-w-7xl items-center gap-3">
         <nav
-        
-  className="flex flex-1 items-center justify-between rounded-full border px-7 py-4 shadow-sm"
+          className="flex flex-1 items-center justify-between rounded-full border px-7 py-4 shadow-sm"
           style={{
             backgroundColor: "var(--bg-primary)",
             borderColor: "var(--border-color)",
@@ -207,25 +206,22 @@ export default function AdminDashboardPage() {
               <MessageSquare size={17} />
               View Queries
             </button>
-
-           
           </div>
         </nav>
 
-<button
-  type="button"
-  onClick={handleLogout}
-  className="flex cursor-pointer items-center gap-3 rounded-full border px-5 py-4 font-medium transition hover:!bg-red-500 hover:!text-white hover:!border-red-500"
-  style={{
-    backgroundColor: "var(--bg-primary)",
-    color: "var(--text-primary)",
-    borderColor: "var(--border-color)",
-  }}
->
-  <LogOut size={18} />
-  Logout
-</button>
-
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="flex cursor-pointer items-center gap-3 rounded-full border px-5 py-4 font-medium transition hover:!bg-red-500 hover:!text-white hover:!border-red-500"
+          style={{
+            backgroundColor: "var(--bg-primary)",
+            color: "var(--text-primary)",
+            borderColor: "var(--border-color)",
+          }}
+        >
+          <LogOut size={18} />
+          Logout
+        </button>
       </div>
 
       <section className="px-6 py-10">
@@ -233,7 +229,7 @@ export default function AdminDashboardPage() {
           <h2 className="text-3xl font-bold">Welcome, {adminName}</h2>
 
           <p className="mt-2" style={{ color: "var(--text-secondary)" }}>
-            Manage your Phone Store Nova administration panel.
+            Manage your Phone Store administration panel.
           </p>
 
           <div className="mt-8">
