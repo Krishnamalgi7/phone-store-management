@@ -37,20 +37,20 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-  const adminData = localStorage.getItem("admin");
+    const adminData = localStorage.getItem("admin");
 
-  if (adminData) {
-    try {
-      const admin = JSON.parse(adminData);
-      setAdminName(admin.name);
-    } catch (error) {
-      console.error("Failed to read admin data:", error);
+    if (adminData) {
+      try {
+        const admin = JSON.parse(adminData);
+        setAdminName(admin.name);
+      } catch (error) {
+        console.error("Failed to read admin data:", error);
+        setAdminName("");
+      }
+    } else {
       setAdminName("");
     }
-  } else {
-    setAdminName("");
-  }
-}, []);
+  }, []);
 
   /*
    * ---------------------------------------------
@@ -142,7 +142,7 @@ export default function Navbar() {
         {/* LOGO */}
 
         <a href="#home" className="flex items-center gap-3">
-          <img src={logo} alt={brandName} className="h-10 w-auto" />
+          <img src={logo} alt={brandName} className="h-14 w-auto object-contain" />
 
           <span
             className="text-2xl font-bold"
@@ -330,49 +330,49 @@ export default function Navbar() {
         </div>
       </nav>
 
-{adminName ? (
-  <div className="flex items-center gap-2">
-    <div
-      className="flex items-center gap-3 rounded-full border px-5 py-4 font-medium"
-      style={{
-        backgroundColor: "var(--bg-primary)",
-        color: "var(--text-primary)",
-        borderColor: "var(--border-color)",
-      }}
-    >
-      Welcome, {adminName}
-    </div>
+      {adminName ? (
+        <div className="flex items-center gap-2">
+          <div
+            className="flex items-center gap-3 rounded-full border px-5 py-4 font-medium"
+            style={{
+              backgroundColor: "var(--bg-primary)",
+              color: "var(--text-primary)",
+              borderColor: "var(--border-color)",
+            }}
+          >
+            Welcome, {adminName}
+          </div>
 
-    <button
-      type="button"
-      onClick={() => (window.location.href = "/admin/dashboard")}
-      className="flex cursor-pointer items-center justify-center rounded-full border p-3 transition hover:opacity-80"
-      style={{
-        backgroundColor: "var(--bg-primary)",
-        color: "var(--text-primary)",
-        borderColor: "var(--border-color)",
-      }}
-      aria-label="Open Admin Panel"
-      title="Admin Panel"
-    >
-      <LayoutDashboard size={20} />
-    </button>
-  </div>
-) : (
-  <button
-    type="button"
-    onClick={handleLogin}
-    className="theme-accent-hover flex cursor-pointer items-center gap-3 rounded-full border px-5 py-4 font-medium transition"
-    style={{
-      backgroundColor: "var(--bg-primary)",
-      color: "var(--text-primary)",
-      borderColor: "var(--border-color)",
-    }}
-  >
-    <LogIn size={18} />
-    Login
-  </button>
-)}
+          <button
+            type="button"
+            onClick={() => (window.location.href = "/admin/dashboard")}
+            className="flex cursor-pointer items-center justify-center rounded-full border p-3 transition hover:opacity-80"
+            style={{
+              backgroundColor: "var(--bg-primary)",
+              color: "var(--text-primary)",
+              borderColor: "var(--border-color)",
+            }}
+            aria-label="Open Admin Panel"
+            title="Admin Panel"
+          >
+            <LayoutDashboard size={20} />
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={handleLogin}
+          className="theme-accent-hover flex cursor-pointer items-center gap-3 rounded-full border px-5 py-4 font-medium transition"
+          style={{
+            backgroundColor: "var(--bg-primary)",
+            color: "var(--text-primary)",
+            borderColor: "var(--border-color)",
+          }}
+        >
+          <LogIn size={18} />
+          Login
+        </button>
+      )}
 
       {/* =================================================
           MOBILE MENU
