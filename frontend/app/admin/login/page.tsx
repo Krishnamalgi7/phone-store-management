@@ -1,5 +1,7 @@
 "use client";
 
+import Loader from "../../components/Loader";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowBigLeft } from "lucide-react";
@@ -52,6 +54,10 @@ export default function AdminLoginPage() {
       setLoading(false);
     }
   };
+
+  if (loading) {
+  return <Loader />;
+}
 
   return (
     <main

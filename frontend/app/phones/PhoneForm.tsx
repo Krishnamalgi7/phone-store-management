@@ -1,5 +1,6 @@
 "use client";
 
+import Loader from "../components/Loader";
 import { useEffect, useState } from "react";
 import { Minus, Plus } from "lucide-react";
 
@@ -97,6 +98,8 @@ export default function PhoneForm({
 
   const [roms, setRoms] = useState<MasterItem[]>([]);
 
+  const [loading, setLoading] = useState(true);
+
   /*
    * ------------------------------------------------
    * LOAD EDITING PHONE
@@ -179,6 +182,7 @@ export default function PhoneForm({
   useEffect(() => {
     const fetchMasterData = async () => {
       try {
+        setLoading(true);
         const token = localStorage.getItem("adminToken");
 
         const headers = {
@@ -244,6 +248,8 @@ export default function PhoneForm({
         console.error("Master data error:", error);
 
         setStatus("Failed to load phone options.");
+      } finally{
+        setLoading(false);
       }
     };
 
@@ -480,6 +486,10 @@ export default function PhoneForm({
       );
     }
   };
+
+  if (loading) {
+  return <Loader />;
+}
 
   /*
    * ------------------------------------------------

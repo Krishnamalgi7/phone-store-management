@@ -2,6 +2,7 @@
 
 import { ChevronDown, Search, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import Loader from "./Loader";
 
 import PhoneCard from "./PhoneCard";
 
@@ -438,6 +439,10 @@ const response = await fetch(
 
   const maxPrice = filters.price.max;
 
+  if (loading) {
+  return <Loader />;
+}
+
   return (
     <section
       id="phones"
@@ -782,17 +787,6 @@ const response = await fetch(
         {/* PHONE GRID */}
 
         <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {loading && (
-            <p
-              className="col-span-full text-center"
-              style={{
-                color: "var(--text-secondary)",
-              }}
-            >
-              Loading phones...
-            </p>
-          )}
-
           {error && (
             <p
               className="col-span-full text-center"

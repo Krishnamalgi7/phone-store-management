@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { ChevronDown, Pencil, Search, X } from "lucide-react";
+import Loader from "../components/Loader";
 
 type ReferenceValue =
   | string
@@ -109,266 +110,264 @@ export default function ManagePhoneList({
 
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-/*
- * -----------------------------------------
- * SEARCH DEBOUNCE
- * -----------------------------------------
- */
+  /*
+   * -----------------------------------------
+   * SEARCH DEBOUNCE
+   * -----------------------------------------
+   */
 
-useEffect(() => {
-  const timer = setTimeout(() => {
-    setDebouncedSearch(searchTerm);
-  }, 400);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 400);
 
-  return () => {
-    clearTimeout(timer);
-  };
-}, [searchTerm]);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchTerm]);
 
-/*
- * -----------------------------------------
- * FETCH PHONES
- * -----------------------------------------
- */
+  /*
+   * -----------------------------------------
+   * FETCH PHONES
+   * -----------------------------------------
+   */
 
-useEffect(() => {
-  const fetchPhones = async () => {
-    try {
-  if (phones.length === 0) {
-    setLoading(true);
-  }
+  useEffect(() => {
+    const fetchPhones = async () => {
+      try {
+        if (phones.length === 0) {
+          setLoading(true);
+        }
 
-  setIsFetching(true);
+        setIsFetching(true);
 
-  const params = new URLSearchParams();
+        const params = new URLSearchParams();
 
-      if (debouncedSearch.trim()) {
-        params.set("search", debouncedSearch.trim());
+        if (debouncedSearch.trim()) {
+          params.set("search", debouncedSearch.trim());
+        }
+
+        if (selectedBrand) {
+          params.set("brand", selectedBrand);
+        }
+
+        if (selectedVariant) {
+          params.set("variant", selectedVariant);
+        }
+
+        if (selectedRam) {
+          params.set("ram", selectedRam);
+        }
+
+        if (selectedRom) {
+          params.set("rom", selectedRom);
+        }
+
+        if (priceChanged) {
+          params.set("minPrice", String(priceRange[0]));
+          params.set("maxPrice", String(priceRange[1]));
+        }
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/phones?${params.toString()}`,
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch phones");
+        }
+
+        const data = await response.json();
+
+        setPhones(data.phones || []);
+      } catch (error) {
+        console.error("Error fetching phones:", error);
+      } finally {
+        setLoading(false);
+        setIsFetching(false);
+      }
+    };
+
+    fetchPhones();
+  }, [
+    refreshKey,
+    debouncedSearch,
+    selectedBrand,
+    selectedVariant,
+    selectedRam,
+    selectedRom,
+    priceRange,
+    priceChanged,
+  ]);
+
+  /*
+   * -----------------------------------------
+   * FETCH FILTER OPTIONS
+   * -----------------------------------------
+   */
+
+  useEffect(() => {
+    const fetchFilters = async () => {
+      try {
+        const params = new URLSearchParams();
+
+        if (selectedBrand) {
+          params.set("brandId", selectedBrand);
+        }
+
+        if (selectedVariant) {
+          params.set("variantId", selectedVariant);
+        }
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/phones/filters?${params.toString()}`,
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch phone filters");
+        }
+
+        const data = await response.json();
+
+        setFilters(data);
+
+        if (data.rams.length === 1) {
+          setSelectedRam(data.rams[0]._id);
+        } else if (data.rams.length > 1) {
+          setSelectedRam("");
+        }
+
+        if (data.roms.length === 1) {
+          setSelectedRom(data.roms[0]._id);
+        } else if (data.roms.length > 1) {
+          setSelectedRom("");
+        }
+      } catch (error) {
+        console.error("Error fetching phone filters:", error);
+      }
+    };
+
+    fetchFilters();
+  }, [selectedBrand, selectedVariant]);
+
+  /*
+   * -----------------------------------------
+   * FETCH VARIANTS BY BRAND
+   * -----------------------------------------
+   */
+
+  useEffect(() => {
+    const fetchVariantsByBrand = async () => {
+      if (!selectedBrand) {
+        setBrandVariants([]);
+        return;
       }
 
-      if (selectedBrand) {
-        params.set("brand", selectedBrand);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/phones/variants?brandId=${selectedBrand}`,
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch variants");
+        }
+
+        const data = await response.json();
+
+        setBrandVariants(data);
+        setSelectedVariant((currentVariant) => {
+          const stillValid = data.some(
+            (variant: MasterItem) => variant._id === currentVariant,
+          );
+
+          if (stillValid) {
+            return currentVariant;
+          }
+
+          if (data.length === 1) {
+            return data[0]._id;
+          }
+
+          return "";
+        });
+      } catch (error) {
+        console.error("Error fetching brand variants:", error);
       }
+    };
 
-      if (selectedVariant) {
-        params.set("variant", selectedVariant);
+    fetchVariantsByBrand();
+  }, [selectedBrand]);
+
+  /*
+   * -----------------------------------------
+   * RESET DEPENDENT FILTERS
+   * -----------------------------------------
+   */
+
+  useEffect(() => {
+    setSelectedVariant("");
+    setSelectedRam("");
+    setSelectedRom("");
+  }, [selectedBrand]);
+
+  /*
+   * -----------------------------------------
+   * SET INITIAL PRICE RANGE
+   * -----------------------------------------
+   */
+
+  useEffect(() => {
+    if (filters.price.max > 0 && !priceChanged) {
+      setPriceRange([0, filters.price.max]);
+    }
+  }, [filters.price.max, priceChanged]);
+
+  /*
+   * -----------------------------------------
+   * CLOSE PRICE POPUP
+   * -----------------------------------------
+   */
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        priceFilterRef.current &&
+        !priceFilterRef.current.contains(event.target as Node)
+      ) {
+        setShowPriceFilter(false);
       }
+    };
 
-      if (selectedRam) {
-        params.set("ram", selectedRam);
-      }
+    document.addEventListener("mousedown", handleOutsideClick);
 
-      if (selectedRom) {
-        params.set("rom", selectedRom);
-      }
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
 
-      if (priceChanged) {
-        params.set("minPrice", String(priceRange[0]));
-        params.set("maxPrice", String(priceRange[1]));
-      }
+  /*
+   * -----------------------------------------
+   * CLEAR FILTERS
+   * -----------------------------------------
+   */
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/phones?${params.toString()}`
-      );
+  const clearFilters = () => {
+    setSearchTerm("");
+    setDebouncedSearch("");
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch phones");
-      }
+    setSelectedBrand("");
+    setSelectedVariant("");
+    setSelectedRam("");
+    setSelectedRom("");
 
-      const data = await response.json();
+    setPriceChanged(false);
+    setShowPriceFilter(false);
 
-      setPhones(data.phones || []);
-    } catch (error) {
-      console.error("Error fetching phones:", error);
-    } finally {
-  setLoading(false);
-  setIsFetching(false);
-}
-  };
-
-  fetchPhones();
-}, [
-  refreshKey,
-  debouncedSearch,
-  selectedBrand,
-  selectedVariant,
-  selectedRam,
-  selectedRom,
-  priceRange,
-  priceChanged,
-]);
-
-/*
- * -----------------------------------------
- * FETCH FILTER OPTIONS
- * -----------------------------------------
- */
-
-useEffect(() => {
-  const fetchFilters = async () => {
-    try {
-      const params = new URLSearchParams();
-
-       if (selectedBrand) {
-        params.set("brandId", selectedBrand);
-      }
-
-      if (selectedVariant) {
-        params.set("variantId", selectedVariant);
-      }
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/phones/filters?${params.toString()}`
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch phone filters");
-      }
-
-      const data = await response.json();
-
-      setFilters(data);
-
-      if (data.rams.length === 1) {
-  setSelectedRam(data.rams[0]._id);
-} else if (data.rams.length > 1) {
-  setSelectedRam("");
-}
-
-if (data.roms.length === 1) {
-  setSelectedRom(data.roms[0]._id);
-} else if (data.roms.length > 1) {
-  setSelectedRom("");
-}
-
-    } catch (error) {
-      console.error("Error fetching phone filters:", error);
+    if (filters.price.max > 0) {
+      setPriceRange([filters.price.min, filters.price.max]);
+    } else {
+      setPriceRange([0, 0]);
     }
   };
-
-  fetchFilters();
-}, [selectedBrand, selectedVariant]);
-
-/*
- * -----------------------------------------
- * FETCH VARIANTS BY BRAND
- * -----------------------------------------
- */
-
-useEffect(() => {
-  const fetchVariantsByBrand = async () => {
-    if (!selectedBrand) {
-      setBrandVariants([]);
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/phones/variants?brandId=${selectedBrand}`
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch variants");
-      }
-
-      const data = await response.json();
-
-      setBrandVariants(data);
-      setSelectedVariant((currentVariant) => {
-  const stillValid = data.some(
-    (variant: MasterItem) => variant._id === currentVariant,
-  );
-
-  if (stillValid) {
-    return currentVariant;
-  }
-
-  if (data.length === 1) {
-    return data[0]._id;
-  }
-
-  return "";
-});
-
-    } catch (error) {
-      console.error("Error fetching brand variants:", error);
-    }
-  };
-
-  fetchVariantsByBrand();
-}, [selectedBrand]);
-
-/*
- * -----------------------------------------
- * RESET DEPENDENT FILTERS
- * -----------------------------------------
- */
-
-useEffect(() => {
-  setSelectedVariant("");
-  setSelectedRam("");
-  setSelectedRom("");
-}, [selectedBrand]);
-
-/*
- * -----------------------------------------
- * SET INITIAL PRICE RANGE
- * -----------------------------------------
- */
-
-useEffect(() => {
-  if (filters.price.max > 0 && !priceChanged) {
-    setPriceRange([0, filters.price.max]);
-  }
-}, [filters.price.max, priceChanged]);
-
-/*
- * -----------------------------------------
- * CLOSE PRICE POPUP
- * -----------------------------------------
- */
-
-useEffect(() => {
-  const handleOutsideClick = (event: MouseEvent) => {
-    if (
-      priceFilterRef.current &&
-      !priceFilterRef.current.contains(event.target as Node)
-    ) {
-      setShowPriceFilter(false);
-    }
-  };
-
-  document.addEventListener("mousedown", handleOutsideClick);
-
-  return () => {
-    document.removeEventListener("mousedown", handleOutsideClick);
-  };
-}, []);
-
-/*
- * -----------------------------------------
- * CLEAR FILTERS
- * -----------------------------------------
- */
-
-const clearFilters = () => {
-  setSearchTerm("");
-  setDebouncedSearch("");
-
-  setSelectedBrand("");
-  setSelectedVariant("");
-  setSelectedRam("");
-  setSelectedRom("");
-
-  setPriceChanged(false);
-  setShowPriceFilter(false);
-
-  if (filters.price.max > 0) {
-    setPriceRange([filters.price.min, filters.price.max]);
-  } else {
-    setPriceRange([0, 0]);
-  }
-};
 
   /*
    * -----------------------------------------
@@ -420,17 +419,8 @@ const clearFilters = () => {
    * -----------------------------------------
    */
   if (loading) {
-    return (
-      <p
-        className="mt-12"
-        style={{
-          color: "var(--text-secondary)",
-        }}
-      >
-        Loading phones...
-      </p>
-    );
-  }
+  return <Loader />;
+}
 
   /*
    * -----------------------------------------
@@ -478,7 +468,6 @@ const clearFilters = () => {
           onChange={(event) => {
             setSelectedBrand(event.target.value);
           }}
-          
           className="w-24 shrink-0 cursor-pointer rounded-xl border px-3 py-3 outline-none"
           style={{
             backgroundColor: "var(--bg-secondary)",
@@ -836,7 +825,7 @@ const clearFilters = () => {
             );
           })
         )}
-      </div>      
+      </div>
     </section>
   );
 }

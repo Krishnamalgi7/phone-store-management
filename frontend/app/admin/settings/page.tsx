@@ -1,5 +1,7 @@
 "use client";
 
+import Loader from "../../components/Loader";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -105,6 +107,8 @@ export default function AdminSettingsPage() {
   const [status, setStatus] = useState<StatusFilter>("all");
 
   const [loading, setLoading] = useState(false);
+
+  const [sectionLoading, setSectionLoading] = useState(false);
 
   const [metaLoading, setMetaLoading] = useState(true);
 
@@ -265,6 +269,7 @@ export default function AdminSettingsPage() {
       setMessage("Failed to load data.");
     } finally {
       setLoading(false);
+      setSectionLoading(false);
     }
   };
 
@@ -278,6 +283,8 @@ export default function AdminSettingsPage() {
     if (!openSection) {
       return;
     }
+
+    setSectionLoading(true);
 
     const timer = setTimeout(() => {
       fetchItems(openSection, 1);
@@ -576,6 +583,10 @@ export default function AdminSettingsPage() {
     (section) => section.key === openSection,
   );
 
+  if (metaLoading) {
+    return <Loader />;
+  }
+
   /*
    * =================================================
    * MANAGEMENT VIEW
@@ -728,16 +739,8 @@ export default function AdminSettingsPage() {
 
           {/* RESULTS */}
 
-          {loading ? (
-            <div
-              className="rounded-2xl border p-10 text-center"
-              style={{
-                borderColor: "var(--border-color)",
-                background: "var(--bg-secondary)",
-              }}
-            >
-              Loading...
-            </div>
+          {sectionLoading || loading ? (
+            <Loader />
           ) : items.length === 0 ? (
             <div
               className="rounded-2xl border p-10 text-center"

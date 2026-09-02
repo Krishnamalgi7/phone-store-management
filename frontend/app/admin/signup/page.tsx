@@ -1,5 +1,7 @@
 "use client";
 
+import Loader from "../../components/Loader";
+
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -43,9 +45,10 @@ export default function AdminSignupPage() {
     checkAdmin();
   }, []);
 
-  if (checkingAdmin) {
-    return null;
-  }
+if (checkingAdmin) {
+  return <Loader />;
+}
+
   if (adminExists) {
     return (
       <main

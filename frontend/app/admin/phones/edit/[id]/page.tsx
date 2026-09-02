@@ -4,6 +4,7 @@ import { CircleChevronLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import PhoneForm from "../../../../phones/PhoneForm";
+import Loader from "../../../../components/Loader";
 
 type Phone = {
   _id: string;
@@ -61,17 +62,7 @@ export default function EditPhonePage() {
   }, [phoneId]);
 
   if (loading) {
-    return (
-      <main
-        className="min-h-screen p-8"
-        style={{
-          backgroundColor: "var(--bg-primary)",
-          color: "var(--text-primary)",
-        }}
-      >
-        Loading phone...
-      </main>
-    );
+    return <Loader />;
   }
 
   if (error || !phone) {

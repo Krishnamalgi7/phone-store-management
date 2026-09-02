@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ImagePlus, Pencil, Upload, X } from "lucide-react";
+import Loader from "../../../components/Loader";
 
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`;
 
@@ -14,6 +15,7 @@ export default function StoreBrandingForm() {
   const [logo, setLogo] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState("");
   const [brandingSaving, setBrandingSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -28,9 +30,13 @@ export default function StoreBrandingForm() {
         const data = await response.json();
 
         setCurrentBrandName(data.brandName || "");
-        setCurrentLogo(data.logo ? `${process.env.NEXT_PUBLIC_API_URL}${data.logo}` : "");
+        setCurrentLogo(
+          data.logo ? `${process.env.NEXT_PUBLIC_API_URL}${data.logo}` : "",
+        );
       } catch (error) {
         console.error("Failed to fetch store branding:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -79,15 +85,17 @@ export default function StoreBrandingForm() {
 
       setMessage("Store branding updated successfully.");
       setEditing(false);
-
     } catch (error) {
       console.error("Save branding error:", error);
       setMessage("Failed to update store branding.");
-      
     } finally {
       setBrandingSaving(false);
     }
   };
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div
