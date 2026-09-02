@@ -67,12 +67,15 @@ body {
   background-color: var(--bg-secondary);
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.nav-link.active {
   text-decoration: underline;
   text-decoration-color: var(--accent-color);
   text-decoration-thickness: 2px;
   text-underline-offset: 6px;
 }
+
+
 
 .price-slider {
   appearance: none;

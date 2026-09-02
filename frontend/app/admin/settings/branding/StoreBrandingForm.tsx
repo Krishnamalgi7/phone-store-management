@@ -78,11 +78,12 @@ export default function StoreBrandingForm() {
       );
 
       setMessage("Store branding updated successfully.");
-
       setEditing(false);
+
     } catch (error) {
       console.error("Save branding error:", error);
       setMessage("Failed to update store branding.");
+      
     } finally {
       setBrandingSaving(false);
     }

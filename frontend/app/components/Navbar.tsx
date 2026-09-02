@@ -127,10 +127,11 @@ export default function Navbar() {
   }, []);
 
   return (
-    <div className="relative mx-auto mt-4 flex w-full max-w-7xl items-center gap-3 px-0">
-      {/* <div className="flex w-full items-center gap-2"> */}
+    <div className="relative mx-auto mt-4 flex w-full max-w-7xl items-center gap-3">
+      
       <nav
-        className="flex min-w-0 flex-1 items-center rounded-full border px-7 py-4 shadow-sm"
+
+  className="flex min-w-0 flex-1 items-center justify-between rounded-full border px-7 py-4 shadow-sm"
         style={{
           backgroundColor: "var(--bg-primary)",
 
@@ -142,7 +143,7 @@ export default function Navbar() {
         {/* LOGO */}
 
         <a href="#home" className="flex items-center gap-3">
-          <img src={logo} alt={brandName} className="h-14 w-auto object-contain" />
+          <img src={logo} alt={brandName} className="h-10 w-auto object-contain rounded-xl" />
 
           <span
             className="text-2xl font-bold"
@@ -158,7 +159,7 @@ export default function Navbar() {
             DESKTOP NAVIGATION
         ================================================== */}
 
-        <div className="ml-auto flex items-center gap-7">
+        <div className="ml-auto flex items-center gap-5">
           {/* HOME */}
 
           <a

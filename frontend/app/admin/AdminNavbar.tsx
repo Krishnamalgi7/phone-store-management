@@ -9,10 +9,11 @@ import {
   Plus,
   LayoutDashboard,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function AdminNavbar() {
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
@@ -51,7 +52,9 @@ export default function AdminNavbar() {
           <button
             type="button"
             onClick={() => router.push("/admin/dashboard")}
-            className="nav-link flex cursor-pointer items-center gap-2 transition"
+            className={`nav-link flex cursor-pointer items-center gap-2 transition ${
+              pathname === "/admin/dashboard" ? "active" : ""
+            }`}
             style={{
               color: "var(--text-primary)",
             }}
@@ -65,7 +68,9 @@ export default function AdminNavbar() {
           <button
             type="button"
             onClick={() => router.push("/admin/phones/add")}
-            className="nav-link flex cursor-pointer items-center gap-2 transition"
+            className={`nav-link flex cursor-pointer items-center gap-2 transition ${
+              pathname === "/admin/phones/add" ? "active" : ""
+            }`}
             style={{
               color: "var(--text-primary)",
             }}
@@ -79,7 +84,12 @@ export default function AdminNavbar() {
           <button
             type="button"
             onClick={() => router.push("/admin/phones")}
-            className="nav-link flex cursor-pointer items-center gap-2 transition"
+            className={`nav-link flex cursor-pointer items-center gap-2 transition ${
+              pathname === "/admin/phones" ||
+              pathname.startsWith("/admin/phones/edit/")
+                ? "active"
+                : ""
+            }`}
             style={{
               color: "var(--text-primary)",
             }}
@@ -93,7 +103,9 @@ export default function AdminNavbar() {
           <button
             type="button"
             onClick={() => router.push("/admin/settings")}
-            className="nav-link flex cursor-pointer items-center gap-2 transition"
+            className={`nav-link flex cursor-pointer items-center gap-2 transition ${
+              pathname.startsWith("/admin/settings") ? "active" : ""
+            }`}
             style={{
               color: "var(--text-primary)",
             }}
@@ -107,7 +119,9 @@ export default function AdminNavbar() {
           <button
             type="button"
             onClick={() => router.push("/admin/queries")}
-            className="nav-link flex cursor-pointer items-center gap-2 transition"
+            className={`nav-link flex cursor-pointer items-center gap-2 transition ${
+              pathname.startsWith("/admin/queries") ? "active" : ""
+            }`}
             style={{
               color: "var(--text-primary)",
             }}

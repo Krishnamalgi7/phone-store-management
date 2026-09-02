@@ -134,11 +134,6 @@ export default function PhoneList() {
       params.set("search", debouncedSearch.trim());
     }
 
-    /*
-     * These are now IDs,
-     * not names.
-     */
-
     if (selectedBrand) {
       params.set("brand", selectedBrand);
     }
@@ -289,6 +284,9 @@ export default function PhoneList() {
         const data: PhoneFilters = await response.json();
 
         setFilters(data);
+
+        setPriceRange([0, data.price.max]);
+        setPriceChanged(false);
 
         if (data.rams.length === 1) {
           setSelectedRam(data.rams[0]._id);
