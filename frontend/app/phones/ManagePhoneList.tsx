@@ -822,14 +822,14 @@ const clearFilters = () => {
                   <button
                     type="button"
                     onClick={() => onEdit(phone)}
-                    className="flex cursor-pointer items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition"
+                    className="theme-accent-hover flex cursor-pointer items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition "
                     style={{
                       backgroundColor: "var(--text-primary)",
                       color: "var(--bg-primary)",
                     }}
                   >
                     <Pencil size={15} />
-                    Edit
+                    Edit Phone
                   </button>
                 </div>
               </div>

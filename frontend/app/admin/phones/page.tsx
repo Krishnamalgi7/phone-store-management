@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { CircleChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import PhoneManagement from "../../components/PhoneManagement";
 
@@ -25,7 +25,7 @@ export default function ManagePhonesPage() {
             color: "var(--text-primary)",
           }}
         >
-          <ArrowLeft size={18} />
+          <CircleChevronLeft size={18} />
           Back to Dashboard
         </button>
 

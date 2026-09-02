@@ -132,7 +132,7 @@ export default function PhoneForm({
             ? editingPhone.rom
             : editingPhone.rom?._id || ""),
 
-        price: String(editingPhone.price),
+        price: formatPrice(String(editingPhone.price)),
 
         description: editingPhone.description,
 
@@ -187,21 +187,33 @@ export default function PhoneForm({
 
         const [brandsResponse, variantsResponse, ramsResponse, romsResponse] =
           await Promise.all([
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/brands?page=1&limit=100`, {
-              headers,
-            }),
+            fetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/api/brands?page=1&limit=100`,
+              {
+                headers,
+              },
+            ),
 
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/variants?page=1&limit=100`, {
-              headers,
-            }),
+            fetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/api/variants?page=1&limit=100`,
+              {
+                headers,
+              },
+            ),
 
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/rams?page=1&limit=100`, {
-              headers,
-            }),
+            fetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/api/rams?page=1&limit=100`,
+              {
+                headers,
+              },
+            ),
 
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/roms?page=1&limit=100`, {
-              headers,
-            }),
+            fetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/api/roms?page=1&limit=100`,
+              {
+                headers,
+              },
+            ),
           ]);
 
         const [brandsData, variantsData, ramsData, romsData] =
@@ -238,6 +250,15 @@ export default function PhoneForm({
     fetchMasterData();
   }, []);
 
+  const formatPrice = (value: string) => {
+    const numericValue = value.replace(/\D/g, "");
+
+    if (!numericValue) {
+      return "";
+    }
+
+    return Number(numericValue).toLocaleString("en-IN");
+  };
   /*
    * ------------------------------------------------
    * HANDLE INPUT
@@ -257,7 +278,9 @@ export default function PhoneForm({
       [name]:
         type === "checkbox"
           ? (event.target as HTMLInputElement).checked
-          : value,
+          : name === "price"
+            ? formatPrice(value)
+            : value,
     });
 
     if (name === "imageUrl" && value) {
@@ -372,7 +395,7 @@ export default function PhoneForm({
 
       data.append("romId", formData.rom);
 
-      data.append("price", formData.price);
+      data.append("price", formData.price.replace(/,/g, ""));
 
       data.append("description", formData.description);
 
@@ -427,6 +450,8 @@ export default function PhoneForm({
       });
 
       const result = await response.json();
+
+      console.log("Phone form response:", result); 
 
       if (!response.ok) {
         throw new Error(result.message || "Operation failed");
@@ -649,7 +674,9 @@ export default function PhoneForm({
 
             <input
               name="price"
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9,]*"
               min="0"
               value={formData.price}
               onChange={handleChange}

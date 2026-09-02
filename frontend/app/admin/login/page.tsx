@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowBigLeft } from "lucide-react";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -19,16 +20,19 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
         },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
+      );
 
       const data = await response.json();
 
@@ -141,12 +145,13 @@ export default function AdminLoginPage() {
         <button
           type="button"
           onClick={() => router.push("/")}
-          className="theme-accent-text-hover mt-3 block w-full cursor-pointer text-center text-sm font-medium transition hover:underline"
+          className="theme-accent-text-hover mt-3 flex w-full cursor-pointer items-center justify-center gap-2 text-sm font-medium transition hover:underline"
           style={{
             color: "var(--text-secondary)",
           }}
         >
-          ← Back to Home
+          <ArrowBigLeft size={18} strokeWidth={2} />
+          Back to Home
         </button>
       </div>
     </main>

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { CircleChevronLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import PhoneForm from "../../../../phones/PhoneForm";
@@ -91,7 +91,7 @@ export default function EditPhonePage() {
             color: "var(--text-primary)",
           }}
         >
-          <ArrowLeft size={18} />
+          <CircleChevronLeft size={18} />
           Back to Manage Phones
         </button>
 
@@ -118,7 +118,7 @@ export default function EditPhonePage() {
             color: "var(--text-primary)",
           }}
         >
-          <ArrowLeft size={18} />
+          <CircleChevronLeft size={18} />
           Back to Manage Phones
         </button>
 

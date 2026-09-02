@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CircleChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import PhoneForm from "../../../phones/PhoneForm";
 import { Minus, Plus } from "lucide-react";
@@ -26,7 +26,7 @@ export default function AddPhonePage() {
             color: "var(--text-primary)",
           }}
         >
-          <ArrowLeft size={18} />
+          <CircleChevronLeft size={18} />
           Back to dashboard
         </button>
 

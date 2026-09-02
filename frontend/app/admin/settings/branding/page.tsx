@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CircleChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import StoreBrandingForm from "./StoreBrandingForm";
@@ -24,7 +24,7 @@ export default function StoreBrandingPage() {
           onClick={() => router.push("/admin/settings")}
           className="mb-8 flex cursor-pointer items-center gap-2 text-sm font-medium transition-colors hover:text-[var(--accent-color)]"
         >
-          <ArrowLeft size={17} />
+          <CircleChevronLeft size={17} />
           Back to Settings
         </button>
 

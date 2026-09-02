@@ -1,16 +1,11 @@
 "use client";
 
 import PhoneManagement from "../../components/PhoneManagement";
-// import AdminSettingsPage from "../settings/page";
+import Loader from "../../components/Loader";
 
 import {
-  // X,
   MessageSquare,
   Smartphone,
-  // LogOut,
-  // Settings,
-  // Plus,
-  // House,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -18,13 +13,9 @@ import { useRouter } from "next/navigation";
 export default function AdminDashboardPage() {
   const router = useRouter();
   const [adminName, setAdminName] = useState("");
-
-  // const [showSettings, setShowSettings] = useState(false);
-
   const [phones, setPhones] = useState<any[]>([]);
   const [contacts, setContacts] = useState<any[]>([]);
-
-  // const [showQueries, setShowQueries] = useState(false);
+const [loading, setLoading] = useState(true);
 
   //Count phone brands
   const brandCounts = phones.reduce((counts: Record<string, number>, phone) => {
@@ -68,6 +59,9 @@ export default function AdminDashboardPage() {
 
   const fetchDashboardData = async () => {
     try {
+      console.log("Dashboard loading started");
+
+      setLoading(true);
       const token = localStorage.getItem("adminToken");
 
       if (!token) {
@@ -95,7 +89,9 @@ export default function AdminDashboardPage() {
       setContacts(contactsData);
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
-    }
+    }finally {
+  setLoading(false);
+}
   };
 
   const handleCompleteQuery = async (contactId: string) => {
@@ -136,6 +132,10 @@ export default function AdminDashboardPage() {
 
     router.replace("/");
   };
+
+  if (loading) {
+  return <Loader />;
+}
 
   return (
     <main

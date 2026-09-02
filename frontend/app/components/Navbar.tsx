@@ -11,6 +11,7 @@ import {
   X,
   LogIn,
   LayoutDashboard,
+  SunMoon,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -242,7 +243,7 @@ export default function Navbar() {
             }}
             aria-label="Open settings"
           >
-            <Settings size={22} />
+            <SunMoon size={22} />
           </button>
 
           {/* SETTINGS MENU */}

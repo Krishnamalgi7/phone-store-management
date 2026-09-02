@@ -11,6 +11,7 @@ import {
   Search,
   X,
   Upload,
+  CircleChevronLeft,
 } from "lucide-react";
 
 type SectionType = "brands" | "variants" | "rams" | "roms";
@@ -1014,7 +1015,7 @@ export default function AdminSettingsPage() {
               color: "var(--text-primary)",
             }}
           >
-            <ArrowLeft size={18} />
+            <CircleChevronLeft size={18} />
             Back to Dashboard
           </button>
 

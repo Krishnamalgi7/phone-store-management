@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CircleChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -126,7 +126,7 @@ export default function CustomerQueriesPage() {
             }
             className="mb-8 flex cursor-pointer items-center gap-2 text-sm font-semibold transition-colors hover:!text-[var(--accent-color)]"
           >
-            <ArrowLeft size={18} />
+            <CircleChevronLeft size={18} />
             Back to Dashboard
           </button>
 
