@@ -219,8 +219,8 @@ export default function PhoneList() {
         const params = buildParams();
 
         const response = await fetch(
-          `http://localhost:5000/api/phones?${params.toString()}`,
-        );
+  `${process.env.NEXT_PUBLIC_API_URL}/api/phones?${params.toString()}`,
+);
 
         if (!response.ok) {
           throw new Error("Failed to fetch phones");
@@ -273,9 +273,9 @@ export default function PhoneList() {
           params.set("variantId", selectedVariant);
         }
 
-        const response = await fetch(
-          `http://localhost:5000/api/phones/filters?${params.toString()}`,
-        );
+const response = await fetch(
+  `${process.env.NEXT_PUBLIC_API_URL}/api/phones/filters?${params.toString()}`,
+);
 
         if (!response.ok) {
           throw new Error("Failed to fetch phone filters");

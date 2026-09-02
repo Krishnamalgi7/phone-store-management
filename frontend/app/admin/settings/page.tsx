@@ -37,7 +37,7 @@ type MetaData = {
   inactive: number;
 };
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`;
 
 const sections = [
   {
@@ -134,7 +134,7 @@ export default function AdminSettingsPage() {
         data.append("logo", logo);
       }
 
-      const response = await fetch("http://localhost:5000/api/store-settings", {
+      const response = await fetch(`${API_BASE_URL}/store-settings`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -1039,43 +1039,39 @@ export default function AdminSettingsPage() {
           </p>
         </div>
 
+        {/* STORE BRANDING CARD */}
+        <button
+          type="button"
+          onClick={() => router.push("/admin/settings/branding")}
+          className="group mb-4 flex w-full cursor-pointer items-center gap-5 rounded-2xl border p-5 text-left transition-all duration-200 hover:-translate-y-[1px] hover:shadow-sm"
+          style={{
+            borderColor: "var(--border-color)",
+            background: "var(--bg-secondary)",
+          }}
+        >
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-3">
+              <h2 className="text-lg font-semibold">Store Branding</h2>
+            </div>
 
+            <p
+              className="mt-1 text-sm"
+              style={{
+                color: "var(--text-secondary)",
+              }}
+            >
+              Manage your store name and logo
+            </p>
+          </div>
 
-{/* STORE BRANDING CARD */}
-<button
-  type="button"
-  onClick={() => router.push("/admin/settings/branding")}
-  className="group mb-4 flex w-full cursor-pointer items-center gap-5 rounded-2xl border p-5 text-left transition-all duration-200 hover:-translate-y-[1px] hover:shadow-sm"
-  style={{
-    borderColor: "var(--border-color)",
-    background: "var(--bg-secondary)",
-  }}
->
-  <div className="min-w-0 flex-1">
-    <div className="flex items-center gap-3">
-      <h2 className="text-lg font-semibold">
-        Store Branding
-      </h2>
-    </div>
-
-    <p
-      className="mt-1 text-sm"
-      style={{
-        color: "var(--text-secondary)",
-      }}
-    >
-      Manage your store name and logo
-    </p>
-  </div>
-
-  <ChevronRight
-    size={21}
-    className="shrink-0 transition-transform duration-200 group-hover:translate-x-1"
-    style={{
-      color: "var(--text-secondary)",
-    }}
-  />
-</button>
+          <ChevronRight
+            size={21}
+            className="shrink-0 transition-transform duration-200 group-hover:translate-x-1"
+            style={{
+              color: "var(--text-secondary)",
+            }}
+          />
+        </button>
 
         {/* SETTINGS CARDS */}
 

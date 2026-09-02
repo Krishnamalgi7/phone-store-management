@@ -36,7 +36,7 @@ export default function AdminSignupModal() {
       try {
         const response =
           await fetch(
-            "http://localhost:5000/api/admin/status",
+            `${process.env.NEXT_PUBLIC_API_URL}/api/admin/status`,
           );
 
         const data =
@@ -76,7 +76,7 @@ export default function AdminSignupModal() {
     try {
       const response =
         await fetch(
-          "http://localhost:5000/api/admin/signup",
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/signup`,
           {
             method: "POST",
 

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { ImagePlus, Pencil, Upload, X } from "lucide-react";
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`;
 
 export default function StoreBrandingForm() {
   const [currentBrandName, setCurrentBrandName] = useState("");
@@ -28,7 +28,7 @@ export default function StoreBrandingForm() {
         const data = await response.json();
 
         setCurrentBrandName(data.brandName || "");
-        setCurrentLogo(data.logo ? `http://localhost:5000${data.logo}` : "");
+        setCurrentLogo(data.logo ? `${process.env.NEXT_PUBLIC_API_URL}${data.logo}` : "");
       } catch (error) {
         console.error("Failed to fetch store branding:", error);
       }
@@ -73,7 +73,7 @@ export default function StoreBrandingForm() {
 
       setCurrentLogo(
         result.setting.logo
-          ? `http://localhost:5000${result.setting.logo}`
+          ? `${process.env.NEXT_PUBLIC_API_URL}${result.setting.logo}`
           : "",
       );
 

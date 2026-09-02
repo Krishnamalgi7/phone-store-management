@@ -107,7 +107,7 @@ export default function Navbar() {
     const fetchStoreBranding = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/api/store-settings",
+          `${process.env.NEXT_PUBLIC_API_URL}/api/store-settings`,
         );
 
         if (!response.ok) {
@@ -117,7 +117,7 @@ export default function Navbar() {
         const data = await response.json();
 
         setBrandName(data.brandName);
-        setLogo(`http://localhost:5000${data.logo}`);
+        setLogo(`${process.env.NEXT_PUBLIC_API_URL}${data.logo}`);
       } catch (error) {
         console.error("Failed to fetch store branding:", error);
       }

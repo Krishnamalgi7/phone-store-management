@@ -26,42 +26,30 @@ export default function EditPhonePage() {
 
   const phoneId = params.id as string;
 
-  const [phone, setPhone] =
-    useState<Phone | null>(null);
+  const [phone, setPhone] = useState<Phone | null>(null);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchPhone = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/phones/${phoneId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/phones/${phoneId}`,
         );
 
-        const data =
-          await response.json();
+        const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(
-            data.message ||
-              "Failed to fetch phone",
-          );
+          throw new Error(data.message || "Failed to fetch phone");
         }
 
         setPhone(data);
       } catch (error) {
-        console.error(
-          "Failed to fetch phone:",
-          error,
-        );
+        console.error("Failed to fetch phone:", error);
 
-        setError(
-          "Unable to load phone.",
-        );
+        setError("Unable to load phone.");
       } finally {
         setLoading(false);
       }
@@ -77,10 +65,8 @@ export default function EditPhonePage() {
       <main
         className="min-h-screen p-8"
         style={{
-          backgroundColor:
-            "var(--bg-primary)",
-          color:
-            "var(--text-primary)",
+          backgroundColor: "var(--bg-primary)",
+          color: "var(--text-primary)",
         }}
       >
         Loading phone...
@@ -93,65 +79,53 @@ export default function EditPhonePage() {
       <main
         className="min-h-screen p-8"
         style={{
-          backgroundColor:
-            "var(--bg-primary)",
-          color:
-            "var(--text-primary)",
+          backgroundColor: "var(--bg-primary)",
+          color: "var(--text-primary)",
         }}
       >
         <button
           type="button"
-          onClick={() =>
-            router.push("/admin/phones")
-          }
+          onClick={() => router.push("/admin/phones")}
           className="mb-6 flex cursor-pointer items-center gap-2 text-sm font-semibold transition-colors hover:!text-[var(--accent-color)]"
-  style={{
-    color: "var(--text-primary)",
-  }}
->
-  <ArrowLeft size={18} />
-  Back to Manage Phones
-</button>
+          style={{
+            color: "var(--text-primary)",
+          }}
+        >
+          <ArrowLeft size={18} />
+          Back to Manage Phones
+        </button>
 
-        <p className="mt-8">
-          {error || "Phone not found."}
-        </p>
+        <p className="mt-8">{error || "Phone not found."}</p>
       </main>
     );
   }
 
   return (
     <main
-        className="min-h-screen px-6 py-10"
-        style={{
-          background: "var(--bg-primary)",
-          color: "var(--text-primary)",
-        }}
-      >
-        <div className="mx-auto max-w-7xl">
+      className="min-h-screen px-6 py-10"
+      style={{
+        background: "var(--bg-primary)",
+        color: "var(--text-primary)",
+      }}
+    >
+      <div className="mx-auto max-w-7xl">
         {/* BACK */}
         <button
           type="button"
-          onClick={() =>
-            router.push("/admin/phones")
-          }
+          onClick={() => router.push("/admin/phones")}
           className="mb-6 flex cursor-pointer items-center gap-2 text-sm font-semibold transition hover:opacity-70"
           style={{
-            color:
-              "var(--text-primary)",
+            color: "var(--text-primary)",
           }}
         >
           <ArrowLeft size={18} />
-
           Back to Manage Phones
         </button>
 
         {/* EXISTING EDIT FORM */}
         <PhoneForm
           editingPhone={phone}
-          onEditComplete={() =>
-            router.push("/admin/phones")
-          }
+          onEditComplete={() => router.push("/admin/phones")}
         />
       </div>
     </main>

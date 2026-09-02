@@ -187,19 +187,19 @@ export default function PhoneForm({
 
         const [brandsResponse, variantsResponse, ramsResponse, romsResponse] =
           await Promise.all([
-            fetch("http://localhost:5000/api/brands?page=1&limit=100", {
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/brands?page=1&limit=100`, {
               headers,
             }),
 
-            fetch("http://localhost:5000/api/variants?page=1&limit=100", {
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/variants?page=1&limit=100`, {
               headers,
             }),
 
-            fetch("http://localhost:5000/api/rams?page=1&limit=100", {
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/rams?page=1&limit=100`, {
               headers,
             }),
 
-            fetch("http://localhost:5000/api/roms?page=1&limit=100", {
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/roms?page=1&limit=100`, {
               headers,
             }),
           ]);
@@ -400,8 +400,8 @@ export default function PhoneForm({
       }
 
       const url = editingPhone
-        ? `http://localhost:5000/api/phones/${editingPhone._id}`
-        : "http://localhost:5000/api/phones";
+        ? `${process.env.NEXT_PUBLIC_API_URL}/api/phones/${editingPhone._id}`
+        : `${process.env.NEXT_PUBLIC_API_URL}/api/phones`;
 
       const method = editingPhone ? "PUT" : "POST";
 

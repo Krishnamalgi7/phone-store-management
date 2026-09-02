@@ -32,7 +32,7 @@ export default function CustomerQueriesPage() {
       }
 
       const response = await fetch(
-        "http://localhost:5000/api/contacts",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/contacts`,
         {
           headers: {
             Authorization:
@@ -77,7 +77,7 @@ export default function CustomerQueriesPage() {
       }
 
       const response = await fetch(
-        `http://localhost:5000/api/contacts/${contactId}/status`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/contacts/${contactId}/status`,
         {
           method: "PATCH",
           headers: {

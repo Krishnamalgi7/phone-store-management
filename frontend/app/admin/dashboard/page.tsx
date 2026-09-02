@@ -75,8 +75,8 @@ export default function AdminDashboardPage() {
       }
 
       const [phonesResponse, contactsResponse] = await Promise.all([
-        fetch("http://localhost:5000/api/phones"),
-        fetch("http://localhost:5000/api/contacts", {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/phones`),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/contacts`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -107,7 +107,7 @@ export default function AdminDashboardPage() {
       }
 
       const response = await fetch(
-        `http://localhost:5000/api/contacts/${contactId}/status`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/contacts/${contactId}/status`,
         {
           method: "PATCH",
           headers: {

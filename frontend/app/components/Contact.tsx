@@ -40,18 +40,21 @@ export default function Contact() {
     try {
       setStatus("Submitting...");
 
-      const response = await fetch("http://localhost:5000/api/contacts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/contacts`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...formData,
+            name,
+            phone,
+            message,
+          }),
         },
-        body: JSON.stringify({
-          ...formData,
-          name,
-          phone,
-          message,
-        }),
-      });
+      );
 
       const data = await response.json();
 

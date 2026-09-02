@@ -168,7 +168,7 @@ useEffect(() => {
       }
 
       const response = await fetch(
-        `http://localhost:5000/api/phones?${params.toString()}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/phones?${params.toString()}`
       );
 
       if (!response.ok) {
@@ -218,7 +218,7 @@ useEffect(() => {
       }
 
       const response = await fetch(
-        `http://localhost:5000/api/phones/filters?${params.toString()}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/phones/filters?${params.toString()}`
       );
 
       if (!response.ok) {
@@ -264,7 +264,7 @@ useEffect(() => {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/phones/variants?brandId=${selectedBrand}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/phones/variants?brandId=${selectedBrand}`
       );
 
       if (!response.ok) {
@@ -382,7 +382,7 @@ const clearFilters = () => {
       const token = localStorage.getItem("adminToken");
 
       const response = await fetch(
-        `http://localhost:5000/api/phones/${phone._id}/status`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/phones/${phone._id}/status`,
         {
           method: "PATCH",
           headers: {

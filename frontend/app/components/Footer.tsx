@@ -10,7 +10,7 @@ useEffect(() => {
   const fetchStoreBranding = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/store-settings",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/store-settings`,
       );
 
       if (!response.ok) {

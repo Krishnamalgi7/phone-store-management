@@ -15,81 +15,81 @@ export default function AdminSignupPage() {
   const [adminExists, setAdminExists] = useState(false);
   const [checkingAdmin, setCheckingAdmin] = useState(true);
 
-useEffect(() => {
-  const checkAdmin = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:5000/api/admin/status"
-      );
+  useEffect(() => {
+    const checkAdmin = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/status`,
+        );
 
-      if (!response.ok) {
-        setError("Failed to check admin status");
-        return;
+        if (!response.ok) {
+          setError("Failed to check admin status");
+          return;
+        }
+
+        const data = await response.json();
+
+        if (data.exists) {
+          setAdminExists(true);
+        }
+      } catch (error) {
+        console.error("Admin status check error:", error);
+        setError("Unable to connect to the server");
+      } finally {
+        setCheckingAdmin(false);
       }
+    };
 
-      const data = await response.json();
-
-      if (data.exists) {
-        setAdminExists(true);
-      }
-    } catch (error) {
-      console.error("Admin status check error:", error);
-      setError("Unable to connect to the server");
-    } finally {
-      setCheckingAdmin(false);
-    }
-  };
-
-  checkAdmin();
-}, []);
+    checkAdmin();
+  }, []);
 
   if (checkingAdmin) {
     return null;
   }
   if (adminExists) {
-  return (
-    <main
-      className="flex min-h-screen items-center justify-center px-4"
-      style={{
-        backgroundColor: "var(--bg-primary)",
-        color: "var(--text-primary)",
-      }}
-    >
-      <div
-        className="w-full max-w-md rounded-2xl border p-6 shadow-xl"
+    return (
+      <main
+        className="flex min-h-screen items-center justify-center px-4"
         style={{
-          backgroundColor: "var(--bg-secondary)",
-          borderColor: "var(--border-color)",
+          backgroundColor: "var(--bg-primary)",
+          color: "var(--text-primary)",
         }}
       >
-        <h2 className="text-xl font-bold text-center">
-          Administrator account already exists
-        </h2>
-
-        <p
-          className="mt-3 text-sm leading-6 text-center"
+        <div
+          className="w-full max-w-md rounded-2xl border p-6 shadow-xl"
           style={{
-            color: "var(--text-secondary)",
+            backgroundColor: "var(--bg-secondary)",
+            borderColor: "var(--border-color)",
           }}
         >
-          Please login to continue
-        </p>
+          <h2 className="text-xl font-bold text-center">
+            Administrator account already exists
+          </h2>
 
-        <button
-  type="button"
-  onClick={() => router.push("/admin/login")}
-  className="mx-auto block theme-accent-hover mt-6 w-1/2 cursor-pointer rounded-lg px-5 py-2.5 font-semibold transition"
-  style={{
-    backgroundColor: "var(--text-primary)",
-    color: "var(--bg-primary)",
-  }}
->
-  Click here to Login
-</button>
-      </div>
-    </main>
-  );
-}
+          <p
+            className="mt-3 text-sm leading-6 text-center"
+            style={{
+              color: "var(--text-secondary)",
+            }}
+          >
+            Please login to continue
+          </p>
+
+          <button
+            type="button"
+            onClick={() => router.push("/admin/login")}
+            className="mx-auto block theme-accent-hover mt-6 w-1/2 cursor-pointer rounded-lg px-5 py-2.5 font-semibold transition"
+            style={{
+              backgroundColor: "var(--text-primary)",
+              color: "var(--bg-primary)",
+            }}
+          >
+            Click here to Login
+          </button>
+        </div>
+      </main>
+    );
+  }
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -97,7 +97,7 @@ useEffect(() => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/admin/signup", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

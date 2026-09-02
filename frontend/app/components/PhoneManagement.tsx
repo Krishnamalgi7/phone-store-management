@@ -73,10 +73,6 @@ export default function PhoneManagement() {
 
       <ManagePhoneList
         onEdit={(phone: Phone) => {
-          /*
-           * Edit goes to the existing EDIT PAGE.
-           * No popup.
-           */
           router.push(
             `/admin/phones/edit/${phone._id}`,
           );
