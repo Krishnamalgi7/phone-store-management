@@ -1,4 +1,5 @@
 "use client";
+import Loader from "./Loader";
 
 import { useEffect, useRef, useState } from "react";
 import {
@@ -24,7 +25,7 @@ export default function Navbar() {
   const [brandName, setBrandName] = useState("Phone Store");
   const [logo, setLogo] = useState("/logo.png");
   const [adminName, setAdminName] = useState("");
-
+  const [loading, setLoading] = useState(true);
   const settingsRef = useRef<HTMLDivElement>(null);
 
   /*
@@ -121,18 +122,22 @@ export default function Navbar() {
         setLogo(`${process.env.NEXT_PUBLIC_API_URL}${data.logo}`);
       } catch (error) {
         console.error("Failed to fetch store branding:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchStoreBranding();
   }, []);
 
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
     <div className="relative mx-auto mt-4 flex w-full max-w-7xl items-center gap-3">
-      
       <nav
-
-  className="flex min-w-0 flex-1 items-center justify-between rounded-full border px-7 py-4 shadow-sm"
+        className="flex min-w-0 flex-1 items-center justify-between rounded-full border px-7 py-4 shadow-sm"
         style={{
           backgroundColor: "var(--bg-primary)",
 
@@ -144,7 +149,11 @@ export default function Navbar() {
         {/* LOGO */}
 
         <a href="#home" className="flex items-center gap-3">
-          <img src={logo} alt={brandName} className="h-10 w-auto object-contain rounded-xl" />
+          <img
+            src={logo}
+            alt={brandName}
+            className="h-10 w-auto object-contain rounded-xl"
+          />
 
           <span
             className="text-2xl font-bold"
