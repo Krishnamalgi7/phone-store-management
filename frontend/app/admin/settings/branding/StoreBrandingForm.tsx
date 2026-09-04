@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ImagePlus, Pencil, Upload, X } from "lucide-react";
-import Loader from "../../../components/Loader";
+import Loader from "../../../../components/Loader";
 
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`;
 

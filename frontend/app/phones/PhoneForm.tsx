@@ -1,6 +1,6 @@
 "use client";
 
-import Loader from "../components/Loader";
+import Loader from "../../components/Loader";
 import { useEffect, useState } from "react";
 import { Minus, Plus } from "lucide-react";
 

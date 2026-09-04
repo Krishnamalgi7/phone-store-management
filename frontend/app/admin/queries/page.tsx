@@ -3,7 +3,7 @@
 import { ArrowLeft, CircleChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Loader from "../../components/Loader";
+import Loader from "../../../components/Loader";
 
 type Contact = {
   _id: string;

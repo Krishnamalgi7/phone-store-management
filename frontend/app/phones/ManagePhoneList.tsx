@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { ChevronDown, Pencil, Search, X } from "lucide-react";
-import Loader from "../components/Loader";
+import Loader from "../../components/Loader";
 
 type ReferenceValue =
   | string

@@ -1,6 +1,6 @@
 "use client";
 
-import Loader from "../../components/Loader";
+import Loader from "../../../components/Loader";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";

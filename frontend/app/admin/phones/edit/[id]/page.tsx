@@ -4,7 +4,7 @@ import { CircleChevronLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import PhoneForm from "../../../../phones/PhoneForm";
-import Loader from "../../../../components/Loader";
+import Loader from "../../../../../components/Loader";
 
 type Phone = {
   _id: string;

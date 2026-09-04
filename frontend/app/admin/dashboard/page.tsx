@@ -1,7 +1,7 @@
 "use client";
 
-import PhoneManagement from "../../components/PhoneManagement";
-import Loader from "../../components/Loader";
+import PhoneManagement from "../../../components/PhoneManagement";
+import Loader from "../../../components/Loader";
 
 import {
   MessageSquare,

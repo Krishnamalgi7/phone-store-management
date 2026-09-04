@@ -2,7 +2,7 @@
 
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import ManagePhoneList from "../phones/ManagePhoneList";
+import ManagePhoneList from "../app/phones/ManagePhoneList";
 
 type ReferenceValue =
   | string

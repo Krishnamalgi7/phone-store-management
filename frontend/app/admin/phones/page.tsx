@@ -2,7 +2,7 @@
 
 import { CircleChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import PhoneManagement from "../../components/PhoneManagement";
+import PhoneManagement from "../../../components/PhoneManagement";
 
 export default function ManagePhonesPage() {
   const router = useRouter();
