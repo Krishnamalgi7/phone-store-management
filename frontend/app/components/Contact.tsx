@@ -144,7 +144,7 @@ export default function Contact() {
             {/* Email */}
 
             <a
-              href="https://mail.google.com/mail/?view=cm&fs=1&to=hello@nova.com"
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=hello@phonestore.com"
               target="_blank"
               rel="noopener noreferrer"
               className="cursor-pointer rounded-2xl bg-gray-100 px-5 py-4 transition hover:bg-gray-200"

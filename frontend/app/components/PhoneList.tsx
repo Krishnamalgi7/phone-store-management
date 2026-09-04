@@ -170,6 +170,15 @@ export default function PhoneList() {
     setCurrentPage(1);
   };
 
+  const changePage = (page: number) => {
+  setCurrentPage(page);
+
+  document.getElementById("phones")?.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+};
+
   /*
    * ------------------------------------------------
    * CLEAR FILTERS
@@ -832,7 +841,7 @@ const response = await fetch(
             <button
               type="button"
               disabled={currentPage === 1}
-              onClick={() => setCurrentPage((page) => page - 1)}
+              onClick={() => changePage(currentPage - 1)}
               className="cursor-pointer rounded-xl border px-5 py-3 transition disabled:cursor-not-allowed disabled:opacity-40"
               style={{
                 backgroundColor: "var(--bg-secondary)",
@@ -855,7 +864,7 @@ const response = await fetch(
             <button
               type="button"
               disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage((page) => page + 1)}
+              onClick={() => changePage(currentPage + 1)}
               className="cursor-pointer rounded-xl border px-5 py-3 transition disabled:cursor-not-allowed disabled:opacity-40"
               style={{
                 backgroundColor: "var(--bg-secondary)",

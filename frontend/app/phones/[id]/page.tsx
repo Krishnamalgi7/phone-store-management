@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Loader from "../../components/Loader";
 
 type Phone = {
   _id: string;
@@ -54,17 +55,8 @@ export default function PhoneDetailsPage() {
   }, [params.id]);
 
   if (loading) {
-    return (
-      <main
-        className="flex min-h-screen items-center justify-center"
-        style={{ backgroundColor: "var(--bg-primary)" }}
-      >
-        <p style={{ color: "var(--text-secondary)" }}>
-          Loading phone details...
-        </p>
-      </main>
-    );
-  }
+  return <Loader />;
+}
 
   if (error || !phone) {
     return (
@@ -82,7 +74,7 @@ export default function PhoneDetailsPage() {
 
   return (
     <main
-      className="min-h-screen px-6 py-10"
+      className="min-h-screen py-30"
       style={{
         backgroundColor: "var(--bg-primary)",
         color: "var(--text-primary)",
